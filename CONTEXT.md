@@ -19,3 +19,17 @@ The stage a milestone map is in, always derived by querying the map and its chil
 
 **Child-map state**:
 The stage a child map is in. Uses the same two states as an ordinary single-level Wayfinder map: open (tickets remain or destination not yet reached) and closed (destination reached, decisions recorded) — no additional gate at this level.
+
+### Skill composition
+
+**Invoke**:
+Calling another skill directly through the `Skill` tool at runtime. Only possible for a skill without `disable-model-invocation` in its frontmatter — the tool itself refuses to call flagged skills.
+_Avoid_: call, run, use (as a stand-in for a live Skill-tool call)
+
+**Defer**:
+Stopping and telling the human to run a skill's slash command themselves, because the skill carries `disable-model-invocation` and cannot be invoked programmatically or have its workflow replicated inline. The composing skill does not attempt the referenced skill's job itself.
+_Avoid_: handoff (ambiguous with the pipeline's document handoffs between vision/pitch/roadmap/milestone artifacts), hand off to the skill
+
+**Embed**:
+Folding a short, specific discipline borrowed from an invokable skill directly into a composing skill's own text, with no runtime dependency on the source skill at all. Reserved for cases too small to warrant a full Skill-tool round-trip — not a general substitute for invoke.
+_Avoid_: adapt, inline (as a distinct fourth mode — collapsed into embed; see ADR 0002)
