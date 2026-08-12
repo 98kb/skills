@@ -51,3 +51,13 @@ _Avoid_: assertion (too generic; doesn't convey it's one half of a specific two-
 **Eval-complete**:
 The state a skill reaches once its scenario suite — at least one eval scenario per founder-persona category — passes grading. The gate before that skill is considered ready for `/to-spec` / `/to-tickets` / `/implement`.
 _Avoid_: tested, passing (too vague — doesn't convey the specific gate)
+
+### to-vision artifact
+
+**Vision Statement**:
+The vision artifact's one-sentence headline field — the single citable line downstream artifacts (a pitch, roadmap, or milestone) quote when referencing "the vision," distinct from the fuller Future State field beneath it.
+_Avoid_: vision (ambiguous with the artifact as a whole), mission (see Cagan's vision-vs-mission distinction — a mission is a durable org-wide slogan, a vision is product-specific and falsifiable)
+
+**Vision Pivot Trigger**:
+The vision artifact's mandatory field stating the falsifiable condition under which the vision itself — not a discovery-level detail — would be wrong, per Cagan's vision-pivot vs. discovery-pivot split. The mechanism a downstream skill checks against when flagging a possible vision-level revision (see Revision propagation policy, #8).
+_Avoid_: pivot (too generic — a discovery pivot is a different, lower-stakes thing this term deliberately excludes)
