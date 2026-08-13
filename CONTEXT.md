@@ -74,16 +74,16 @@ _Avoid_: risk, assumption (both too generic — this term specifically means a r
 
 ### to-roadmap artifact
 
-**Wedge**:
-The roadmap artifact's strategic-frame field: the initial, deliberately narrow beachhead the Moves are sequenced to dominate, named by `to-roadmap` itself since the milestone map rules out a separate to-strategy skill and the upstream pitch's Problem field doesn't itself commit to one. Exact sourcing/definition pending [to-roadmap: artifact schema (fields) (#27)](https://github.com/98kb/skills/issues/27).
-_Avoid_: strategy (too generic — the artifact's strategic layer is more than just the wedge statement), positioning (a different, narrower marketing-specific term not yet confirmed as the right primary source)
+**Strategic Frame**:
+The roadmap artifact's single structured field folding in the problem space this roadmap claims, its constraints, and its differentiation — the narrow, single-pitch-scoped replacement for "Wedge." Deliberately renamed away from "Wedge" because every primary source's own worked wedge/beachhead example describes expansion into a *different* product or market than the starting point, a claim a `to-roadmap` session (one pitch in, no vision re-fetch, no cross-roadmap view) has no evidence to back. Later Moves stay within this one pitch's own Problem/Solution bounds — the "expand" is Move 2/3/4 addressing adjacent parts of the *same* approved problem space, not a cross-market trajectory. Capped ~150 words. See [ADR 0006](docs/adr/0006-to-roadmap-artifact-schema-strategic-frame-replaces-wedge.md).
+_Avoid_: Wedge (the term this replaces — carries a cross-market connotation from its primary sources that this field's narrow scope can't support), strategy (too generic — the artifact's strategic layer is more than just this one field), positioning (a different, narrower marketing-specific term not confirmed as the right primary source)
 
 **Move**:
-One item in the roadmap artifact's ordered sequence — a Shape-Up-scale bet, sized and sequenced under the Wedge, carrying its own Evidence Threshold. The unit `to-milestone` later picks off as "the next unfinished roadmap move."
+One item in the roadmap artifact's ordered sequence — a Shape-Up-scale bet, sized and sequenced under the Strategic Frame, carrying its own Appetite, Evidence Threshold, and Status. The unit `to-milestone` later picks off as "the next unfinished roadmap move." Four Status states: pending → active (Shape Up's one-bet-at-a-time cadence — only one Move active at a time) → proven or invalidated. Moves list capped at 6 open (non-invalidated) Moves at a time; Description capped ~50 words.
 _Avoid_: bet (Shape Up's own term, kept as a description of a Move's scale, not adopted as this pipeline's field name), feature (implies a single deliverable rather than a scoped, thresholded unit of the sequence)
 
 **Evidence Threshold**:
-A Move's stated condition for what would justify moving on to the next Move — defined by `to-roadmap` at authoring/resequencing time, but judged (executed as a pass/fail gate check) by `to-milestone`, never by `to-roadmap` itself. The split that keeps "what would count as evidence" and "did the evidence actually come in" owned by different skills.
+A Move's stated condition for what would justify moving on to the next Move, with two sub-fields — **signal** (the observable result, e.g. "10 paying customers from cohort X") and **threshold** (the specific bar, e.g. "≥10") — deliberately lighter than to-pitch's four-part Riskiest Assumption (claim/threshold/test/timebox), since it's `to-milestone`, not `to-roadmap`, that owns *how* the check gets executed. Defined by `to-roadmap` at authoring/resequencing time, but judged (executed as a pass/fail gate check) by `to-milestone`, never by `to-roadmap` itself. The split that keeps "what would count as evidence" and "did the evidence actually come in" owned by different skills.
 _Avoid_: success criteria (too generic, doesn't convey the split between stating and judging), evidence gate (that's `to-milestone`'s mechanism for executing against this threshold, not the threshold itself)
 
 **Re-entry session**:
