@@ -61,3 +61,13 @@ _Avoid_: vision (ambiguous with the artifact as a whole), mission (see Cagan's v
 **Vision Pivot Trigger**:
 The vision artifact's mandatory field stating the falsifiable condition under which the vision itself — not a discovery-level detail — would be wrong, per Cagan's vision-pivot vs. discovery-pivot split. The mechanism a downstream skill checks against when flagging a possible vision-level revision (see Revision propagation policy, #8).
 _Avoid_: pivot (too generic — a discovery pivot is a different, lower-stakes thing this term deliberately excludes)
+
+### to-pitch artifact
+
+**Appetite**:
+The pitch artifact's fixed-budget field: small (≤2 weeks) or big (≤6 weeks), inherited from Shape Up's own two-tier timebox. Fixes a scope constraint on the Solution sketch rather than estimating one — a pitch is written to fit the appetite, never the other way around. Kept as a comparable unit for a future cross-pitch portfolio-sequencing mechanism, which does not exist yet.
+_Avoid_: estimate, budget (implies cost/time is measured after the fact, not fixed before writing)
+
+**Riskiest Assumption**:
+One structured item (of up to three, ranked) in the pitch artifact's Riskiest Assumptions & Cheap Validation Plan field, with four sub-fields: claim, threshold, test, timebox. The structural home for a falsifiable claim and its cheap test — the falsifiability-check mechanism that populates and validates it belongs to `to-pitch`'s grilling question tree (#22), not to the schema itself.
+_Avoid_: risk, assumption (both too generic — this term specifically means a ranked, structurally falsifiable item, not any stated belief)

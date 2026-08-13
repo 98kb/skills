@@ -1,0 +1,19 @@
+# to-pitch's schema fixes seven fields, a two-tier Appetite unit, and a structured Riskiest Assumptions list
+
+The vision-roadmap-bridge research (Q5) named the seven fields — Problem, Appetite, Solution sketch, Riskiest Assumptions & Cheap Validation Plan, Rabbit Holes, No-gos, Open Questions — but left three things unpinned: which fields are mandatory, what unit Appetite takes outside Shape Up's multi-team betting table, and whether Riskiest Assumptions needs internal structure. This ticket settles all three.
+
+**Mandatory vs optional**: Problem, Appetite, Solution sketch, and Riskiest Assumptions & Cheap Validation Plan are mandatory — a pitch without any one of them isn't a pitch. Rabbit Holes, No-gos, and Open Questions are optional; a lean pitch may legitimately have none of one or more.
+
+**Riskiest Assumptions & Cheap Validation Plan**: a ranked list of 1–3 assumptions (capped, not singular, so "riskiest" stays a real ranking rather than an artificial one-shot forced choice). Each assumption is a structured item with four sub-fields — **claim**, **threshold**, **test**, **timebox** — considered and rejected as freeform prose, because a shapeless field would give the falsifiability-check mechanism (owned by [to-pitch: grilling question tree & falsifiability/sharpness test (#22)](https://github.com/98kb/skills/issues/22)) nothing to grab onto structurally. This ticket only fixes the shape; #22 owns the mechanism that populates and checks it.
+
+**Appetite unit**: a two-tier timebox, small (≤2 weeks) or big (≤6 weeks), inherited directly from Shape Up rather than invented fresh. Considered and rejected: a raw calendar estimate (loses the fixed-budget forcing function Shape Up's Appetite is built around) and a fraction-of-runway unit (adds a founder-finance dependency this pipeline doesn't otherwise need). The two-tier form stays comparable across pitches for a future portfolio-sequencing mechanism (flagged as separate, still-needed work by the research) even though no betting-table-equivalent exists yet.
+
+**Other fields**: Rabbit Holes and No-gos are bullet lists (Shape Up itself enumerates both as discrete items). Open Questions is a bullet list capped at 3–5 ("top handful," per the research). Solution sketch is capped around 150 words / 5 bullets — explicitly below wireframe/spec detail, and prose-only since this pipeline produces text, not breadboards. Problem is 2–4 sentences, customer-back framing (name the segment, then their pain in their own words) per the PR/FAQ forcing function the research recommends.
+
+**Document order**: Problem → Appetite → Solution sketch → Riskiest Assumptions & Cheap Validation Plan → Rabbit Holes → No-gos → Open Questions, matching the research's own listing order — already reads as the natural pitch narrative.
+
+**Length**: ~500–600 words total, a conversational guideline the grilling session steers by, not a schema-enforced limit — mirrors to-vision's approach ([ADR 0004](0004-to-vision-artifact-schema-reshapes-cagans-nine-factors.md)). Per-field/per-bullet caps (Solution sketch's 150 words, the bullet counts above, the 1–3 assumption cap) are the load-bearing scope constraints; the total is a sanity-check number, not something the agent tallies and rejects against — mechanical word-counting mid-conversation is brittle and risks truncating a sentence rather than prompting genuine tightening.
+
+Artifact metadata (title, date, approval marker, revision marker) is explicitly out of scope — inherited generically from Artifact storage & cross-reference convention (#7) and Approval & completion gate pattern (#9), same as to-vision.
+
+Decided on [to-pitch: artifact schema (fields) (#21)](https://github.com/98kb/skills/issues/21), a ticket on [Child map: to-pitch skill design (#20)](https://github.com/98kb/skills/issues/20), itself a child of [Milestone map: to-vision / to-pitch / to-roadmap / to-milestone skill design (#1)](https://github.com/98kb/skills/issues/1).
