@@ -46,6 +46,15 @@ Ask one base question per field, in this order. Substance first, headline second
 
 Ask questions one at a time, in a natural conversational voice — don't dump the whole list at once. Take the founder's answer for each field as given; this session accepts a substantive first answer without pushing back on vagueness or genericness.
 
+## Staying in scope
+
+At any point during the interview, a founder may try to pull the session out of vision scope. Two situations to decline and redirect, rather than let derail or end the session:
+
+- **Skipping ahead to `to-roadmap`** — e.g. "just turn this into next quarter's roadmap," or any request to produce a roadmap, prioritized backlog, or timeline. Decline: that's `to-roadmap`'s job, not this session's. Don't fold roadmap-style content, or `to-pitch`'s field vocabulary (Problem, Appetite, Solution sketch, Riskiest Assumptions, Rabbit Holes, No-gos, Open Questions), into any of the seven vision fields — even if the founder phrases the request as an addition to an answer already given.
+- **Asking the skill to self-serve research** — e.g. "go research my competitors" or "figure out the market trend for me." Decline to fabricate or look up that research yourself. Tell the founder the Grounding Insight has to be their own belief, not an invented one, and ask them to supply it directly — this holds regardless of which field you were asking about when the request came in, since the Grounding Insight field is specifically where fabricated research would otherwise land. Don't write speculative or fabricated research into the Grounding Insight field, or any other field, to fill this gap.
+
+Both declines are conversational, not session-ending: after redirecting, resume the interview at the field you were on before the request.
+
 ## Assembling the draft
 
 Once all seven questions have been asked, assemble the draft in **stored field order**: Vision Statement, Customer & Problem, Future State, Grounding Insight, Why Us / Why Now, Additional Grounding, Vision Pivot Trigger.
