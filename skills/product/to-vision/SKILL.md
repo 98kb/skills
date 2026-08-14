@@ -34,17 +34,19 @@ This is the field order the artifact is **stored** in. It is not the order you *
 
 ## Interview order
 
-Ask one base question per field, in this order. Substance first, headline second, falsifiability last:
+Ask one base question per field, in this order. Substance first, headline second, falsifiability last. Ask questions one at a time, in a natural conversational voice — don't dump the whole list at once.
 
-1. **Customer & Problem** — "Who exactly is this for, and what's broken for them today?"
-2. **Future State** — "In 2–5 years, what does the world look like for that customer once this exists?"
-3. **Grounding Insight** — "What's the one insight, trend, or technology bet you're building on — something you'd be willing to be proven wrong about?"
-4. **Why Us / Why Now** — "Why is now the moment, and why are you positioned to win it?"
-5. **Additional Grounding** (single offer, no chase) — "Anything else grounding this — a competitive gap, capability, or GTM angle worth naming?" If the founder has nothing to add, skip this field immediately — don't ask again.
-6. **Vision Statement** (synthesized, not asked cold) — "Now say it in one line — the Amazon-headline version of everything you just told me." Draft this yourself from the answers gathered so far, offer it to the founder, and let them adjust it, rather than asking them to write a headline from nothing.
-7. **Vision Pivot Trigger** — "What would have to happen — or fail to happen — for you to conclude this vision itself was wrong?"
+For every field except Additional Grounding, check the founder's answer against that field's sharpness test below. If it's vague, generic, or unfalsifiable, fire that field's specific follow-up rather than accepting the answer outright. Escalation is capped at 2 follow-up attempts per field. What happens at the cap differs by field: every field except Grounding Insight is **accepted but flagged** once the cap is hit — take the founder's best answer, note that the field is flagged (for disclosure at the end-of-session gate-check), and move on without looping further. Grounding Insight is the one non-negotiable field — see its entry below.
 
-Ask questions one at a time, in a natural conversational voice — don't dump the whole list at once. Take the founder's answer for each field as given; this session accepts a substantive first answer without pushing back on vagueness or genericness.
+The **swap-test** — "if you swapped your company's name for a direct competitor's, would this still ring true?" — catches answers that could describe any company. It's used as written for Vision Statement and Future State; Why Us/Why Now uses an extended form of it.
+
+1. **Customer & Problem** — "Who exactly is this for, and what's broken for them today?" If the answer names a generic customer (a demographic, "everyone who...", etc.) rather than a specific person or role, ask: "Name the one person or role you'd actually go talk to this week." Capped at 2 attempts, then accept and flag.
+2. **Future State** — "In 2–5 years, what does the world look like for that customer once this exists?" If the answer is vague or aspirational, apply the swap-test: "If you swapped your company's name for a direct competitor's, would this still ring true?" A "yes" means it's too generic — push for the differentiator. Capped at 2 attempts, then accept and flag.
+3. **Grounding Insight** — "What's the one insight, trend, or technology bet you're building on — something you'd be willing to be proven wrong about?" If the answer restates the problem instead of naming a belief, say so and re-ask: "That's the problem again — what's the belief that makes you think it's solvable now?" Capped at 2 attempts. **If a real Grounding Insight is still absent or inadequate after 2 attempts, end the session right here** — do not assemble a draft, do not run the gate-check below, and do not offer approval. This is the one field with no partial credit: a vision without a grounding insight isn't a vision.
+4. **Why Us / Why Now** — "Why is now the moment, and why are you positioned to win it?" If the answer is generic or timeless, apply the extended swap-test: "Would this be equally true of a competitor, or true two years ago?" Capped at 2 attempts, then accept and flag.
+5. **Additional Grounding** (single offer, no chase) — "Anything else grounding this — a competitive gap, capability, or GTM angle worth naming?" If the founder has nothing to add, skip this field immediately — don't ask again. No escalation applies to this field.
+6. **Vision Statement** (synthesized, not asked cold) — "Now say it in one line — the Amazon-headline version of everything you just told me." Draft this yourself from the answers gathered so far, offer it to the founder, and let them adjust it, rather than asking them to write a headline from nothing. If the draft (or the founder's revision of it) reads like a mission statement, apply the swap-test. Capped at 2 attempts, then accept and flag.
+7. **Vision Pivot Trigger** — "What would have to happen — or fail to happen — for you to conclude this vision itself was wrong?" If the answer is an unfalsifiable hedge, ask: "What specific customer behavior, market signal, or metric would tell you that?" Capped at 2 attempts; a 3rd still-vague answer is accepted, but note the gap directly in the Vision Pivot Trigger prose you write into the artifact (not just disclosed at the gate-check, since this field's whole point is to be checkable later) — e.g. "not yet tied to a specific, checkable signal."
 
 ## Staying in scope
 
@@ -75,9 +77,14 @@ Once all seven questions have been asked, assemble the draft in **stored field o
 
 ## Gate-check
 
-Before offering the draft for approval, re-read it once, end to end, checking for sharpness or falsifiability problems. Nothing gets flagged by this pass — every draft proceeds to approval unchanged.
+Before offering the draft for approval, re-read the full assembled draft once, end to end, against:
 
-Show the founder the full assembled draft before asking for approval.
+- **The 3-part composite sharpness test**: (1) names a specific customer and future state, not a platitude; (2) commits to at least one grounding insight; (3) is falsifiable — a reader could point to it and say "this didn't happen."
+- **All 3 swap-tests**: the Vision Statement swap-test, the Future State swap-test, and Why Us/Why Now's extended swap-test ("would this be equally true of a competitor, or true two years ago?").
+
+This is a coherence check over the whole assembled draft, not a repeat of the per-field escalation above — it can catch problems that only become visible once the fields sit next to each other. If a field fails one of these tests and wasn't already flagged during the interview, flag it now.
+
+Show the founder the full assembled draft, then disclose every flagged field in plain language — naming the field and what's weak about it — **before** asking for approval. Approving with visible flags is a legitimate, non-blocking outcome; don't withhold or delay the approval request just because flags exist.
 
 ## Approval
 
