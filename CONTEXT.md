@@ -89,3 +89,13 @@ _Avoid_: success criteria (too generic, doesn't convey the split between stating
 **Re-entry session**:
 A `to-roadmap` invocation against an *existing* roadmap artifact — as opposed to a from-scratch authoring session — that reads prior Moves and whatever evidence has returned, decides resequence vs. no-op, and invokes the in-place revision mechanism from Revision propagation policy (#8) rather than a new versioning scheme.
 _Avoid_: revision (too generic — every artifact in this pipeline can be revised per #8; this term specifically names the roadmap's own recurring authoring mode, not the general mechanism), re-plan (implies discarding the existing sequence rather than resequencing it)
+
+### to-milestone artifact
+
+**Milestone (artifact)**:
+One gate-check `to-milestone` produces each time it judges a Move's Evidence Threshold against the founder's reported evidence — unrelated to the "Milestone map" term above, a different-layer Wayfinder concept from this same repo's own planning process. Snapshots the Move being judged (roadmap link + positional index + Description, since Moves carry no id of their own) and the Evidence Threshold being judged as they stood at check time — not a live pointer, since a later `to-roadmap` Re-entry session can resequence or revise both. A Move accumulates one Milestone per gate-check, never overwritten, so its full history of checks stays readable.
+_Avoid_: Milestone map (the unrelated Wayfinder term above), gate-check result (undersells that it's a durable, stored artifact rather than a momentary computation), review (too generic, collides with unrelated review practices elsewhere in engineering)
+
+**Verdict**:
+A Milestone's decision field: advance, persevere, pivot, or stop. Advance and persevere continue the roadmap unchanged (move to the next Move, or keep working the active one); pivot hands off to `to-roadmap`'s Re-entry session; stop ends further Moves on this roadmap. A root-cause narrative accompanies every Verdict except advance, mirroring the reviewed traditions' pattern of writing up misses, not hits.
+_Avoid_: decision (too generic — every Wayfinder ticket in this repo is also "a decision"), outcome (implies something that just happens rather than a judged call), grade (evokes OKR's continuous 0.0–1.0 scoring, which this four-value enum deliberately isn't)
