@@ -14,7 +14,9 @@ Run an adaptive interview that turns a founder's raw idea into a seven-field vis
 Check whether `docs/product/vision.md` already exists in the founder's repo.
 
 - **If it doesn't exist**, this is a from-scratch session. Proceed with the interview below.
-- **If it exists**, read it and tell the founder a vision is already recorded there, showing them its current fields. Continue with the interview below, using the existing content as the starting point for each field's answer (read it back to the founder and let them confirm or revise it, rather than asking cold). On approval, `update` the file in place rather than treating this as a second `create`.
+- **If it exists**, read it and tell the founder a vision is already recorded there, showing them its current fields. Continue with the interview below, using the existing content as the starting point for each field's answer (read it back to the founder and let them confirm or revise it, rather than asking cold). On approval, `update` the file in place rather than treating this as a second `create`. Check the frontmatter for `approved_by`/`approved_at` first, since that changes what an edit here means:
+- **Drafted** (no `approved_by`/`approved_at` present) — an ordinary continuation of an unfinished draft. Proceed exactly as described above and below.
+- **Approved** (`approved_by`/`approved_at` present) — any field edit the founder lands here is a *revision* to an already-approved artifact. As soon as an edited field is confirmed, `update` `docs/product/vision.md` in place with the change — same mechanism, no parallel version history — and in that same write add a dated revision-reason marker to the frontmatter (see Writing the artifact) and clear `approved_by`/`approved_at` back to unset. Do this immediately; a stale approval must never survive an in-place edit, not even for the rest of this session. The vision is now back to drafted status — continue the session (further edits, gate-check) as normal, and don't write `approved_by`/`approved_at` again until the founder gives a fresh explicit approval (see Approval).
 
 ## The artifact schema
 
@@ -92,6 +94,8 @@ Ask the founder to explicitly approve the draft (e.g. "Do you approve this visio
 
 Once given, confirm back in your own words ("Recording this as approved.") before writing anything. This confirmation step exists so an offhand "looks good" is never silently treated as a formal approval.
 
+Re-approving a vision after a revision cleared its `approved_by`/`approved_at` (see Before starting) uses this exact same mechanism — an explicit affirmative phrase, confirmed back, before `approved_by`/`approved_at` are written again. No separate re-approval flow exists.
+
 ## Writing the artifact
 
 Write `docs/product/vision.md` with this shape:
@@ -100,6 +104,8 @@ Write `docs/product/vision.md` with this shape:
 ---
 approved_by: <founder's name or identifier, as given in this session>
 approved_at: <ISO 8601 timestamp, at the moment of approval>
+revised_at: <ISO 8601 timestamp, at the moment of the most recent revision>
+revision_reason: <one-line reason for the most recent revision, in the founder's words>
 ---
 
 # Vision
@@ -134,5 +140,7 @@ approved_at: <ISO 8601 timestamp, at the moment of approval>
 ```
 
 The frontmatter `approved_by`/`approved_at` pair is the artifact's approval marker — its presence is what distinguishes an approved vision from a merely-drafted one. Only write the file after the founder has approved; a session that ends before approval produces no file.
+
+The frontmatter `revised_at`/`revision_reason` pair is the artifact's revision-reason marker — it records only the most recent in-place edit to an already-approved vision (no parallel version history), and is written per the Approved case in Before starting: at the moment the edit lands, alongside clearing `approved_by`/`approved_at`. A vision that has never been revised omits this pair entirely.
 
 `docs/product/vision.md` has no upstream artifact to point back to — it's the root of the vision → pitch → roadmap → milestone chain.
