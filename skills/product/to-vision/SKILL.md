@@ -55,6 +55,20 @@ At any point during the interview, a founder may try to pull the session out of 
 
 Both declines are conversational, not session-ending: after redirecting, resume the interview at the field you were on before the request.
 
+Separately from scope, watch every answer for vague or overloaded **terms** as they come up — see "Sharpening vague terms" below.
+
+## Sharpening vague terms
+
+While listening to any field answer, watch for individual terms that are vague or overloaded — words that could mean more than one thing in this founder's context (e.g. "the practice" when it's unclear whether that means the clinic org or an individual practitioner; "user" vs. "account"; "the platform"). This is a check on the founder's **language**, not on the answer's overall specificity — it's independent of, and can fire alongside or apart from, any other sharpness handling elsewhere in this document.
+
+When a term like this appears:
+
+1. Pause before moving to the next question.
+2. Embed `/domain-modeling`'s "sharpen fuzzy language" move only — propose the precise alternatives and ask the founder to pick (e.g. "You said 'the practice' — do you mean the clinic as an organization, or the person running it? Those are different things."). Don't reach for `/domain-modeling`'s "challenge against the glossary" move or its `CONTEXT.md`/`CONTEXT-MAP.md` read/write machinery: `to-vision` never reads or writes those files, and the founder isn't expected to already have a project glossary to challenge against.
+3. Once the founder clarifies, fold the sharpened language directly into that field's own working answer — it flows into the draft naturally when fields are assembled later. Don't produce a separate glossary note, table, or file; the sharpening's only output is a better-worded field.
+
+Only fire this when a term is actually vague or overloaded. A clear, unambiguous answer should pass straight through to the next question with no detour.
+
 ## Assembling the draft
 
 Once all seven questions have been asked, assemble the draft in **stored field order**: Vision Statement, Customer & Problem, Future State, Grounding Insight, Why Us / Why Now, Additional Grounding, Vision Pivot Trigger.
