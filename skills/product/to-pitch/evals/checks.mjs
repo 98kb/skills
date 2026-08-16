@@ -288,24 +288,42 @@ export const fieldItems = [
 //
 // Named must / must-not assertions, each opted into by a scenario setting its
 // `when` key. Everything here is a fact about the *outcome* a scenario
-// specifies, not a restatement of the shared floor.
+// specifies, not a restatement of the shared floor. Two rules may share a
+// `when` key: that is how one expectation gets asserted from both directions,
+// with a distinct check id each so the report says which half failed.
 export const assertions = [
   // 02a — the Appetite cap records the tighter tier and says so. Two separate
   // facts: what landed in the artifact, and what the founder was told.
+  //
+  // "the recorded tier is small" is not the same claim as "the word small
+  // appears": a bare /\bsmall\b/ passes on "Big (≤6 weeks) — not small", which
+  // is the exact failure the cap exists to prevent. What is actually being
+  // asserted is that the *first* tier word in the field is the tighter one, so
+  // the pattern reaches "small" only across text containing neither tier.
   {
     when: "appetiteRecordedSmall",
     checkId: "scenario/appetite-recorded-small",
     source: "artifact",
     field: "Appetite",
-    must: /\bsmall\b/i,
+    must: /^(?:(?!\b(?:small|big)\b)[\s\S])*\bsmall\b/i,
     label: "the Appetite recorded as the tighter 'small' tier",
   },
+  // The disclosure is two clauses, and SKILL.md doesn't say they share a
+  // sentence. "Appetite — flagged. You never confirmed a tier, so I recorded
+  // small provisionally." is the natural way to write it and the old
+  // `[^.?!]{0,140}` window could not cross that full stop — 3 of 6 realistic
+  // phrasings missed. `[^!?]` crosses sentence boundaries but not turn-level
+  // topic breaks, and the window is lazy so it binds to the nearest disclosure
+  // rather than to something 200 characters away. "committed" is deliberately
+  // only reachable via "never committed" / "didn't commit": a clean gate-check
+  // says "Appetite is a committed tier, not an estimate", and that is the
+  // opposite of this flag.
   {
     when: "appetiteFounderUnconfirmed",
     checkId: "scenario/appetite-founder-unconfirmed",
     source: "transcript",
     speaker: "agent",
-    must: /\bappetite\b[^.?!]{0,140}(?:founder-unconfirmed|unconfirmed|never confirmed|didn'?t confirm|provisional|you didn'?t (?:pick|commit))|(?:founder-unconfirmed|never confirmed|didn'?t confirm|provisionally record)[^.?!]{0,140}\bappetite\b/i,
+    must: /\bappetite\b[^!?]{0,180}?\b(?:founder-unconfirmed|unconfirmed|never confirmed|never (?:picked|committed|chose|landed on)|didn'?t (?:confirm|pick|commit|choose|land on)|did not (?:confirm|pick|commit|choose)|provisional(?:ly)?|defaulted to)\b|\b(?:founder-unconfirmed|never confirmed|never (?:picked|committed|chose)|didn'?t (?:confirm|pick|commit)|provisional(?:ly)?|defaulted to)\b[^!?]{0,180}?\bappetite\b/i,
     label: "the Appetite disclosed as founder-unconfirmed",
   },
 
