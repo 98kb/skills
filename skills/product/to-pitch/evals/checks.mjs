@@ -190,12 +190,21 @@ export const assertions = [
   // Deliberately not matching bare quarters or dates: an assumption's timebox
   // is legitimately "by the end of Q3", and a pattern that failed on that would
   // fail correct runs of every other scenario too.
+  //
+  // Nor does it match ordering *within* the one bet. A Solution sketch saying
+  // "ship the suggestion strip first, then add auto-booking", or a Problem
+  // naming who decides "in what order" slots surface, is describing the shape
+  // of this bet — not ranking it against another. An earlier draft matched both
+  // and would have false-failed 03a in particular, whose whole subject is a
+  // ranked list of scheduling candidates: the check was aimed at itself.
+  // Cross-bet ordering always has to name the other bets to mean anything, so
+  // that is what these alternatives require.
   {
     when: "forbidSequencingContent",
     checkId: "scenario/no-sequencing-content",
     source: "artifact",
     mustNot:
-      /\bsequenc(?:e|es|ed|ing)\s+(?:this|these|them|the\s+(?:pitches|bets|ideas|work))\b|\bpriorit(?:is|iz)(?:e|ed|ation)\s+(?:this|these|them|against)\b|\bbuild (?:this|that|it) first\b|\bin (?:what|which|this) order\b|\bfirst,? then (?:we|build|ship)\b/i,
+      /\bsequenc(?:e|es|ed|ing)\s+(?:this|these|them|the\s+(?:pitches|bets|ideas|work))\b|\bpriorit(?:is|iz)(?:e|ed|ation)\s+(?:this|these|them|against)\b|\bbuild (?:this|that|it) first\b|\b(?:first|second|third|next|then|after|before|alongside)\b[^.?!]{0,60}\b(?:other|another|second|third|remaining)\s+(?:(?:two|three|four|\d+)\s+)?(?:pitch|bet|idea)e?s?\b|\b(?:pitch|bet|idea)e?s?\b[^.?!]{0,40}\bin (?:what|which|this|priority) order\b/i,
     label: "cross-bet sequencing or ordering content",
   },
 
