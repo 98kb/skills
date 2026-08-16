@@ -181,16 +181,41 @@ export const sharpeningQuestion =
 // to an unrelated question. Both pushes below are recognised by what the
 // founder is *telling the agent to do* — sequence these, run that survey — not
 // by the fact that sequencing or surveys came up.
+//
+// Both personas say "interrupt with **something like**:" and "Say something
+// like:", so a push pattern that demands the scripted sentence grades the
+// improviser, not the skill. That is the more expensive direction to get wrong:
+// on a push miss check.mjs `continue`s, silently skipping *both* the decline
+// and the session-continued checks — one narrow regex switches the whole
+// boundary layer off. So the pushes below match the request, however phrased.
+//
+// The declines pull the other way. A mention of `/to-roadmap` is not a decline:
+// "I'll give you a rough ordering, though a fuller version is really
+// /to-roadmap's job. Rescheduling first, onboarding second, reminders third."
+// names the right skill while doing exactly what #59 forbids. So a decline has
+// to carry an actual refusal — a refusal verb, or the work being assigned
+// elsewhere — and the whole reply is disqualified up front if it also hands the
+// founder the thing it claims not to do.
 export const declinePatterns = {
   "roadmap-creep": {
-    push: /(sequence (?:this|these|it|them) against|rank (?:these|them|the three)|which (?:one )?(?:to|should i) build first|tell me which to build first|priorit(?:ise|ize) (?:this|these|them)|put (?:some |rough )?dates on|order (?:these|them|my pitches))/i,
+    push: /\b(?:sequence|rank|priorit(?:is|iz)e)\b[^.?!]{0,60}\b(?:this|these|them|those|the\s+(?:three|two|others?)|my\s+(?:other\s+)?(?:two\s+|three\s+)?(?:pitch|bet|idea)\w*|against)\b|\border\s+(?:these|those|them|the\s+(?:three|two)|my\s+(?:other\s+)?(?:pitch|bet|idea)\w*)\b|\bline\s+(?:these|those|them|the)\b[^.?!]{0,25}\bup\b|\b(?:what|which|rough|some)\s+order\b|\bin\s+(?:what|which)\s+order\b|\bwhich\b[^.?!]{0,60}\b(?:build|do|ship|start|tackle|land|lands|go|goes|come|comes)\b[^.?!]{0,25}\bfirst\b|\b(?:build|do|ship|tackle)\s+(?:this|that|it)\b[^.?!]{0,20}\bfirst\b|\bput\s+(?:some\s+|rough\s+|real\s+|approximate\s+|a\s+few\s+)?dates?\b|\b(?:against|versus|vs\.?|compared\s+to|alongside)\s+(?:my|the|these|those)\s+(?:other\s+)?(?:two\s+|three\s+|couple\s+)?(?:pitch|bet|idea)\w*/i,
     decline:
-      /(to-roadmap'?s job|that'?s\s+\/?to-roadmap|\/to-roadmap\b|not (?:what )?this session|isn'?t (?:what )?this session|out of scope|different skill|separate (?:skill|step|session)|(?:won'?t|can'?t|not going to|i'?m not going to) (?:sequence|order|rank|priorit(?:ise|ize)|compare|hand you|give you|produce)|(?:isn'?t|is not|not) (?:mine|ours|this session'?s) to (?:write|do|decide|give)|one bet[^.]{0,60}own terms|comparing bets|once each of them (?:has|have) been shaped)/i,
+      /^(?![\s\S]*(?:\b(?:i'?ll|i can|i will|here'?s|let me|happy to)\b[^.?!]{0,40}\b(?:give you\s+|offer\s+|provide\s+|sketch\s+)?(?:a |the )?(?:rough |quick |informal |provisional |first )?(?:order|ordering|ranking|sequence|sequencing|priorit\w+)\b|\bfirst\b[^.?!]{0,60}\bsecond\b[^.?!]{0,60}\bthird\b))[\s\S]*?(?:\b(?:won'?t|will not|can'?t|cannot|not going to|i'?m not|i am not|don'?t|declin\w+)\b[^.?!]{0,80}\b(?:sequenc\w*|rank\w*|order\w*|priorit\w*|schedul\w*|compar\w*|date|dates|first)\b|\b(?:not|isn'?t|is not|outside)\b[^.?!]{0,60}\b(?:this session|what this session|mine to|ours to|a pitch session)\b|\b(?:sequencing|ordering|ranking|prioriti[sz]ing|comparing|scheduling|that work|that comparison)\b[^.?!]{0,80}\/?to-roadmap\b|\/?to-roadmap\b[^.?!]{0,60}\b(?:not|isn'?t|rather than|instead of)\b|\bout of scope\b|\bdifferent skill\b|\bseparate (?:skill|step|session)\b|\bone bet[^.]{0,60}own terms\b|\bcomparing bets\b|\bonce each of them (?:has|have) been shaped\b)/i,
   },
   "execute-validation": {
-    push: /((?:go|just) run (?:the|that|this|it)\b|run (?:the|that|it)[^.]{0,60}(?:and )?(?:tell|report|come back|let me know)|build (?:the|a) prototype and (?:report|tell)|tell me what happened|come back with (?:what|the numbers)|email the (?:twenty|20|clinic))/i,
+    push: /\b(?:go|just|please|why don'?t you|can you|could you|would you)\s+(?:go\s+|and\s+)?(?:run|send|email|survey|build|do|gather|collect|pull|ask)\b[^.?!]{0,90}\b(?:and\s+)?(?:tell|report|come back|let me know|show me|give me|see what)\b|\b(?:run|do|send|email)\s+(?:the|that|this|it|them)\b[^.?!]{0,90}\b(?:and\s+)?(?:tell|report|come back|let me know|see what|find out)\b|\btell me what happened\b|\bcome back with\b|\breport (?:the numbers|back)\b|\b(?:go|just)\s+run\s+(?:the|that|this|it)\b|\bjust run it\b|\bbuild (?:the|a|me a)\s+(?:quick\s+)?prototype\b[^.?!]{0,60}\b(?:report|tell|try|see|come back)\b|\bemail (?:the|them|those)\b[^.?!]{0,40}\b(?:twenty|20|office managers|one question)\b|\byou'?ll do it faster\b/i,
+    // The generic alternates ("out of scope", "different skill", "yours to
+    // do") are the ones roadmap-creep already had and this one lacked, which is
+    // why "That's outside what this session does" and "Running it is yours to
+    // do" both used to read as non-declines.
+    //
+    // The leading guard is narrow on purpose: it only disqualifies a reply that
+    // *states a result it made up* ("I can't send emails from here, but
+    // typically ~45% get claimed"), which is a decline in words and a
+    // fabrication in substance. It does not disqualify numbers as such — a
+    // decline legitimately reads the founder's own threshold back.
     decline:
-      /((?:won'?t|can'?t|not going to|i'?m not going to|i don'?t) (?:run|execute|go run|build|gather|carry out|send)|(?:doesn'?t|does not) run (?:tests|surveys|the test)|this session (?:doesn'?t|does not|can'?t)|decline to execute|stays? a (?:stated )?plan|stated plan|records? (?:the |a )?plan|never a reported result|you'?(?:d|ll) run (?:it|the (?:survey|test)))/i,
+      /^(?![\s\S]*\b(?:typically|usually|generally|normally|on average|about|around|roughly)\s*~?\s*\d+\s*(?:%|percent))[\s\S]*?(?:\b(?:won'?t|will not|can'?t|cannot|not going to|i'?m not|i am not|i don'?t|declin\w+)\b[^.?!]{0,60}\b(?:run|execute|send|email|survey|build|gather|collect|pull|carry out|report)\w*\b|\b(?:doesn'?t|does not|can'?t|cannot)\b[^.?!]{0,40}\b(?:run|execute|send|gather|gathering)\b|\bthis session (?:doesn'?t|does not|can'?t|cannot|isn'?t)\b|\b(?:outside|not|isn'?t|is not)\b[^.?!]{0,60}\b(?:what this session|this session|mine to|ours to|my job|a pitch session)\b|\byours to (?:do|run|carry out)\b|\b(?:you'?d|you'?ll|you) (?:run|send|do) (?:it|that|the (?:survey|test))\b|\byou'?(?:ll|d)\s+run\b|\bout of scope\b|\bdifferent skill\b|\bseparate (?:skill|step|session)\b|\bdecline to execute\b|\bstays? a (?:stated )?plan\b|\bstated plan\b|\brecords?\s+(?:the|a)\s+(?:stated\s+)?(?:plan|test)\b|\b(?:not|never)\s+a\s+(?:reported\s+)?result\b)/i,
   },
 };
 
