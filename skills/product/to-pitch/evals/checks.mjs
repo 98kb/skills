@@ -11,6 +11,14 @@
 // `to-vision`'s suite banked four false-failure lessons on its first run, and
 // all four apply here unchanged. Each one is noted at the pattern it shapes.
 // They are load-bearing; read the note before loosening one.
+//
+// LESSON — SKILL.md gives *example* wordings, not scripts ("adapted at runtime",
+// "not a script read aloud", "Run the checks adaptively"). A pattern written
+// against one sentence therefore grades a phrasing, not a behaviour. Every
+// pattern below is aimed at the *family* of things a competent run would say,
+// and is paired with an explicit negative set — the things a competent run says
+// that must NOT match. Where the two pull against each other, the shape that
+// resolves it is named in the comment.
 
 // A "flag" is the skill naming a field and asserting it is weak.
 //
@@ -29,8 +37,32 @@ export const flags = {
     /(?:flagged\b|flagging\b|is (?:still )?(?:weak|vague|generic|soft)|still (?:fairly )?(?:generic|vague|soft|broad)|remains (?:generic|vague)|hit the cap|founder-unconfirmed|unconfirmed|never confirmed|didn'?t confirm|trimmed (?:it )?to)/i,
   negated:
     /\b(?:no|zero|none|not|without|nothing|non-)\b[^.]{0,40}\b(?:flag|weak|vague|generic|soft|unconfirmed)/i,
+
+  // The single most load-bearing pattern in the suite. It locates the approval
+  // request, which gates the whole flag/disclosure block; and under
+  // `forbidApprovalRequest` it is the *only* thing standing between a skill that
+  // wrongly offers approval (02b's gate failure, 04's refused session) and a
+  // fully green run. SKILL.md's "Do you approve this pitch?" is an e.g., so this
+  // matches the shape rather than the sentence: a modal + you/I, then some
+  // form of "approve", then a question mark — plus the handful of fixed idioms
+  // ("ready to approve", "please approve") that carry no modal.
+  //
+  // Two guards keep it from firing on correct behaviour:
+  //
+  //   - **the vision guard.** 04's correct refusal *tells the founder to go
+  //     approve the vision* ("Would you like to approve the vision and come
+  //     back?"), and 01's opening turn reports "vision.md is approved by Dana
+  //     Okafor". Both name approval, neither offers it. Any window that reaches
+  //     the word "vision" is therefore not a pitch-approval request.
+  //   - **the question mark.** "Recording this as approved." is the confirm-back
+  //     *after* approval, not a request for it. Requests ask.
+  //
+  // The windows are `[^.!?]`-bounded, which also makes this markdown-tolerant —
+  // "Do you *approve* this pitch?" matches with the emphasis still in place.
+  // That matters because check.mjs tests this one pattern against the raw turn
+  // text rather than the stripped text (see the emphasis lesson below).
   approvalRequest:
-    /\b(do you approve|approve this pitch|approve the pitch|are you happy to approve|ready to approve|would you like to approve|please approve)\b/i,
+    /\b(?:do|does|would|will|can|could|shall|should|may)\s+(?:you|i)\b(?:(?!\bvision\b)[^.!?]){0,100}\bapprov(?:e|es|al|ed)\b(?:(?!\bvision\b)[^.!?]){0,60}\?|\bare you\s+(?:happy|ready|good|ok(?:ay)?|comfortable)\b(?:(?!\bvision\b)[^.!?]){0,60}\bapprov|\bready to approve\b(?!\s+(?:the\s+|your\s+)?vision)|\bplease approve\b(?!\s+(?:the\s+|your\s+)?vision)|\bis\s+(?:this|it|that|the\s+(?:pitch|draft))\b[^.!?]{0,40}\bapproved\b[^.!?]{0,40}\?|\b(?:i'?ll|i can|i could|happy to)\s+record\b(?:(?!\bvision\b)[^.!?]){0,60}\bas approved\b/i,
 };
 
 // The base question that opens each field, in the order SKILL.md asks them —
