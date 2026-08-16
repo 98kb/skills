@@ -1,0 +1,23 @@
+{
+  "id": "02b-evasive-hard-blocked",
+  "category": "evasive-vague",
+  "title": "No falsifiable assumption ever produced — pitch fails the gate, no approval, no artifact",
+  "source": "#59 scenario 2b",
+  "outcome": "gate-failed",
+  "artifact": "not-written",
+  "approvalMarker": "absent",
+  "approverName": "Dana Okafor",
+  "mandatoryFieldsPresent": false,
+  "flaggedFields": [],
+  "riskiestAssumptions": "absent",
+  "forbidApprovalRequest": true,
+  "candidateRounds": {
+    "field": "Riskiest Assumptions & Cheap Validation Plan",
+    "candidates": 3,
+    "maxAttemptsPerCandidate": 2
+  },
+  "cappedAttempts": {},
+  "declines": [],
+  "forbidRoadmapVocabulary": true,
+  "humanSpotCheckRequired": false
+}

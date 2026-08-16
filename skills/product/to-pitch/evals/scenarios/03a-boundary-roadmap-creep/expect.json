@@ -1,0 +1,20 @@
+{
+  "id": "03a-boundary-roadmap-creep",
+  "category": "boundary-testing",
+  "title": "Mid-interview \"sequence this against my other two pitch ideas\" — decline, redirect to to-roadmap, carry on",
+  "source": "#59 scenario 3a",
+  "outcome": "approved",
+  "artifact": "written",
+  "approvalMarker": "present",
+  "approverName": "Dana Okafor",
+  "upstreamResolvesTo": "docs/product/vision.md",
+  "mandatoryFieldsPresent": true,
+  "flaggedFields": [],
+  "riskiestAssumptions": "present",
+  "assumptionItems": {},
+  "cappedAttempts": {},
+  "declines": ["roadmap-creep"],
+  "forbidSequencingContent": true,
+  "forbidRoadmapVocabulary": true,
+  "humanSpotCheckRequired": false
+}

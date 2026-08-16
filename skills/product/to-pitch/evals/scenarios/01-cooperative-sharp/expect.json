@@ -1,0 +1,20 @@
+{
+  "id": "01-cooperative-sharp",
+  "category": "cooperative-sharp",
+  "title": "Specialty-aware rescheduling at a small appetite — sharp answers throughout",
+  "source": "#59 scenario 1",
+  "outcome": "approved",
+  "artifact": "written",
+  "approvalMarker": "present",
+  "approverName": "Dana Okafor",
+  "upstreamResolvesTo": "docs/product/vision.md",
+  "mandatoryFieldsPresent": true,
+  "flaggedFields": [],
+  "riskiestAssumptions": "present",
+  "assumptionItems": { "count": 1 },
+  "cappedAttempts": {},
+  "declines": [],
+  "forbidRoadmapVocabulary": true,
+  "humanSpotCheckRequired": true,
+  "assertZeroFlags": true
+}
