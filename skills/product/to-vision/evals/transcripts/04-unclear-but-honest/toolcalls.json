@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Bash",
+    "input": {
+      "command": "mkdir -p /tmp/to-vision-eval-ct2hr6/docs/product && date -Iseconds",
+      "description": "Create docs dir and get ISO timestamp"
+    }
+  },
+  {
+    "name": "Bash",
+    "input": {
+      "command": "date -Iseconds",
+      "description": "Get current ISO 8601 timestamp"
+    }
+  },
+  {
+    "name": "Bash",
+    "input": {
+      "command": "mkdir -p /tmp/to-vision-eval-ct2hr6/docs/product",
+      "description": "Create docs/product directory"
+    }
+  },
+  {
+    "name": "Write",
+    "input": {
+      "file_path": "/tmp/to-vision-eval-ct2hr6/docs/product/vision.md",
+      "content": "---\napproved_by: Tomás Iyer\napproved_at: 2026-08-16\n---\n\n# Vision\n\n## Vision Statement\n\nThe demand number every chain has an analyst for, for the thirty-two seat kitchen that doesn't — read straight out of the POS they already run.\n\n## Customer & Problem\n\nIndependent restaurant operators — the thirty-two seat neighbourhood room with one prep cook and no analyst. Someone like Renata. Not chains, which have people for this. Each week she decides what gets prepped and when, and she's guessing. Prep lands on the day that's convenient for the kitchen rather than the day the food will sell, because there's no way to know what Thursday will need. The cost shows up on Tuesday morning: hotel pans of Sunday's mise — diced mirepoix, blanched greens, portioned proteins — still technically fine, none of it sellable by Wednesday, carried to the bin. It isn't the purchased cost of the ingredient that hurts; it's the labour and the food spent on the wrong day. Nobody is deciding wrong. The number they'd need to decide right doesn't reach them.\n\n## Future State\n\nIn three years, a thirty-two seat independent has the same demand number a fifty-unit chain's analyst produces — day by day, dish by dish, without hiring one. Renata preps Sunday for what Thursday will actually sell, and the Tuesday walk-in has nothing in it to carry to the bin. The forecast stops being the thing only the chains can afford, and the prep day goes back to being a craft decision made on real information instead of a convenient one made on none.\n\n## Grounding Insight\n\nThe POS systems independents already run now push item-level sales through an API — timestamped, going back years. That wasn't true a decade ago, when the best available was a monthly PDF export that told you almost nothing. The bet is that the signal needed to forecast a thirty-two seat room is already sitting in that history, and is recoverable at that scale: open a single independent's item-level numbers and Thursday is visible in them. The product is the number itself, not the prep schedule — given a real number, a cook works out the prep days themselves. That part is craft and doesn't need software.\n\n## Why Us / Why Now\n\nEleven years cooking, two independent kitchens run, left six months ago — and the pans carried to the bin were carried personally. The access that buys is not purchasable: chefs take calls from other chefs, where a salesperson gets three minutes and a no. More than access, it's knowing what to ask. \"What did you throw out Tuesday\" is a normal question between cooks and gets a straight answer; that number is on no report, is faintly embarrassing, and no operator would ever put it on a form for a stranger. The timing is set by the POS data now being reachable through an API rather than trapped in a monthly export.\n\n## Vision Pivot Trigger\n\nPut it into ten kitchens and measure prepped-food waste. If that waste doesn't move at all, the premise was wrong. Equally, if it turns out the waste was in the ordering all along and prep timing was a red herring, the vision was aimed at the wrong decision.\n"
+    }
+  },
+  {
+    "name": "Read",
+    "input": {
+      "file_path": "/tmp/to-vision-eval-ct2hr6/docs/product/vision.md"
+    }
+  }
+]

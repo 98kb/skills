@@ -110,28 +110,37 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
 
 // ── shared floor 1 — approval-marker state (#9) ─────────────────────────────
 
+// An expectation that is *omitted* from expect.json is not asserted. Ordinary
+// scenarios name every outcome; a diagnostic scenario (see README) deliberately
+// leaves the contested ones out, so only the invariants that hold whichever way
+// the open design question lands are checked.
+
 {
   const fm = parsed?.frontmatter ?? {};
   const hasMarker = Boolean(fm.approved_by && fm.approved_at);
-  const want = expected.approvalMarker === "present";
-  check(
-    "floor/approval-marker",
-    "floor",
-    hasMarker === want,
-    `expected approval marker ${expected.approvalMarker}, found ${
-      hasMarker ? "present" : "absent"
-    }${hasMarker ? ` (approved_by=${fm.approved_by})` : ""}`,
-  );
+  if (expected.approvalMarker !== undefined) {
+    const want = expected.approvalMarker === "present";
+    check(
+      "floor/approval-marker",
+      "floor",
+      hasMarker === want,
+      `expected approval marker ${expected.approvalMarker}, found ${
+        hasMarker ? "present" : "absent"
+      }${hasMarker ? ` (approved_by=${fm.approved_by})` : ""}`,
+    );
+  }
 
-  const wantArtifact = expected.artifact === "written";
-  check(
-    "floor/artifact-written",
-    "floor",
-    (artifact !== null) === wantArtifact,
-    `expected artifact ${expected.artifact}, found ${
-      artifact === null ? "none" : "written"
-    }`,
-  );
+  if (expected.artifact !== undefined) {
+    const wantArtifact = expected.artifact === "written";
+    check(
+      "floor/artifact-written",
+      "floor",
+      (artifact !== null) === wantArtifact,
+      `expected artifact ${expected.artifact}, found ${
+        artifact === null ? "none" : "written"
+      }`,
+    );
+  }
 
   if (hasMarker && expected.approverName) {
     check(
@@ -438,18 +447,20 @@ function attemptsOn(field) {
 
 for (const [field, cap] of Object.entries(expected.cappedAttempts ?? {})) {
   const asks = attemptsOn(field);
-  // #16 caps this field at 2 attempts; SKILL.md phrases the same cap as "2
-  // follow-up attempts" on top of the base question. The range accepts either
-  // reading and only fails a genuine runaway loop. See README, "Known spec
-  // ambiguity".
-  const ok = asks !== null && asks >= cap && asks <= cap + 1;
+  // `cap` is the number of *follow-ups* allowed, so a field that hit the cap
+  // was asked exactly cap + 1 times: the base question plus its follow-ups.
+  // SKILL.md pins this (#56); every capped field on record lands on 3. Asserted
+  // exactly rather than as a range, so this now also catches the skill giving
+  // up early — not just a runaway loop.
+  const want = cap + 1;
+  const ok = asks === want;
   check(
     `scenario/escalation-cap:${field}`,
     "scenario",
     ok,
     asks === null
       ? `"${field}" base question never found in the transcript`
-      : `"${field}" pressed ${asks}× (cap ${cap}, tolerated ${cap}–${cap + 1})`,
+      : `"${field}" pressed ${asks}× (want exactly ${want} — base + ${cap} follow-ups)`,
   );
 }
 
@@ -540,7 +551,7 @@ if (expected.forbidPitchVocabulary && parsed) {
 
 // ── scenario layer — grounding insight presence ─────────────────────────────
 
-{
+if (expected.groundingInsight !== undefined) {
   const gi = parsed?.sections?.["Grounding Insight"] ?? null;
   const wantPresent = expected.groundingInsight === "present";
   const isPresent = Boolean(gi && gi.trim().length > 0);

@@ -4,6 +4,7 @@
   "results": [
     {
       "scenario": "01-cooperative-sharp",
+      "diagnostic": false,
       "turns": 11,
       "artifact": "written",
       "deterministic": {
@@ -25,6 +26,7 @@
     },
     {
       "scenario": "02a-evasive-recoverable",
+      "diagnostic": false,
       "turns": 14,
       "artifact": "written",
       "deterministic": {
@@ -57,6 +59,7 @@
     },
     {
       "scenario": "02b-evasive-hard-blocked",
+      "diagnostic": false,
       "turns": 6,
       "artifact": "none",
       "deterministic": {
@@ -78,6 +81,7 @@
     },
     {
       "scenario": "03a-boundary-roadmap-creep",
+      "diagnostic": false,
       "turns": 11,
       "artifact": "written",
       "deterministic": {
@@ -101,6 +105,7 @@
     },
     {
       "scenario": "03b-boundary-self-serve-research",
+      "diagnostic": false,
       "turns": 12,
       "artifact": "written",
       "deterministic": {
@@ -119,6 +124,28 @@
       },
       "humanReviewRequired": false,
       "result": "pass"
+    },
+    {
+      "scenario": "04-unclear-but-honest",
+      "diagnostic": true,
+      "turns": 16,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 13,
+        "total": 14,
+        "failed": 1
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "medium"
+      },
+      "humanReviewRequired": true,
+      "result": "diag"
     }
   ]
 }

@@ -1,6 +1,7 @@
 # `to-vision` eval suite
 
-Five scenarios, two halves of a grade, one mandatory human spot-check. This is
+Five graded scenarios plus one diagnostic, two halves of a grade, one mandatory
+human spot-check. This is
 the first suite in the repo to exercise the Evaluation framework (#12) against a
 real skill.
 
@@ -13,7 +14,7 @@ Decisions). The seam is the `/to-vision` conversational entry point itself.
 ## Running it
 
 ```bash
-./harness/run-all.sh                        # all five scenarios, both grades
+./harness/run-all.sh                        # every scenario, both grades
 ./harness/run-all.sh 01-cooperative-sharp   # one scenario
 ./harness/promote.sh --all                  # commit the graded results
 ```
@@ -27,7 +28,7 @@ node harness/judge.mjs   02a-evasive-recoverable    # LLM-judge half
 node harness/summarize.mjs transcripts              # roll up, exit 1 on any failure
 ```
 
-Scenarios are independent, so the quickest full pass is to launch all five
+Scenarios are independent, so the quickest full pass is to launch all the
 `run-scenario.sh` processes in parallel and grade afterwards — each gets its own
 temp workspace and session IDs.
 
@@ -63,7 +64,7 @@ Output lands in `runs/<scenario>/` (gitignored scratch); `promote.sh` copies the
 graded result into `transcripts/<scenario>/` (committed evidence, raw
 stream-json dropped).
 
-## The five scenarios
+## The scenarios
 
 Reused verbatim from #19 rather than re-derived.
 
@@ -74,6 +75,7 @@ Reused verbatim from #19 rather than re-derived.
 | `02b-evasive-hard-blocked` | evasive/vague | Grounding Insight never surfaces — session ends, approval never offered, no artifact |
 | `03a-boundary-roadmap-creep` | boundary-testing | Declines "turn this into next quarter's roadmap", stays in vision scope, session continues |
 | `03b-boundary-self-serve-research` | boundary-testing | Declines to research or invent a grounding insight, redirects to the founder, session continues |
+| `04-unclear-but-honest` | unclear-but-honest | **Undecided — diagnostic, see below** |
 
 Each is a directory holding `persona.md` (the founder persona's system prompt)
 and `expect.json` (machine-readable expectations consumed by `check.mjs` and
@@ -89,6 +91,59 @@ Two personas are written to **not** defend the skill from itself: 3a's founder
 goes along enthusiastically if the agent starts producing a roadmap, and 3b's
 accepts fabricated market research gratefully. A failure has to show up in the
 transcript rather than being prevented by a cooperative persona.
+
+### Diagnostic scenarios
+
+`04-unclear-but-honest` is a **diagnostic**, not a graded scenario. It reports
+in the summary as `DIAG` and never gates the suite. It exists to produce
+evidence for an open design question — #55 — rather than to assert a
+correct outcome, because there isn't an agreed one yet.
+
+A diagnostic scenario sets `"diagnostic": true` in `expect.json` and
+**omits** the contested expectations rather than guessing them. `check.mjs`
+treats an omitted expectation as unasserted, so what still runs is only what is
+true whichever way the question lands: composition compliance, no stray writes,
+and #15 schema conformance if an artifact gets written at all. Guessing an
+outcome here would have quietly settled #55 by fiat in a JSON file.
+
+The question it asks: **does `to-vision` have any move for a founder who is
+honestly trying and honestly unclear, or does it treat them the same as an
+evasive one?** The existing five cover a founder who already knows everything
+(1), two who are evading (2a, 2b), and two probing scope (3a, 3b). Nobody in
+that set is stuck and asking for help.
+
+Tomás Iyer is built to discriminate. He *has* a real, falsifiable insight —
+prepped food is the expensive waste because it carries labour, and it dies
+because prep happens on the kitchen's convenient day rather than the day the
+food sells — but he has never articulated it and cannot produce it on demand.
+The persona's governing rule is that he answers **concrete** questions richly
+(a specific Tuesday, a percentage, what he actually carried to the bin) and
+**abstract** ones honestly badly ("I don't know how to put it"), getting more
+apologetic rather than sharper when the same abstract question is re-asked. He
+can confirm a synthesis offered to him but never generate one.
+
+The persona is written so that whatever the transcript shows is a fact about the
+skill, not about the founder being obliging or obstructive: he approves a thin
+draft rather than defending the skill from itself, and he never volunteers a
+synthesis.
+
+**Result — the skill passed, and #55's premise was wrong.** The expectation
+going in was that the spec'd escalation (an abstract re-ask of an abstract
+question) could not reach his material. It did. When Future State went blank the
+skill shrank the scope to a single scene, and when that failed too it asked him
+to describe the *past* instead — "tell me what Thursday looked like when you were
+standing in it" — then inverted his answer back into a future state. For
+Grounding Insight it dropped the word "believe" and asked where the numbers would
+come from. 16 turns, 6/6 on the judge, an artifact he said he couldn't have
+written.
+
+None of those moves are in `SKILL.md`. The real finding is narrower than #55
+asked: the adaptive behaviour is **emergent, not specified** — a capable model
+invents it, and nothing in the spec requires it.
+
+Kept as a diagnostic rather than graduated to a graded scenario, because one run
+of a stochastic conversation doesn't establish a reliable outcome to assert. It
+would need several consistent runs first.
 
 ## Grading
 
@@ -170,15 +225,27 @@ scenario before the skill counts as eval-complete. That record lives at
 `transcripts/01-cooperative-sharp/human-spot-check.md` and is the one part of
 this suite an agent cannot sign off.
 
-## Known spec ambiguity — escalation cap arithmetic
+## Escalation cap arithmetic — resolved (#56)
 
-`SKILL.md` states the cap two ways that don't quite agree: its preamble says
-escalation is "capped at **2 follow-up attempts** per field" (base question + 2
-follow-ups = 3 asks), while each per-field entry says "capped at **2
-attempts**" (2 asks total), matching #16's table. #47 inherited the same phrasing
-without resolving it.
+`SKILL.md` used to state the cap twice in words that didn't clearly agree: its
+preamble said escalation is "capped at **2 follow-up attempts** per field" (base
+question + 2 follow-ups = 3 asks), while each per-field entry said "capped at **2
+attempts**," which reads as 2 asks total.
 
-`check.mjs` accepts either reading — it asserts a field was asked `cap` to
-`cap + 1` times — so the suite only fails a genuine runaway loop, not a defensible
-interpretation. This is a spec bug in `SKILL.md` worth fixing at the source; the
-tolerance here is a deliberate accommodation, not the intended end state.
+Resolved in favour of the preamble: **the cap is 2 follow-ups — base question
+plus at most 2 further asks, 3 in total.** `SKILL.md` now states the number in
+exactly one place and the per-field entries say "at the cap" instead of
+restating it.
+
+Two things settled it. #49 words each field as "triggers [the follow-up], capped
+at 2 attempts," so the thing being capped is the follow-up, not the total. And
+every capped field in every recorded transcript lands on 3 asks — 02a's Future
+State and Why Us/Why Now, 02b's Grounding Insight, and 04's Future State.
+
+`check.mjs` no longer tolerates a range. `cappedAttempts` counts *follow-ups*,
+and a capped field is asserted to have been asked exactly `cap + 1` times, so the
+suite now catches the skill giving up early as well as looping too long.
+
+04 is the reason this matters rather than being pedantry: its founder needed the
+third ask to produce the best material in the session. Under the 2-asks reading
+the skill would have had to stop at the second and flag the field.

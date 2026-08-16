@@ -1,0 +1,75 @@
+{
+  "scenario": "04-unclear-but-honest",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [],
+  "failures": [],
+  "excusedFailures": [],
+  "unexcusedFailures": [],
+  "confidence": "medium",
+  "humanReviewRequired": true,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Specific customer and specific future state, not a platitude",
+      "verdict": "pass",
+      "rationale": "Customer & Problem names \"the thirty-two seat neighbourhood room with one prep cook and no analyst\" and explicitly excludes chains, with a concrete failure mode (\"hotel pans of Sunday's mise... none of it sellable by Wednesday\"). Future State names a dated end condition — \"In three years, a thirty-two seat independent has the same demand number a fifty-unit chain's analyst produces — day by day, dish by dish, without hiring one\" — which is a state of the world, not a \"make lives better\" platitude.",
+      "fields": [
+        "Customer & Problem",
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 2,
+      "name": "Commits to a grounding factor (insight / trend / technology bet)",
+      "verdict": "pass",
+      "rationale": "Grounding Insight commits to a named technology trend and an explicit bet: POS systems \"now push item-level sales through an API — timestamped, going back years\" versus the prior \"monthly PDF export,\" and \"the bet is that the signal needed to forecast a thirty-two seat room is already sitting in that history, and is recoverable at that scale.\" It also commits to a falsifiable scope claim — \"the product is the number itself, not the prep schedule\" — which is a real product bet rather than altitude.",
+      "fields": [
+        "Grounding Insight"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Something a reader could point to and say \"this didn't happen\"",
+      "verdict": "pass",
+      "rationale": "The Vision Pivot Trigger specifies an observable test and an observable negative result: \"Put it into ten kitchens and measure prepped-food waste. If that waste doesn't move at all, the premise was wrong.\" It adds a second distinct disconfirming outcome — waste turning out to live in ordering rather than prep timing — so a reader has concrete conditions to point at. The absence of a numeric threshold or deadline weakens it but does not make it unfalsifiable.",
+      "fields": [
+        "Vision Pivot Trigger"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Vision Statement swap-test",
+      "verdict": "pass",
+      "rationale": "\"The demand number every chain has an analyst for, for the thirty-two seat kitchen that doesn't — read straight out of the POS they already run\" carries three specifics that break on swap: the chain-analyst parity claim, the explicitly analyst-less independent as the customer, and the existing-POS mechanism. A chain-focused analytics vendor or a POS incumbent could not say this and have it ring true, since their whole position is the analyst-having customer this statement defines itself against.",
+      "fields": [
+        "Vision Statement"
+      ],
+      "excused": false
+    },
+    {
+      "id": 5,
+      "name": "Future State swap-test",
+      "verdict": "pass",
+      "rationale": "The future state is stated as a specific operator's changed Tuesday — \"Renata preps Sunday for what Thursday will actually sell, and the Tuesday walk-in has nothing in it to carry to the bin\" — plus \"the forecast stops being the thing only the chains can afford.\" Swapping in a competitor whose customer is the fifty-unit chain inverts the sentence rather than preserving it, so the swap breaks.",
+      "fields": [
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 6,
+      "name": "Why Us / Why Now extended swap-test",
+      "verdict": "pass",
+      "rationale": "The Why Us is not competitor-portable: it rests on \"eleven years cooking, two independent kitchens run,\" chefs taking calls from chefs, and a specific unaskable question — \"What did you throw out Tuesday\" — that \"no operator would ever put on a form for a stranger.\" The two-years-ago half is the artifact's thinnest point, since the timing clause dates the POS API shift against \"a decade ago\" rather than establishing recency, but \"left six months ago\" is a hard recency marker that was not true two years ago, so the field as a whole survives.",
+      "fields": [
+        "Why Us / Why Now"
+      ],
+      "excused": false
+    }
+  ]
+}
