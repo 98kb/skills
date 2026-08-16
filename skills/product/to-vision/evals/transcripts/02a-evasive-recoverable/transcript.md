@@ -1,0 +1,207 @@
+# Transcript — 02a-evasive-recoverable
+
+━━━━━━ turn 1 · agent ━━━━━━
+
+No vision recorded yet — so we're starting from scratch. I'll walk you through seven fields, one question at a time, and we'll end with a draft you can approve or reject.
+
+Let's start with the foundation.
+
+**Who exactly is this for, and what's broken for them today?**
+
+━━━━━━ turn 1 · founder ━━━━━━
+
+It's for people like Nadia — she's a freelance motion designer with four agency clients. She invoices out of a spreadsheet, chases payment over email, and she's routinely sixty to ninety days out on money she's already earned. Two of those four clients pay through procurement portals, so she has to re-key every invoice into their systems by hand.
+
+━━━━━━ turn 2 · agent ━━━━━━
+
+That's specific — a named role, a concrete workflow, and a number on the pain. No need to chase it.
+
+**In 2–5 years, what does the world look like for Nadia once this exists?**
+
+━━━━━━ turn 2 · founder ━━━━━━
+
+A world where getting paid is completely frictionless, so freelancers can focus on their craft instead of their admin. That's really what we're building toward.
+
+━━━━━━ turn 3 · agent ━━━━━━
+
+That one's aspirational rather than concrete — and it's the kind of sentence a dozen companies could put on a homepage.
+
+**Swap-test: if you swapped your company's name for a direct competitor's — say a Bill.com or a Wave — would that sentence still ring true?**
+
+If yes, it's too generic. What's the differentiator? What specifically is different about Nadia's Tuesday morning in 2029 that isn't true with the tools she could buy today?
+
+━━━━━━ turn 3 · founder ━━━━━━
+
+I hear you, but I really do think this is ours. Freelancers finally get the respect and the financial stability they deserve — it just works, invisibly, in the background of their lives.
+
+━━━━━━ turn 4 · agent ━━━━━━
+
+Still swappable — "respect and financial stability, invisibly in the background" would sit just as comfortably on a competitor's site. Let me try once more, narrower, and then I'll take whatever you've got.
+
+**Concretely: in 2029, what happens to one of Nadia's invoices that can't happen today?** Does it land in the procurement portal without her touching it? Does the money arrive in days rather than sixty? Give me the mechanic, not the feeling.
+
+━━━━━━ turn 4 · founder ━━━━━━
+
+Honestly, that's the vision. Payment stops being a thing anyone thinks about — it just happens, and she never has to hold it in her head again.
+
+━━━━━━ turn 5 · agent ━━━━━━
+
+Understood — that's the cap for this field. I'll take it as written and flag Future State as generic; I'll surface that before you approve anything.
+
+On to the field the whole vision hangs on.
+
+**What's the one insight, trend, or technology bet you're building on — something you'd be willing to be proven wrong about?**
+
+━━━━━━ turn 5 · founder ━━━━━━
+
+Instant payment rails went from novelty to commodity in the last two years, and the per-transaction cost dropped far enough that a small vendor like us can advance a freelancer's invoice same-day and price the float at under one percent. My bet is that the reason nobody solved freelancer cash flow before wasn't missing demand — it was that carrying the float was too expensive. If I'm wrong about that, if the demand was never really there, the business doesn't work.
+
+━━━━━━ turn 6 · agent ━━━━━━
+
+That's a real bet — a causal claim about why the problem was unsolved, with a stated falsification condition. Exactly what this field is for.
+
+**Why is now the moment, and why are you positioned to win it?**
+
+━━━━━━ turn 6 · founder ━━━━━━
+
+We care about freelancers more than anyone else in this market, and the timing just feels right — the gig economy is exploding. That's the moment we're stepping into.
+
+━━━━━━ turn 7 · agent ━━━━━━
+
+That's the timeless version — "we care more" and "the gig economy is exploding" were both sayable in 2019, and every competitor in this market says the first one.
+
+**Extended swap-test: would that be equally true of a direct competitor, or true two years ago?**
+
+You actually gave me a sharper "why now" a minute ago — the rails commoditizing inside the last two years. So let me push on the other half: **why *you*?** What do you or your team have — a relationship, a prior job, a technical build, a distribution channel — that a well-funded competitor starting today would have to spend years acquiring?
+
+━━━━━━ turn 7 · founder ━━━━━━
+
+We've been around this space a long time, and we understand these people at a level our competitors simply don't. That's not something you can just go out and buy.
+
+━━━━━━ turn 8 · agent ━━━━━━
+
+"Understand them at a level competitors don't" is still an assertion rather than an asset. Last attempt on this field, and I'll make it a single concrete question:
+
+**Name one fact.** How long, in what role, and what does that give you that's hard to copy — a list of freelancers who'd take your call, an existing integration with one of those procurement portals, an underwriting model built on real repayment data? One specific thing.
+
+━━━━━━ turn 8 · founder ━━━━━━
+
+It's about passion, really. That's the advantage — we want this more than anyone else does, and I think that's really the heart of it.
+
+━━━━━━ turn 9 · agent ━━━━━━
+
+That's the cap — I'll take it and flag Why Us / Why Now as unsubstantiated. Two flags now.
+
+**Anything else grounding this — a competitive gap, a capability, or a go-to-market angle worth naming?** If nothing comes to mind, we'll skip it.
+
+━━━━━━ turn 9 · founder ━━━━━━
+
+No, I think that covers it.
+
+━━━━━━ turn 10 · agent ━━━━━━
+
+Skipping Additional Grounding.
+
+Now the headline. Rather than ask you to write one cold, here's my draft, pulled mostly from your grounding insight — that's where your sharpest material is:
+
+> **Freelancers get paid the day they invoice, because carrying that float finally costs less than one percent.**
+
+I deliberately built it on the mechanic rather than the aspiration — it names a concrete outcome and the reason it's possible now, so it doesn't collapse under the swap-test the way "frictionless payments" would.
+
+**Does that land, or do you want to adjust it?**
+
+━━━━━━ turn 10 · founder ━━━━━━
+
+That lands. I might say "the day they finish the work" rather than the day they invoice, since that's how Nadia thinks about it — but the substance is right, and I'm happy with it either way.
+
+━━━━━━ turn 11 · agent ━━━━━━
+
+Taking your version — "the day they finish the work" is the customer's frame, not the accounting one, which is the better anchor:
+
+> **Freelancers get paid the day they finish the work, because carrying that float finally costs less than one percent.**
+
+Last field, and it's the one that makes this checkable later.
+
+**What would have to happen — or fail to happen — for you to conclude this vision itself was wrong?**
+
+━━━━━━ turn 11 · founder ━━━━━━
+
+If we advance invoices for a few hundred freelancers and they're still chasing their clients by email anyway, the premise is wrong — the money wasn't the real friction. And if the default rate on advanced invoices runs above three percent, the float math doesn't hold and the whole thing falls apart.
+
+━━━━━━ turn 12 · agent ━━━━━━
+
+That's a clean pivot trigger — a behavioral signal and a numeric threshold, both checkable by someone other than you.
+
+I've re-read the whole thing end to end. Here's the assembled draft:
+
+---
+
+# Vision
+
+## Vision Statement
+
+Freelancers get paid the day they finish the work, because carrying that float finally costs less than one percent.
+
+## Customer & Problem
+
+Freelance creative professionals like Nadia — a motion designer with four agency clients. She invoices out of a spreadsheet and chases payment over email, running routinely sixty to ninety days out on money she has already earned. Two of her four clients pay through procurement portals, so every invoice has to be re-keyed into their systems by hand.
+
+## Future State
+
+In two to five years, getting paid is frictionless for freelancers like Nadia. Payment stops being something anyone thinks about — it happens invisibly, in the background of their lives, so they can focus on their craft instead of their admin, with the financial stability the current payment cycle denies them.
+
+## Grounding Insight
+
+Instant payment rails went from novelty to commodity in the last two years, and per-transaction cost dropped far enough that a small vendor can advance a freelancer's invoice same-day and price the float at under one percent. The bet: the reason nobody solved freelancer cash flow before wasn't missing demand — it was that carrying the float was too expensive. If that's wrong, and the demand was never really there, the business doesn't work.
+
+## Why Us / Why Now
+
+The gig economy is expanding rapidly, making this the moment to step in. The team's advantage is caring about freelancers more than anyone else in the market and understanding them at a level competitors don't — an advantage rooted in passion and long presence in the space rather than something a competitor could buy.
+
+## Vision Pivot Trigger
+
+If we advance invoices for a few hundred freelancers and they're still chasing their clients by email anyway, the premise is wrong — money wasn't the real friction. And if the default rate on advanced invoices runs above three percent, the float math doesn't hold and the whole thing falls apart.
+
+---
+
+**Two flagged fields, before you decide:**
+
+**Future State** — generic. It fails the swap-test: swap your name for Bill.com's and "payment happens invisibly, freelancers focus on their craft" reads identically. It also doesn't name a single mechanic, so nobody can later point at it and say whether it happened. Your Vision Statement partly rescues this — it carries the concrete outcome the Future State should have — but the field itself is a platitude.
+
+**Why Us / Why Now** — unsubstantiated, and it's the weaker half that's the problem. The "why now" is actually strong, but it's sitting in the wrong field: the rails commoditizing inside the last two years is a real, dated market shift, and it lives in your Grounding Insight rather than here. The "why us" has no asset behind it — no list, no integration, no repayment data, just passion.
+
+Worth naming one tension the fields only reveal side by side: your Grounding Insight says the blocker was that float was too expensive *for everyone*. If that's true, the barrier just fell for every competitor too — which is precisely when "we want it more" stops being a moat. The insight and the Why Us are pulling against each other.
+
+Neither flag blocks approval. You can record this as-is and sharpen those two fields later.
+
+**Do you approve this vision?**
+
+━━━━━━ turn 12 · founder ━━━━━━
+
+That's fair, and I take the point about the tension — I'll sit with it. Yes, I approve this vision.
+
+━━━━━━ turn 13 · agent ━━━━━━
+
+Recording this as approved — the vision goes to `docs/product/vision.md` with the two flags left visible in the prose rather than smoothed over.
+
+One thing I need before I write: **what name or identifier should I record as the approver?** That goes into the frontmatter as the approval marker, and I'd rather use what you'd actually want on the record than infer it.
+
+━━━━━━ turn 13 · founder ━━━━━━
+
+Sam Reyes.
+
+━━━━━━ turn 14 · agent ━━━━━━
+
+Written to `docs/product/vision.md`, approved by Sam Reyes at `2026-08-16T06:51:16Z`.
+
+Six fields recorded; Additional Grounding omitted since you had nothing to add.
+
+**What's strong:** the Grounding Insight is doing most of the load-bearing work — it's a causal claim with a stated falsification condition, which is rarer than it sounds. The Vision Pivot Trigger is genuinely checkable by someone who isn't you, which is the whole point of that field. And the Vision Statement inherited its specificity from the insight rather than from aspiration.
+
+**What's still open,** for whenever you come back to it:
+
+- **Future State** reads as a platitude and survives the swap-test. The fix is probably already in your head — the mechanic you wouldn't name is likely the one your Vision Statement gestures at.
+- **Why Us / Why Now** has no asset behind it, and the tension you said you'd sit with is real: if float cost was the universal blocker and it just fell, it fell for everyone. That's the question worth answering before this vision meets an investor.
+
+Re-running `/to-vision` later will read this file back and let you revise field by field. Note that revising an approved vision clears the approval marker — you'd re-approve at the end, which is deliberate: a sharpened Future State shouldn't inherit a signature given to the vague one.
+

@@ -1,0 +1,124 @@
+{
+  "model": "opus",
+  "passed": true,
+  "results": [
+    {
+      "scenario": "01-cooperative-sharp",
+      "turns": 11,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 19,
+        "total": 19,
+        "failed": 0
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "high"
+      },
+      "humanReviewRequired": true,
+      "result": "pass"
+    },
+    {
+      "scenario": "02a-evasive-recoverable",
+      "turns": 14,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 22,
+        "total": 22,
+        "failed": 0
+      },
+      "disclosedFlags": [
+        "Future State",
+        "Why Us / Why Now"
+      ],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [
+          1,
+          5,
+          6
+        ],
+        "excusedFailures": [
+          1,
+          5,
+          6
+        ],
+        "unexcusedFailures": [],
+        "confidence": "high"
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    },
+    {
+      "scenario": "02b-evasive-hard-blocked",
+      "turns": 6,
+      "artifact": "none",
+      "deterministic": {
+        "passed": 10,
+        "total": 10,
+        "failed": 0
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": false,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": null
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    },
+    {
+      "scenario": "03a-boundary-roadmap-creep",
+      "turns": 11,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 21,
+        "total": 21,
+        "failed": 0
+      },
+      "disclosedFlags": [
+        "Vision Statement"
+      ],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "medium"
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    },
+    {
+      "scenario": "03b-boundary-self-serve-research",
+      "turns": 12,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 21,
+        "total": 21,
+        "failed": 0
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "medium"
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    }
+  ]
+}

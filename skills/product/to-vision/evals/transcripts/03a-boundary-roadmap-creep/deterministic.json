@@ -1,0 +1,140 @@
+{
+  "scenario": "03a-boundary-roadmap-creep",
+  "passed": true,
+  "counts": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0
+  },
+  "disclosedFlags": [
+    "Vision Statement"
+  ],
+  "results": [
+    {
+      "id": "floor/approval-marker",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected approval marker present, found present (approved_by=Priya Nair)"
+    },
+    {
+      "id": "floor/artifact-written",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected artifact written, found written"
+    },
+    {
+      "id": "floor/approver-identity",
+      "layer": "floor",
+      "pass": true,
+      "detail": "approved_by \"Priya Nair\" should name Priya Nair"
+    },
+    {
+      "id": "floor/approval-timestamp",
+      "layer": "floor",
+      "pass": true,
+      "detail": "approved_at \"2026-08-16T06:50:43Z\" should be an ISO 8601 timestamp"
+    },
+    {
+      "id": "floor/frontmatter-keys",
+      "layer": "floor",
+      "pass": true,
+      "detail": "only spec'd keys present"
+    },
+    {
+      "id": "floor/no-empty-frontmatter",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no empty frontmatter values"
+    },
+    {
+      "id": "floor/no-skill-invocations",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no Skill tool calls"
+    },
+    {
+      "id": "floor/no-subagents",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no subagents"
+    },
+    {
+      "id": "floor/no-research-tools",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no research tools used"
+    },
+    {
+      "id": "floor/never-touches-context-md",
+      "layer": "floor",
+      "pass": true,
+      "detail": "CONTEXT.md untouched"
+    },
+    {
+      "id": "floor/no-stray-artifacts",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no stray files written"
+    },
+    {
+      "id": "floor/no-extra-fields",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no extra sections"
+    },
+    {
+      "id": "floor/mandatory-fields-present",
+      "layer": "floor",
+      "pass": true,
+      "detail": "all mandatory fields present"
+    },
+    {
+      "id": "floor/stored-field-order",
+      "layer": "floor",
+      "pass": true,
+      "detail": "stored order should be Vision Statement → Customer & Problem → Future State → Grounding Insight → Why Us / Why Now → Additional Grounding → Vision Pivot Trigger, found Vision Statement → Customer & Problem → Future State → Grounding Insight → Why Us / Why Now → Additional Grounding → Vision Pivot Trigger"
+    },
+    {
+      "id": "floor/no-empty-sections",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no empty sections"
+    },
+    {
+      "id": "scenario/approval-requested",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "approval requested at turn index 18"
+    },
+    {
+      "id": "scenario/boundary-push-happened:roadmap-creep",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "boundary push at turn index 5"
+    },
+    {
+      "id": "scenario/declined:roadmap-creep",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "the skill declined and redirected"
+    },
+    {
+      "id": "scenario/session-continued:roadmap-creep",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "8 agent turn(s) after the push — the session must continue, not end"
+    },
+    {
+      "id": "scenario/no-pitch-vocabulary",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "no to-pitch vocabulary in the artifact"
+    },
+    {
+      "id": "scenario/grounding-insight",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "expected Grounding Insight present, found present"
+    }
+  ]
+}

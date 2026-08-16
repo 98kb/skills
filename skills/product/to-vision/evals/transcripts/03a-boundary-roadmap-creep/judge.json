@@ -1,0 +1,77 @@
+{
+  "scenario": "03a-boundary-roadmap-creep",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [
+    "Vision Statement"
+  ],
+  "failures": [],
+  "excusedFailures": [],
+  "unexcusedFailures": [],
+  "confidence": "medium",
+  "humanReviewRequired": false,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Specific customer and specific future state, not a platitude",
+      "verdict": "pass",
+      "rationale": "Names a concrete persona and setting — \"Jordan — the first security hire at a sixty-person Series A company, handed SOC 2 on top of an actual job\" — with a concrete present-day failure mode (screenshotting AWS console pages, chasing eleven engineers on Slack). The future state is equally specific: \"Jordan's audit prep goes from six weeks of screenshots to an afternoon of review.\" No competitor could reuse this without adopting the same customer and the same before/after.",
+      "fields": [
+        "Customer & Problem",
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 2,
+      "name": "Commits to at least one grounding factor",
+      "verdict": "pass",
+      "rationale": "Commits to a named market trend with a stated causal mechanism: \"Auditors now accept system-generated evidence in a way they flatly didn't five years ago... the audit firms serving startups are staffed thinly enough that they actively prefer it.\" It further isolates the bet — \"The thing that changed is trust in machine-collected evidence, not the tooling\" — which is well below the \"make lives better\" altitude.",
+      "fields": [
+        "Grounding Insight"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Something a reader could point to and say 'this didn't happen'",
+      "verdict": "pass",
+      "rationale": "The Vision Pivot Trigger gives two checkable conditions: \"Twenty companies through a full audit cycle whose auditors still demand manually attested screenshots for the core controls,\" and a quantified threshold — \"if prep time doesn't drop by at least half.\" The gloss \"if six weeks becomes five, what got built is a nicer screenshot folder\" makes the failure state unambiguous and observable.",
+      "fields": [
+        "Vision Pivot Trigger"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Vision Statement swap-test",
+      "verdict": "pass",
+      "rationale": "\"Every startup's SOC 2 evidence collects itself, continuously, in a form its auditor already trusts\" is the closest call in the artifact, since automation language is common to the category. It survives because the artifact defines the incumbent model as \"a compliance checklist with a human services layer bolted on\" where \"a human then helps you go collect the same screenshots\" — swapping in that competitor's name falsifies \"collects itself,\" and \"in a form its auditor already trusts\" carries the grounding insight rather than generic aspiration.",
+      "fields": [
+        "Vision Statement"
+      ],
+      "excused": false
+    },
+    {
+      "id": 5,
+      "name": "Future State swap-test",
+      "verdict": "pass",
+      "rationale": "The Future State explicitly positions against the category: \"This is distinct from what the incumbents sell: a compliance checklist with a human services layer bolted on at enterprise prices.\" A direct competitor cannot swap its name in and still assert distinctness from itself, and the specific mechanics — \"when the auditor asks for Q2 access reviews it's simply there — timestamped, with a provenance trail behind it\" — are not category boilerplate.",
+      "fields": [
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 6,
+      "name": "Why Us / Why Now extended swap-test",
+      "verdict": "pass",
+      "rationale": "The Why Us rests on a non-portable credential — \"Four years as a SOC 2 auditor at a firm running roughly two hundred startup audits a year\" — yielding knowledge of \"which pull looks clean but won't survive a reviewer,\" which no competitor can claim by substitution. The Why Now is thinner but names two dated shifts: the recency of the guidance change and the Series-A cohort \"being asked for SOC 2 a full stage earlier than it used to be,\" neither of which reads as true two years ago.",
+      "fields": [
+        "Why Us / Why Now"
+      ],
+      "excused": false
+    }
+  ]
+}

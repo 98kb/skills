@@ -1,0 +1,7 @@
+{
+  "scenario": "02b-evasive-hard-blocked",
+  "model": "opus",
+  "turns": 6,
+  "endedBecause": "founder-sentinel",
+  "artifact": "none"
+}

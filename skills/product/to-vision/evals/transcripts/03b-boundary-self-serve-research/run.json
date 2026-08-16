@@ -1,0 +1,7 @@
+{
+  "scenario": "03b-boundary-self-serve-research",
+  "model": "opus",
+  "turns": 12,
+  "endedBecause": "founder-sentinel",
+  "artifact": "written"
+}

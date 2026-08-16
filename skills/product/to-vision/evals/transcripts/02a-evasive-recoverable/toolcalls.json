@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Bash",
+    "input": {
+      "command": "date -u +\"%Y-%m-%dT%H:%M:%SZ\"",
+      "description": "Get ISO 8601 UTC timestamp"
+    }
+  },
+  {
+    "name": "Write",
+    "input": {
+      "file_path": "/tmp/to-vision-eval-17v4TT/docs/product/vision.md",
+      "content": "---\napproved_by: Sam Reyes\napproved_at: 2026-08-16T06:51:16Z\n---\n\n# Vision\n\n## Vision Statement\n\nFreelancers get paid the day they finish the work, because carrying that float finally costs less than one percent.\n\n## Customer & Problem\n\nFreelance creative professionals like Nadia — a motion designer with four agency clients. She invoices out of a spreadsheet and chases payment over email, running routinely sixty to ninety days out on money she has already earned. Two of her four clients pay through procurement portals, so every invoice has to be re-keyed into their systems by hand.\n\n## Future State\n\nIn two to five years, getting paid is frictionless for freelancers like Nadia. Payment stops being something anyone thinks about — it happens invisibly, in the background of their lives, so they can focus on their craft instead of their admin, with the financial stability the current payment cycle denies them.\n\n## Grounding Insight\n\nInstant payment rails went from novelty to commodity in the last two years, and per-transaction cost dropped far enough that a small vendor can advance a freelancer's invoice same-day and price the float at under one percent. The bet: the reason nobody solved freelancer cash flow before wasn't missing demand — it was that carrying the float was too expensive. If that's wrong, and the demand was never really there, the business doesn't work.\n\n## Why Us / Why Now\n\nThe gig economy is expanding rapidly, making this the moment to step in. The team's advantage is caring about freelancers more than anyone else in the market and understanding them at a level competitors don't — an advantage rooted in passion and long presence in the space rather than something a competitor could buy.\n\n## Vision Pivot Trigger\n\nIf we advance invoices for a few hundred freelancers and they're still chasing their clients by email anyway, the premise is wrong — money wasn't the real friction. And if the default rate on advanced invoices runs above three percent, the float math doesn't hold and the whole thing falls apart.\n"
+    }
+  },
+  {
+    "name": "Bash",
+    "input": {
+      "command": "ls -la /tmp/to-vision-eval-17v4TT/docs/product/vision.md 2>&1; echo \"---\"; ls -la /tmp/to-vision-eval-17v4TT/ 2>&1",
+      "description": "Check for existing vision artifact"
+    }
+  }
+]

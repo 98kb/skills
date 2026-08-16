@@ -1,0 +1,86 @@
+{
+  "scenario": "02a-evasive-recoverable",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [
+    "Future State",
+    "Why Us / Why Now"
+  ],
+  "failures": [
+    1,
+    5,
+    6
+  ],
+  "excusedFailures": [
+    1,
+    5,
+    6
+  ],
+  "unexcusedFailures": [],
+  "confidence": "high",
+  "humanReviewRequired": false,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Specific customer and specific future state, not a platitude",
+      "verdict": "fail",
+      "rationale": "The customer half is sharp — \"Nadia — a motion designer with four agency clients... sixty to ninety days out,\" two of four paying through procurement portals that force manual re-keying. But the Future State half is pure platitude: \"payment stops being something anyone thinks about — it happens invisibly, in the background of their lives, so they can focus on their craft instead of their admin.\" Since this criterion is graded against Customer & Problem *and* Future State, the interchangeable future state fails it.",
+      "fields": [
+        "Customer & Problem",
+        "Future State"
+      ],
+      "excused": true
+    },
+    {
+      "id": 2,
+      "name": "Commits to a grounding factor (insight / trend / technology bet)",
+      "verdict": "pass",
+      "rationale": "The Grounding Insight names a concrete technology-and-cost bet: \"Instant payment rails went from novelty to commodity in the last two years, and per-transaction cost dropped far enough that a small vendor can advance a freelancer's invoice same-day and price the float at under one percent.\" It goes further and states the causal claim being bet on — \"the reason nobody solved freelancer cash flow before... was that carrying the float was too expensive\" — plus what would falsify it. Well below the \"make lives better\" altitude.",
+      "fields": [
+        "Grounding Insight"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Something a reader could point to and say \"this didn't happen\"",
+      "verdict": "pass",
+      "rationale": "The Vision Pivot Trigger gives two observable, measurable conditions: advancing invoices for \"a few hundred freelancers\" who are \"still chasing their clients by email anyway,\" and \"the default rate on advanced invoices runs above three percent.\" Both are leading indicators a reader could check and declare unmet.",
+      "fields": [
+        "Vision Pivot Trigger"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Vision Statement swap-test",
+      "verdict": "pass",
+      "rationale": "\"Freelancers get paid the day they finish the work, because carrying that float finally costs less than one percent\" survives the swap because the because-clause is a specific economic commitment, not a shared aspiration. A competitor whose float costs three percent could not put its name on this sentence without it being false.",
+      "fields": [
+        "Vision Statement"
+      ],
+      "excused": false
+    },
+    {
+      "id": 5,
+      "name": "Future State swap-test",
+      "verdict": "fail",
+      "rationale": "\"Getting paid is frictionless for freelancers like Nadia... it happens invisibly, in the background of their lives, so they can focus on their craft instead of their admin, with the financial stability the current payment cycle denies them\" would ring equally true over any competitor's name. Nothing in it names a mechanism, a constraint, or a choice another payments vendor would decline to claim.",
+      "fields": [
+        "Future State"
+      ],
+      "excused": true
+    },
+    {
+      "id": 6,
+      "name": "Why Us / Why Now extended swap-test",
+      "verdict": "fail",
+      "rationale": "\"The gig economy is expanding rapidly, making this the moment to step in\" was equally true two years ago — and five years ago — so the Why Now does not hold. The Why Us — \"caring about freelancers more than anyone else in the market\" and \"passion and long presence in the space\" — is an unfalsifiable claim every competitor makes about itself, so the competitor swap leaves it intact.",
+      "fields": [
+        "Why Us / Why Now"
+      ],
+      "excused": true
+    }
+  ]
+}

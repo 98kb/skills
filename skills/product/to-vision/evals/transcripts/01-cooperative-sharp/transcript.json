@@ -1,0 +1,86 @@
+[
+  {
+    "speaker": "agent",
+    "text": "No vision recorded yet — so this is a from-scratch session. We'll build it up one field at a time, and I'll write `docs/product/vision.md` only once you've explicitly approved the draft at the end.\n\nLet's start with the foundation.\n\n**Who exactly is this for, and what's broken for them today?**"
+  },
+  {
+    "speaker": "founder",
+    "text": "It's for someone like Marisol Vega — she's the office manager at Riverbend Physical Therapy, a single-site clinic with six therapists. Every Thursday she sits down and rebuilds next week's schedule by hand in a spreadsheet.\n\nWhat breaks is the middle of the week. A therapist calls out, or a patient with vestibular issues gets booked with a sports-ortho therapist, and Marisol is on the phone reshuffling twenty appointments. The mismatched ones either get rescheduled or the patient just doesn't show."
+  },
+  {
+    "speaker": "agent",
+    "text": "That's sharp — a named role at a named clinic, and a concrete failure mode (mid-week reshuffling, mismatched specialties, no-shows). Locking that in.\n\n**In 2–5 years, what does the world look like for Marisol once this exists?**"
+  },
+  {
+    "speaker": "founder",
+    "text": "The schedule rebuilds itself. A therapist calls out Monday morning, and by the time Marisol opens her laptop the affected patients have already been moved to therapists who actually treat their condition, at times those patients have historically kept.\n\nShe stops being the clinic's scheduling engine and goes back to actually running the clinic. And no-shows drop, because patients stay with one specialist through a whole plan of care instead of getting bounced between whoever happened to be free that day."
+  },
+  {
+    "speaker": "agent",
+    "text": "Good — that's not a platitude; it names a specific mechanism (condition-matched reassignment, historically-kept time slots) that wouldn't be equally true of any scheduling tool.\n\n**What's the one insight, trend, or technology bet you're building on — something you'd be willing to be proven wrong about?**"
+  },
+  {
+    "speaker": "founder",
+    "text": "The bet is that the binding constraint on a small clinic's schedule is specialty matching, not slot availability. Everyone builds for open slots — but the reschedules that actually happen in a real week are specialty mismatches, not empty calendars.\n\nAnd the enabling piece is that since payer credentialing files went structured, a therapist's certified specialties are machine-readable for the first time. That means I can match on them without asking the clinic to hand-maintain a skills matrix — which is the thing that killed every previous attempt at this."
+  },
+  {
+    "speaker": "agent",
+    "text": "That's a real bet with a falsifiable claim underneath it, plus a specific enabling change. Before I move on, one word to pin down.\n\nYou've used **\"specialty\"** two ways. In the future state it was \"therapists who actually treat their condition\" — a caseload fact. Here it's the credentialed specialty in the payer file — a credentialing fact. Those can diverge: a therapist can be certified in vestibular and never see a vestibular patient, or treat them constantly without the cert.\n\nWhich one is the schedule matching on — the credentialed specialty, the observed caseload, or the credential as a floor with caseload refining it?"
+  },
+  {
+    "speaker": "founder",
+    "text": "The credential is the floor, and the observed caseload refines it. The credentialing file tells me who is legally and defensibly allowed to treat a vestibular patient — that's the hard constraint, and it's the part I get for free without the clinic maintaining anything. Then within that set, I rank by who actually carries that caseload.\n\nThe reason it has to be that order is liability and payer scrutiny. I'm not going to route a patient to someone who treats a lot of vestibular cases but isn't certified, just because the pattern says they're good at it."
+  },
+  {
+    "speaker": "agent",
+    "text": "Clear — credential as hard eligibility constraint, caseload as ranking within it, ordered that way for liability. That'll go into the wording.\n\n**Why is now the moment, and why are you positioned to win it?**"
+  },
+  {
+    "speaker": "founder",
+    "text": "I ran clinic operations at Meridian Physical Therapy for eight years — four sites — and I personally rebuilt that schedule something like 400 times. So I know the twenty edge cases that make this look trivial from the outside and aren't: the patient who'll only come at 7am, the therapist who can't take back-to-back manual therapy, the plan of care that has to finish before authorization expires.\n\nAs for now — structured credentialing data only became broadly available in the last couple of years, so the matching is finally possible without a data-entry burden nobody would carry. And independent clinics are consolidating fast; the ones still standing are actively shopping for something that lets them stay independent.\n\nThe other piece is that every scheduling incumbent sells to fifty-plus-provider organizations that have a dedicated scheduling coordinator. Nobody serves the three-to-eight-therapist clinic, because the seat count won't support an enterprise sales motion. That's exactly the gap a self-serve product walks into."
+  },
+  {
+    "speaker": "agent",
+    "text": "That holds up against the swap-test — the operator history is yours specifically, and the credentialing-data timing genuinely wasn't true two years ago. The incumbent-gap point reads more like separate grounding than \"why us,\" so let me pick that up in the next field.\n\n**Anything else grounding this — a competitive gap, capability, or GTM angle worth naming?** (The 50+-provider gap you just described would sit here, unless you'd rather keep it in Why Us / Why Now.)"
+  },
+  {
+    "speaker": "founder",
+    "text": "Yes, put it there — it's really a market-structure fact, not a claim about me.\n\nThe shape of it is: the incumbents all sell to fifty-plus-provider organizations, and those buyers already have a dedicated scheduling coordinator, so the software is built to assist a specialist rather than replace one. The three-to-eight-therapist clinic doesn't have that person — the office manager is the scheduling coordinator, on top of everything else. And the seat count there will never pay for an enterprise sales motion, which is why nobody's come for it. Self-serve is the only way in, and it's also the only thing that clinic size can actually absorb."
+  },
+  {
+    "speaker": "agent",
+    "text": "Agreed — that's market structure, not a claim about you. It goes in Additional Grounding.\n\nNow the headline. Rather than have you write it cold, here's my draft from everything you've told me:\n\n> **When a therapist calls out, the schedule rebuilds itself — every patient landed with a therapist credentialed for their condition, at a time they'll actually keep, before the office manager opens her laptop.**\n\nIt survives the swap-test as far as I can tell: an incumbent selling to a 50-provider group couldn't claim it, since it's built around there being no scheduling coordinator and around credential-based matching rather than open slots.\n\nWhat it doesn't say out loud is *who* — the three-to-eight-therapist independent clinic. Optional tightening:\n\n> **The three-to-eight-therapist clinic where the schedule rebuilds itself — a therapist calls out, and every patient is already re-matched to a credentialed specialist at a time they'll keep.**\n\nTake either, or rewrite it in your own words."
+  },
+  {
+    "speaker": "founder",
+    "text": "The second one — naming the clinic size matters, because that's the whole reason this exists and it's the first thing another PT founder would ask.\n\nOne honest note: the call-out is the dramatic case, but the everyday version is Marisol's Thursday rebuild. If you can, I'd rather the headline carry both — something like \"Every independent PT clinic runs a schedule that matches each patient to the right therapist, and rebuilds itself when the week changes.\" Your version with the call-out can sit right underneath as the illustration."
+  },
+  {
+    "speaker": "agent",
+    "text": "Your instinct on carrying both cases is right — the Thursday rebuild is the volume, the call-out is the drama. But run the swap-test on that exact wording: *\"a schedule that matches each patient to the right therapist, and rebuilds itself when the week changes.\"* Would a scheduling incumbent selling to a 60-provider group say that sentence about their own product? I think they'd say it happily — \"right therapist\" is what everyone claims, and \"independent PT clinic\" is broader than the size you just told me is the first thing another founder asks about.\n\nThe two words carrying your differentiation are the ones the revision dropped: **three-to-eight-therapist** and **credentialed**.\n\nMerged, keeping your both-cases structure:\n\n> **The three-to-eight-therapist clinic runs a schedule that matches every patient to a credentialed specialist — and rebuilds itself when the week changes.**\n\nWith your illustration underneath:\n\n> *A therapist calls out Monday morning, and the affected patients are already re-matched before the office manager opens her laptop.*\n\nDoes that carry both cases without giving up the specificity?"
+  },
+  {
+    "speaker": "founder",
+    "text": "You're right, and I'd have caught that in a pitch meeting — \"right therapist\" is exactly the phrase every incumbent already uses. \"Credentialed specialist\" is the version nobody else can say, because they're all matching on open slots.\n\nTake it as written. That headline with the call-out line underneath is the one."
+  },
+  {
+    "speaker": "agent",
+    "text": "Locked. Last question, and it's the one that makes this checkable later.\n\n**What would have to happen — or fail to happen — for you to conclude this vision itself was wrong?**"
+  },
+  {
+    "speaker": "founder",
+    "text": "If we rebuild schedules for twenty clinics and their no-show rate hasn't moved within two quarters, the premise is wrong. That's the number the whole thesis pays out in.\n\nThe other version is qualitative: if clinics tell me plainly that raw availability — not specialty matching — is what actually breaks their week, then I've misread the constraint and I'd stop rather than pivot the wording around it."
+  },
+  {
+    "speaker": "agent",
+    "text": "All seven fields are in. Here's the assembled draft, in stored order.\n\n---\n\n# Vision\n\n## Vision Statement\n\nThe three-to-eight-therapist clinic runs a schedule that matches every patient to a credentialed specialist — and rebuilds itself when the week changes.\n\n*A therapist calls out Monday morning, and the affected patients are already re-matched before the office manager opens her laptop.*\n\n## Customer & Problem\n\nMarisol Vega is the office manager at Riverbend Physical Therapy, a single-site clinic with six therapists. Every Thursday she rebuilds next week's schedule by hand in a spreadsheet.\n\nWhat breaks is the middle of the week. A therapist calls out, or a patient with vestibular issues is booked with a sports-ortho therapist, and Marisol spends the day on the phone reshuffling twenty appointments. The mismatched appointments either get rescheduled or the patient simply doesn't show.\n\n## Future State\n\nThe schedule rebuilds itself. A therapist calls out Monday morning, and by the time Marisol opens her laptop the affected patients have already been moved to therapists who are credentialed to treat their condition, at times those patients have historically kept.\n\nMarisol stops being the clinic's scheduling engine and goes back to running the clinic. No-shows drop, because patients stay with one specialist through a whole plan of care instead of being bounced between whoever happened to be free that day.\n\n## Grounding Insight\n\nThe binding constraint on a small clinic's schedule is specialty matching, not slot availability. Everyone builds for open slots — but the reschedules that actually happen in a real week are specialty mismatches, not empty calendars.\n\nThe enabling bet is that since payer credentialing files became structured, a therapist's certified specialties are machine-readable for the first time. Matching can happen without asking the clinic to hand-maintain a skills matrix — the burden that killed every previous attempt at this.\n\nCredential and caseload are distinct inputs, applied in that order. The credentialing file establishes who is legally and defensibly permitted to treat a given condition; that is the hard eligibility constraint, and it arrives for free without the clinic maintaining anything. Within that eligible set, therapists are ranked by who actually carries that caseload. The order is non-negotiable for liability and payer-scrutiny reasons: a patient is never routed to someone whose observed caseload suggests competence but who lacks the certification.\n\n## Why Us / Why Now\n\nI ran clinic operations at Meridian Physical Therapy for eight years across four sites, and personally rebuilt that schedule roughly 400 times. I know the twenty edge cases that make this look trivial from the outside and aren't: the patient who will only come at 7am, the therapist who can't take back-to-back manual therapy, the plan of care that has to finish before authorization expires.\n\nAs for now: structured credentialing data only became broadly available in the last couple of years, so the matching is finally possible without a data-entry burden nobody would carry. And independent clinics are consolidating fast — the ones still standing are actively shopping for something that lets them stay independent.\n\n## Additional Grounding\n\nThe scheduling incumbents all sell to fifty-plus-provider organizations, and those buyers already employ a dedicated scheduling coordinator — so the software is built to assist a specialist rather than replace one. The three-to-eight-therapist clinic has no such person; the office manager is the scheduling coordinator, on top of everything else. That seat count will never pay for an enterprise sales motion, which is why nobody has come for it. Self-serve is the only way into this segment, and the only motion a clinic that size can absorb.\n\n## Vision Pivot Trigger\n\nIf we rebuild schedules for twenty clinics and their no-show rate has not moved within two quarters, the premise is wrong — that is the metric the entire thesis pays out in.\n\nThe qualitative version: if clinics say plainly that raw availability, not specialty matching, is what actually breaks their week, then the constraint has been misread, and the right response is to stop rather than re-word the vision around it.\n\n---\n\n**Gate-check: no flagged fields.** The draft names a specific customer and a specific future state; it commits to a falsifiable grounding insight (specialty matching, not slot availability, is the binding constraint); and it's checkable — twenty clinics, no-show rate, two quarters. All three swap-tests pass: the Vision Statement and Future State both hinge on credential-based matching that a slot-availability incumbent can't claim, and Why Us / Why Now rests on your operator history plus a data-availability change that genuinely wasn't true two years ago.\n\nOne thing I need before writing: **what name or identifier should go in `approved_by`?**\n\nAnd: **do you approve this vision?**"
+  },
+  {
+    "speaker": "founder",
+    "text": "Dana Okafor — that's the name for `approved_by`.\n\nI've read it through, and it says what I'd say to an investor or to Marisol. Yes, I approve this vision."
+  },
+  {
+    "speaker": "agent",
+    "text": "Written to `docs/product/vision.md`, approved by Dana Okafor at `2026-08-16T06:50:46Z`.\n\nAll seven fields recorded, no flags. Two things worth noting about how this one landed:\n\n- **\"Specialty\" got split into two inputs.** The word was doing double duty — credentialed specialty vs. observed caseload — and pinning it down produced the ordering rule (credential as hard eligibility floor, caseload as ranking within it, for liability reasons). That's now explicit in Grounding Insight rather than an assumption someone would have to reconstruct later.\n- **The headline nearly lost its edge.** \"Right therapist\" and \"independent PT clinic\" would both have survived a swap with any incumbent. \"Credentialed specialist\" and \"three-to-eight-therapist\" are what make the sentence yours.\n\nThe pivot trigger is genuinely checkable — twenty clinics, no-show rate, two quarters — so this is a vision someone can come back to and mark right or wrong.\n\n`docs/product/vision.md` is the root of the chain. When you're ready to take a slice of it into an appetite-bounded bet, `to-pitch` reads from here."
+  }
+]

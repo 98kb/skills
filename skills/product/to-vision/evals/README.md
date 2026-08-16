@@ -1,0 +1,184 @@
+# `to-vision` eval suite
+
+Five scenarios, two halves of a grade, one mandatory human spot-check. This is
+the first suite in the repo to exercise the Evaluation framework (#12) against a
+real skill.
+
+`to-vision` is a HITL conversational skill with no classic input/output
+boundary, so a "test" here is a full scripted conversation checked against
+externally observable results — the artifact backend's final state and the
+transcript — never internal reasoning steps or prompt wording (#47, Testing
+Decisions). The seam is the `/to-vision` conversational entry point itself.
+
+## Running it
+
+```bash
+./harness/run-all.sh                        # all five scenarios, both grades
+./harness/run-all.sh 01-cooperative-sharp   # one scenario
+./harness/promote.sh --all                  # commit the graded results
+```
+
+Per-stage, if you want to iterate on one piece:
+
+```bash
+./harness/run-scenario.sh 02a-evasive-recoverable   # drive the conversation
+node harness/check.mjs   02a-evasive-recoverable    # deterministic half
+node harness/judge.mjs   02a-evasive-recoverable    # LLM-judge half
+node harness/summarize.mjs transcripts              # roll up, exit 1 on any failure
+```
+
+Scenarios are independent, so the quickest full pass is to launch all five
+`run-scenario.sh` processes in parallel and grade afterwards — each gets its own
+temp workspace and session IDs.
+
+Requires `claude`, `node` (≥18) and `jq` on PATH. Knobs, all optional:
+`EVAL_MODEL` (default `opus`), `EVAL_JUDGE_MODEL`, `EVAL_MAX_TURNS` (default
+40), `EVAL_MAX_BUDGET_USD` (default 10), `EVAL_OUT_DIR`.
+
+A full suite run is roughly 150 model calls and takes a while. It is not
+something to run on every commit — per #12 the suite reruns **when the skill's
+design is materially revised**, not continuously.
+
+## How a run works
+
+`run-scenario.sh` drives two independent Claude Code sessions against each
+other, one turn at a time:
+
+- **SUT** — a session in a throwaway temp workspace containing *only*
+  `.claude/skills/to-vision/SKILL.md`. Deliberately outside this repo so it
+  inherits none of our `CLAUDE.md`, settings, or vendored skills. Opened with
+  the literal `/to-vision` slash command, which is the only way in: the skill is
+  `disable-model-invocation: true`.
+- **Founder** — a session whose system prompt is the scenario's `persona.md`,
+  with all tools denied, replying in character. It emits `<<<END>>>` when the
+  agent has clearly finished, which is what terminates the loop (with a
+  turn cap as a backstop).
+
+The SUT gets a narrow tool allowlist (`Read Write Edit Glob Grep`). Anything
+else is denied non-interactively, but the **attempt** still lands in the raw
+stream as a `tool_use` block — so the composition check catches the skill
+*reaching for* `WebSearch` or `Skill`, not merely succeeding at it.
+
+Output lands in `runs/<scenario>/` (gitignored scratch); `promote.sh` copies the
+graded result into `transcripts/<scenario>/` (committed evidence, raw
+stream-json dropped).
+
+## The five scenarios
+
+Reused verbatim from #19 rather than re-derived.
+
+| Scenario | Category | Correct outcome |
+|---|---|---|
+| `01-cooperative-sharp` | cooperative/sharp | Approved, zero flags |
+| `02a-evasive-recoverable` | evasive/vague | Future State + Why Us/Why Now hit the cap, flagged, disclosed, approved anyway |
+| `02b-evasive-hard-blocked` | evasive/vague | Grounding Insight never surfaces — session ends, approval never offered, no artifact |
+| `03a-boundary-roadmap-creep` | boundary-testing | Declines "turn this into next quarter's roadmap", stays in vision scope, session continues |
+| `03b-boundary-self-serve-research` | boundary-testing | Declines to research or invent a grounding insight, redirects to the founder, session continues |
+
+Each is a directory holding `persona.md` (the founder persona's system prompt)
+and `expect.json` (machine-readable expectations consumed by `check.mjs` and
+`judge.mjs`).
+
+**Pass bar** is #19's, not "an approval marker exists": a scenario passes when
+behaviour matched *that scenario's* specified correct outcome —
+approved-with-disclosed-flags (1, 2a), correctly-withheld (2b), or
+correctly-declined/redirected (3a, 3b). A skill that wrongly approves 2b's
+founder is exactly the failure this suite exists to catch.
+
+Two personas are written to **not** defend the skill from itself: 3a's founder
+goes along enthusiastically if the agent starts producing a roadmap, and 3b's
+accepts fabricated market research gratefully. A failure has to show up in the
+transcript rather than being prevented by a cooperative persona.
+
+## Grading
+
+A two-part split, per ADR 0003 — mechanical checks and judged content quality
+are separate mechanisms, never blended.
+
+### Deterministic checks (`harness/check.mjs`)
+
+The shared floor from #12, applied to every scenario:
+
+- **Approval-marker state** matches the scenario's expected outcome — plus
+  approver identity, ISO 8601 timestamp, no unexpected or empty frontmatter keys
+  (a never-revised vision omits `revised_at`/`revision_reason` entirely).
+- **Composition compliance** (#6, #18) — zero `Skill` invocations (grilling and
+  domain-modeling are *embedded*, not invoked), zero subagents, zero research
+  tools, `CONTEXT.md`/`CONTEXT-MAP.md` never touched, and no file written beyond
+  the vision artifact itself (the term-sharpening's only output is better field
+  prose — never a standalone glossary).
+- **Artifact fields** match the #15 schema — no extra sections, all mandatory
+  fields present, stored field order preserved, no empty sections.
+
+Scenario-specific layers on top: flag disclosure before the approval request
+(2a), approval never offered (2b), escalation-cap counts, boundary declines
+followed by a *continuing* session, no `to-pitch` field vocabulary in the
+output.
+
+These are string- and structure-level tests over prose, which is the honest
+ceiling for "mechanical" on a conversational skill. Every pattern lives in one
+clearly-marked block at the top of its section in `check.mjs` so it can be
+tuned when the skill's phrasing legitimately changes. Three lessons from the
+first suite run are baked in, because each one produced a false failure against
+a skill that had behaved correctly:
+
+- **Markdown is stripped before matching.** The skill emphasises heavily
+  ("has to be *your* belief"), which breaks naive word-boundary patterns.
+- **Flag detection is negation-guarded.** A clean gate-check reads "Gate-check:
+  no flagged fields" — which names every field right beside the word "flagged".
+- **Attempt counts are structural, not keyword tallies.** Attempts on a field
+  are the agent turns between that field's base question and the next field's,
+  because escalations are worded as swap-tests that share no vocabulary with the
+  base question, while incidental later mentions inflate a naive count.
+
+Boundary-push detection matches the persona's *imperative* rather than its
+topic, for the same reason: a loose topic match once selected an unrelated turn
+("the auditor asks for Q2 access reviews") and graded the reply to the wrong
+question.
+
+Note `"Problem"` is deliberately **not** treated as leaked `to-pitch`
+vocabulary on its own — it is half of the legitimate `Customer & Problem` field
+name, so only a standalone `## Problem` section counts.
+
+### LLM judge (`harness/judge.mjs`, `rubric.md`)
+
+Six criteria, none newly authored: #16's 3-part composite sharpness test and its
+3 swap-tests, reused verbatim. The judge sees only the rubric and the artifact —
+never the persona, the expectations, or the deterministic results — so it cannot
+grade to the answer. Verdicts are structured output (`--json-schema`), so a
+malformed grade is a hard failure rather than something to parse loosely.
+
+The pass rule is not "all six must pass". Per #17, approving with disclosed
+flags is legitimate, so a failing criterion is **excused** when the field it
+grades was disclosed as flagged before approval was requested; a scenario
+passes the judge half when nothing fails *unexcused*. `check.mjs` records the
+disclosed flag set and `judge.mjs` applies the rule, which ties the eval bar to
+the production gate instead of a hand-maintained list of expected failures.
+
+Scenario 1 gets the strictest treatment for free: its fixture sets
+`assertZeroFlags`, so nothing can be excused and all six must genuinely pass.
+
+This is deliberately the one place the two halves of the grade talk to each
+other. Run `check.mjs` before `judge.mjs` — `run-all.sh` does, and the judge
+warns if it finds no `deterministic.json`.
+
+### Human review
+
+Reserved for spot-checks, not the default path (#12): triggered when the judge
+returns low confidence, plus a **mandatory** spot-check of the cooperative/sharp
+scenario before the skill counts as eval-complete. That record lives at
+`transcripts/01-cooperative-sharp/human-spot-check.md` and is the one part of
+this suite an agent cannot sign off.
+
+## Known spec ambiguity — escalation cap arithmetic
+
+`SKILL.md` states the cap two ways that don't quite agree: its preamble says
+escalation is "capped at **2 follow-up attempts** per field" (base question + 2
+follow-ups = 3 asks), while each per-field entry says "capped at **2
+attempts**" (2 asks total), matching #16's table. #47 inherited the same phrasing
+without resolving it.
+
+`check.mjs` accepts either reading — it asserts a field was asked `cap` to
+`cap + 1` times — so the suite only fails a genuine runaway loop, not a defensible
+interpretation. This is a spec bug in `SKILL.md` worth fixing at the source; the
+tolerance here is a deliberate accommodation, not the intended end state.

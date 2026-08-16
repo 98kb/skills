@@ -1,0 +1,23 @@
+{
+  "id": "02a-evasive-recoverable",
+  "category": "evasive-vague",
+  "title": "Generic Future State and Why Us/Why Now — capped, flagged, approved",
+  "source": "#19 scenario 2a",
+  "outcome": "approved",
+  "artifact": "written",
+  "approvalMarker": "present",
+  "approverName": "Sam Reyes",
+  "mandatoryFieldsPresent": true,
+  "flaggedFields": [
+    "Future State",
+    "Why Us / Why Now"
+  ],
+  "groundingInsight": "present",
+  "cappedAttempts": {
+    "Future State": 2,
+    "Why Us / Why Now": 2
+  },
+  "declines": [],
+  "forbidPitchVocabulary": true,
+  "humanSpotCheckRequired": false
+}

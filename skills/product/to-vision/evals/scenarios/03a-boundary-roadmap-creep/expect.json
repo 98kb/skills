@@ -1,0 +1,19 @@
+{
+  "id": "03a-boundary-roadmap-creep",
+  "category": "boundary-testing",
+  "title": "Mid-interview \"turn this into next quarter's roadmap\" — decline and stay in scope",
+  "source": "#19 scenario 3a",
+  "outcome": "approved",
+  "artifact": "written",
+  "approvalMarker": "present",
+  "approverName": "Priya Nair",
+  "mandatoryFieldsPresent": true,
+  "flaggedFields": [],
+  "groundingInsight": "present",
+  "cappedAttempts": {},
+  "declines": [
+    "roadmap-creep"
+  ],
+  "forbidPitchVocabulary": true,
+  "humanSpotCheckRequired": false
+}

@@ -1,0 +1,75 @@
+{
+  "scenario": "01-cooperative-sharp",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [],
+  "failures": [],
+  "excusedFailures": [],
+  "unexcusedFailures": [],
+  "confidence": "high",
+  "humanReviewRequired": true,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Specific customer and specific future state, not a platitude",
+      "verdict": "pass",
+      "rationale": "Names \"Marisol Vega… office manager at Riverbend Physical Therapy, a single-site clinic with six therapists\" who \"rebuilds next week's schedule by hand in a spreadsheet\" every Thursday, and a concrete future state where \"affected patients have already been moved to therapists who are credentialed to treat their condition, at times those patients have historically kept.\" Neither the customer nor the future state is interchangeable with a generic scheduling vision.",
+      "fields": [
+        "Customer & Problem",
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 2,
+      "name": "Commits to at least one grounding factor",
+      "verdict": "pass",
+      "rationale": "Commits to a falsifiable insight — \"The binding constraint on a small clinic's schedule is specialty matching, not slot availability\" — and an explicit technology bet that \"since payer credentialing files became structured, a therapist's certified specialties are machine-readable for the first time.\" It further commits to an ordering claim (credential as hard eligibility constraint, caseload as ranking within it), well below the \"make lives better\" altitude.",
+      "fields": [
+        "Grounding Insight"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Something a reader could point to and say 'this didn't happen'",
+      "verdict": "pass",
+      "rationale": "The pivot trigger is concrete and time-bounded: \"If we rebuild schedules for twenty clinics and their no-show rate has not moved within two quarters, the premise is wrong.\" The qualitative backstop — clinics saying \"raw availability, not specialty matching, is what actually breaks their week\" — names a specific disconfirming signal and commits to stopping rather than rewording.",
+      "fields": [
+        "Vision Pivot Trigger"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Vision Statement swap-test",
+      "verdict": "pass",
+      "rationale": "\"The three-to-eight-therapist clinic runs a schedule that matches every patient to a credentialed specialist — and rebuilds itself when the week changes\" binds both a segment and a mechanism. Swapping in a direct competitor breaks it: the artifact establishes that \"the scheduling incumbents all sell to fifty-plus-provider organizations\" and build to assist a dedicated coordinator, so the statement would not ring true in their mouths.",
+      "fields": [
+        "Vision Statement"
+      ],
+      "excused": false
+    },
+    {
+      "id": 5,
+      "name": "Future State swap-test",
+      "verdict": "pass",
+      "rationale": "The future state is mechanism-specific rather than outcome-generic: patients moved to therapists \"credentialed to treat their condition, at times those patients have historically kept,\" with no-shows dropping \"because patients stay with one specialist through a whole plan of care.\" A competitor selling slot-availability optimization to enterprise clinics could not claim this text; the causal chain, not just the benefit, is asserted.",
+      "fields": [
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 6,
+      "name": "Why Us / Why Now extended swap-test",
+      "verdict": "pass",
+      "rationale": "Why Us is non-transferable: \"eight years across four sites, and personally rebuilt that schedule roughly 400 times,\" with named edge cases (7am-only patient, no back-to-back manual therapy, authorization expiry). Why Now is dated rather than evergreen — structured credentialing data \"only became broadly available in the last couple of years\" plus active consolidation — so it would not have been true two years ago.",
+      "fields": [
+        "Why Us / Why Now"
+      ],
+      "excused": false
+    }
+  ]
+}

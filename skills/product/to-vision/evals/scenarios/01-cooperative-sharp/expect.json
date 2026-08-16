@@ -1,0 +1,18 @@
+{
+  "id": "01-cooperative-sharp",
+  "category": "cooperative-sharp",
+  "title": "PT-clinic scheduling founder, sharp answers throughout",
+  "source": "#19 scenario 1",
+  "outcome": "approved",
+  "artifact": "written",
+  "approvalMarker": "present",
+  "approverName": "Dana Okafor",
+  "mandatoryFieldsPresent": true,
+  "flaggedFields": [],
+  "groundingInsight": "present",
+  "cappedAttempts": {},
+  "declines": [],
+  "forbidPitchVocabulary": true,
+  "humanSpotCheckRequired": true,
+  "assertZeroFlags": true
+}
