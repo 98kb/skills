@@ -45,9 +45,15 @@ short version:
 
 Then add `checks.mjs` beside it exporting the skill's pattern block —
 `flags`, `baseQuestions`, `declinePatterns`, `forbiddenVocabulary`,
-`fieldPresence`. All are optional; a check whose patterns are absent simply
-does not run. See `skills/product/to-vision/evals/checks.mjs` for a worked
-example with the false-failure lessons annotated.
+`fieldPresence`, `assertions`, `fieldItems`. All are optional; a check whose
+patterns are absent simply does not run. See
+`skills/product/to-vision/evals/checks.mjs` for a worked example with the
+false-failure lessons annotated, and `skills/product/to-pitch/evals/checks.mjs`
+for `assertions` (must / must-not over an artifact section or the transcript)
+and `fieldItems` (structured items and their required sub-fields).
+
+This list is the contract `evals/harness/check.mjs` consumes; a new export kind
+means editing the checker and this line together.
 
 The division is deliberate: `eval.config.json` holds plain data, `checks.mjs`
 holds the regexes and vocabulary lists that cannot survive a round trip through

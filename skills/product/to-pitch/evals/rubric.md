@@ -56,7 +56,7 @@ unfinished assumption is not a shorter one.
 
 - Whether an approval marker exists, which fields are present, whether the
   `upstream` pointer resolves, or which tools were invoked — those are
-  deterministic checks (`harness/check.mjs`), not judgment calls (ADR 0003).
+  deterministic checks (`evals/harness/check.mjs`), not judgment calls (ADR 0003).
 - Whether the skill declined a boundary push — also deterministic.
 - The optional fields. Rabbit Holes, No-gos and Open Questions get **no gate
   rule at all** (#23): empty is a valid completed state for them, and grading

@@ -35,12 +35,6 @@ const artifactPath = join(runDir, "artifact.md");
 const CRITERION_FIELDS = config.judge.criterionFields;
 const CRITERIA_COUNT = Object.keys(CRITERION_FIELDS).length;
 
-// Two nouns the judge prompt needs from the skill: what to call the thing it is
-// grading, and what a *competitor's* version of it is called in the swap-test
-// sentence. Both are prompt text, so they are configured rather than derived —
-// a shared harness that quietly reworded the prompt would change grading.
-
-
 // As in check.mjs: an expectation omitted from expect.json is not asserted. A
 // diagnostic scenario omits `artifact` because which way it goes is the open
 // question — so judge whatever was produced, and stay silent if nothing was.
