@@ -8,6 +8,14 @@
 # Writes <evals>/runs/summary.json and prints a per-scenario table. Exits
 # non-zero if any scenario failed, so this can gate CI.
 #
+# Negative controls run first, before a single model call. They cost nothing and
+# they answer the question a suite run cannot: would these scenarios notice if
+# the skill misbehaved? A suite whose controls do not trip is not a suite that
+# passed, it is a suite that cannot fail — so this stops rather than spending
+# hours and real money producing a green report nobody should believe.
+# EVAL_SKIP_NEGATIVE_CONTROLS=1 forces past it, for the case where you are
+# knowingly mid-repair on the controls themselves.
+#
 set -uo pipefail
 
 CONFIG_ARG="${1:-}"
@@ -31,6 +39,15 @@ else
 fi
 
 mkdir -p "$EVALS_DIR/runs"
+
+if [[ "${EVAL_SKIP_NEGATIVE_CONTROLS:-0}" != "1" ]]; then
+  echo "═══ negative controls ═══════════════════════════════════"
+  if ! node "$HARNESS_DIR/negative-control.mjs" "$EVALS_DIR" "${SCENARIOS[@]}"; then
+    echo "negative controls failed — refusing to spend a suite run on scenarios" >&2
+    echo "that cannot fail. Fix them, or set EVAL_SKIP_NEGATIVE_CONTROLS=1." >&2
+    exit 2
+  fi
+fi
 
 for scenario in "${SCENARIOS[@]}"; do
   echo
