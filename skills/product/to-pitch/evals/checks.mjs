@@ -419,12 +419,28 @@ export const assertions = [
   // 04 — the refusal has to name *why*. "I can't help with that" would satisfy
   // "no artifact, no questions" while telling the founder nothing actionable,
   // and leaving them with one clear next action is the stated point of the gate.
+  //
+  // Two things broke the first version. It required the negation to sit in the
+  // same sentence as the word "vision" (`[^.!?]{0,140}`), which "I've read your
+  // vision. It isn't approved" cannot satisfy; and SKILL.md tells the skill to
+  // name `docs/product/vision.md`, which pushes the negation further from the
+  // noun still ("Your vision at docs/product/vision.md hasn't been approved
+  // yet"). So the first alternative crosses full stops and accepts "it" as the
+  // subject.
+  //
+  // It must still reject the *other* refusal case — no vision artifact at all —
+  // because that is a different message for a different fixture, and 04's
+  // fixture is a vision that exists and is unapproved. "There's no vision here"
+  // and "I couldn't find a vision to work from" name no approval and match
+  // nothing below. `approved_by` is spelled out because a `\bapproved\b` word
+  // boundary does not survive the underscore, and naming the marker is exactly
+  // what SKILL.md asks for.
   {
     when: "refusalNamesMissingApproval",
     checkId: "scenario/refusal-names-missing-approval",
     source: "transcript",
     speaker: "agent",
-    must: /(vision[^.!?]{0,140}(?:isn'?t|is not|hasn'?t been|has not been|not(?: yet)?) approved|(?:no|missing|absent|without)[^.!?]{0,60}approval marker|approve the vision (?:first|before)|unapproved vision|vision[^.!?]{0,80}(?:needs|has) to be approved)/i,
+    must: /(?:vision|it)[^!?]{0,160}?(?:isn'?t|is not|hasn'?t been|has not been|was never|never been|not(?: yet)?)\s+(?:approved|signed off)|\b(?:no|missing|absent|without|lacks?)\b[^.!?]{0,60}(?:\bapprov(?:al|ed)\b|approved_(?:by|at))|\bapprove the vision\b|\bunapproved vision\b|\bvision\b[^.!?]{0,80}(?:needs|has) to be approved\b/i,
     label: "a refusal naming the vision's missing approval",
   },
 ];
