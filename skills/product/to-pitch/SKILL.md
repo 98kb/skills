@@ -178,8 +178,8 @@ Write `docs/product/pitches/<slug>/pitch.md`, using the slug the founder confirm
 upstream: ../../vision.md
 approved_by: <founder's name or identifier, as given in this session>
 approved_at: <ISO 8601 timestamp, at the moment of approval>
-revised_at: <ISO 8601 timestamp, at the moment of the most recent revision>
-revision_reason: <one-line reason for the most recent revision, in the founder's words>
+revised_at: <ISO 8601 timestamp of the most recent revision — key omitted entirely if never revised>
+revision_reason: <one-line reason for that revision, in the founder's words — key omitted entirely if never revised>
 ---
 
 # Pitch: <short title, in the founder's own words>

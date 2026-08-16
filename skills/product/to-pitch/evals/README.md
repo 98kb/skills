@@ -175,6 +175,16 @@ followed by a *continuing* session (03a, 03b); no cross-bet sequencing content
 the four assumption sub-fields on every recorded item; and no `to-roadmap` field
 vocabulary anywhere.
 
+One of those layers is deliberately looser than #69's wording. The ticket asks
+02b's transcript to show "**exactly** the capped attempts plus 2 replacement
+rounds". The candidate count *is* exact — three openings of the assumptions
+field, asserted as an equality. The attempts *within* each candidate are checked
+as a ceiling instead: the chain's budget is "at most 2 attempts", and a candidate
+that fails outright on its first pass can legitimately be refused without the
+second being spent. Asserting an exact ask count there would fail the skill for
+behaving correctly, which is the false-failure class this suite already exists to
+avoid.
+
 These are string- and structure-level tests over prose, which is the honest
 ceiling for "mechanical" on a conversational skill. The *algorithms* are shared —
 the disclosure-window scan, the structural attempt count, the candidate-round

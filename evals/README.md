@@ -215,3 +215,20 @@ done
 Copy first — `check.mjs` writes `deterministic.json` into the run directory it
 is pointed at, and the committed evidence is not something to overwrite. If a
 verdict changes, that is the finding; do not edit the transcript to match.
+
+Compare **verdicts**, not bytes. Three `detail` strings in `02a` (×2) and `02b`
+(×1) already differ from their committed form — `"pressed 3× (cap 2, tolerated
+2–3)"` against `"pressed 3× (want exactly 3 — base + 2 follow-ups)"`. That drift
+predates the extraction: #56 re-worded the message after those transcripts were
+recorded, and the same three lines differ when the pre-extraction checker on
+`main` is run against them. So a bare `diff` reports three hunks on a clean
+tree. What must hold is every check's id and pass/fail, the counts, and the
+disclosed-flag set.
+
+**This re-grade is a substitute for a live re-run, and a weaker bar.** #60 asked
+for `to-vision`'s suite to be re-run against the extracted harness; re-grading
+recorded transcripts was done instead, because a live run is real money and the
+maintainer's spend to authorise. It proves the *checker* is unchanged against
+real recorded conversations. It cannot prove the *driver* — workspace
+construction, the turn loop, transcript capture — still behaves, because none of
+that executes. A live `run-all.sh` remains the only thing that closes that gap.

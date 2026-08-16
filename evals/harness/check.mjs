@@ -381,6 +381,18 @@ function flagMentions(text, field) {
     });
 }
 
+// Everything about flags and approval keys off recognising the approval request
+// in the transcript, so a suite that never declares `flags.approvalRequest`
+// would silently register no flag checks at all and hand judge.mjs an empty
+// `disclosedFlags` — disabling the excusal rule and `assertZeroFlags` without a
+// single failure to show for it. Say so loudly instead of passing quietly.
+if (!APPROVAL_REQUEST) {
+  console.warn(
+    "warning: checks.mjs declares no flags.approvalRequest — the flag," +
+      " disclosure and approval checks are all skipped for this suite.",
+  );
+}
+
 if (APPROVAL_REQUEST) {
   const expectedFlags = expected.flaggedFields ?? [];
   const approvalIdx = transcript.findIndex(
@@ -409,10 +421,20 @@ if (APPROVAL_REQUEST) {
     );
   }
 
+  // Turns that count as "before approval was requested". When no approval was
+  // ever requested this is deliberately *empty* rather than the whole
+  // transcript: #69's rule is that a criterion is excused only when its field
+  // was disclosed **before** the approval request, so with no such request
+  // there is no window and nothing can be excused. Falling back to the whole
+  // transcript would let a weakness named after the fact — or in a session that
+  // never offered approval at all — silently excuse a failing rubric criterion.
+  const disclosureWindow =
+    approvalIdx === -1 ? [] : transcript.slice(0, approvalIdx + 1);
+
   for (const field of expectedFlags) {
-    const disclosedBefore = transcript
-      .slice(0, approvalIdx === -1 ? transcript.length : approvalIdx + 1)
-      .some((t) => t.speaker === "agent" && flagMentions(t.text, field));
+    const disclosedBefore = disclosureWindow.some(
+      (t) => t.speaker === "agent" && flagMentions(t.text, field),
+    );
     check(
       `scenario/flag-disclosed:${field}`,
       "scenario",
@@ -428,9 +450,7 @@ if (APPROVAL_REQUEST) {
   // only when its field was flagged here — approving with disclosed flags is a
   // legitimate outcome (#17), approving with an undisclosed weakness is not.
   disclosedFlags = STORED_FIELD_ORDER.filter((f) =>
-    transcript
-      .slice(0, approvalIdx === -1 ? transcript.length : approvalIdx + 1)
-      .some((t) => t.speaker === "agent" && flagMentions(t.text, f)),
+    disclosureWindow.some((t) => t.speaker === "agent" && flagMentions(t.text, f)),
   );
 
   // Only the cooperative/sharp scenario asserts zero flags — #19 specifies that
