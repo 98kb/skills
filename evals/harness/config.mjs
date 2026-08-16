@@ -30,15 +30,18 @@
 //     "allowedFrontmatter": ["approved_by", "approved_at", ...]
 //   },
 //   "workspace": {
-//     "seed": [ { "from": "fixtures/vision-approved.md",
+//     "seed": [ { "from": "evals/fixtures/vision-approved.md",
 //                 "to":   "docs/product/vision.md" } ]
 //                                             upstream artifacts the SUT must
 //                                             find already present. `from` is
-//                                             relative to the evals dir, `to` to
+//                                             relative to the repo root, `to` to
 //                                             the workspace. Seeded paths are
 //                                             exempt from stray-write detection
 //                                             — they were there before the
-//                                             session started.
+//                                             session started. This is the
+//                                             skill's *default*; a scenario's
+//                                             expect.json can override it per
+//                                             destination. See seeds.mjs.
 //   },
 //   "sut":      { "allowedTools": ["Read", "Write", "Edit", "Glob", "Grep"] },
 //   "founder":  { "finishedWhen": "..." },    the one skill-specific clause of
