@@ -79,35 +79,102 @@ export const flags = {
 // keyword tally would read them as three unrelated topics and count none of
 // them.
 //
-// Each pattern is anchored on wording SKILL.md actually uses, with one or two
-// alternates for the phrasing latitude the skill is explicitly given ("adapted
-// at runtime", "not a script read aloud").
+// LESSON — a field *name* is not a field *question*. These patterns locate the
+// window every attempt count is measured inside, so a pattern that also matches
+// a passing mention silently shifts the window and every count built on it. An
+// earlier draft used bare `/\brabbit holes?\b/`, `/\bno-?gos?\b/` and
+// `/\bopen questions?\b/`; graded against the recorded 01 run those matched
+// turns [7,10], [8,10] and [4,6,9,10] respectively — the assembled draft's own
+// `##` headings, and two turns where the skill merely *parked* something for
+// Open Questions. Same list drives `forbidInterviewQuestions` (04), where a
+// refusal that helpfully lists what a pitch session would have covered has to
+// stay clean. So every field-name alternative below is interrogative: the noun
+// close after a question word, and a question mark close after the noun. The
+// phrase alternatives ("eat unplanned time", "still unresolved") carry the
+// verbatim case and need no such guard.
+//
+// Each pattern is anchored on wording SKILL.md actually uses, plus alternates
+// for the phrasing latitude the skill is explicitly given. Graded against the
+// recorded 01 transcript each of these matches exactly one agent turn, except
+// Riskiest Assumptions, which correctly matches two — see below.
 export const baseQuestions = [
   [
     "Problem",
-    /\bspecific pain\b|\bwhat(?:'s| is) the pain\b|\bpain\b[^.?!]{0,80}(?:in (?:their|her|his) (?:own )?words|this (?:particular )?bet goes after)/i,
+    /\bspecific pain\b|\bwhat(?:'s| is) the pain\b|\bpain\b[^.?!]{0,80}(?:in (?:their|her|his|your) (?:own )?words|this (?:particular )?bet goes after)|\bwhat (?:problem|pain)\b[^.?!]{0,100}\b(?:solv\w+|goes after|this bet|in (?:their|her|his|your) (?:own )?words)\b[^.?!]{0,60}\?/i,
   ],
+  // The two-tier offer is the signature, not the word "appetite" — which the
+  // skill legitimately repeats when it frames the Solution sketch ("At a small
+  // appetite — two weeks — what are you actually building?"). So the tier
+  // alternatives require *both* tiers, or the tier word next to its bound.
   [
     "Appetite",
-    /\bwilling to spend\b|\bstop and reassess\b|\btwo weeks\b[^.?!]{0,80}\bsix\b/i,
+    /\bwilling to spend\b|\bstop and reassess\b|\bwhich tier\b|\btwo[- ]weeks?\b[^.?!]{0,80}\bsix\b[^.?!]{0,60}\?|\b(?:small|big)\b[^.?!]{0,40}\b(?:two[- ]weeks?|six weeks?)\b[^.?!]{0,60}\b(?:big|small)\b/i,
   ],
   [
     "Solution sketch",
-    /\bwhat are you actually building\b|\bwhat you'?re actually building\b|\bat a (?:small|big) appetite\b/i,
+    /\b(?:what|which)\b[^.?!]{0,40}\b(?:are you|you'?re|you'?d be|do you)\b[^.?!]{0,20}\bbuild(?:ing)?\b|\bat a (?:small|big) appetite\b/i,
   ],
   // Deliberately just the "sink" phrasing. SKILL.md opens this field with "the
   // one thing that, if it turned out to be false, would sink this?" and asks
   // for each replacement candidate with "what else, then, would sink this if it
   // turned out to be false?" — so one match is one candidate, which is exactly
-  // what candidateRounds counts. "turned out to be false" is *not* included:
-  // the skill can legitimately use that phrase while challenging a candidate
-  // mid-chain, and counting that as a new candidate would inflate the round
-  // count on the one scenario whose whole point is the round count.
-  ["Riskiest Assumptions & Cheap Validation Plan", /\bsink (?:this|it|the (?:idea|bet|whole thing))\b/i],
-  ["Rabbit Holes", /\beat unplanned time\b|\bunplanned time or complexity\b|\brabbit holes?\b/i],
-  ["No-gos", /\bexplicitly not part of this\b|\bassume is included\b|\bno-?gos?\b/i],
-  ["Open Questions", /\bstill unresolved\b|\broadmap stage\b|\bopen questions?\b/i],
+  // what candidateRounds counts. Against the recorded 01 run this matches agent
+  // turns [4,6], and both are wanted: turn 6 is the replacement re-ask.
+  //
+  // What must NOT match is the chain's three follow-up steps. Two of them are
+  // safe by vocabulary — quantification and cheap-test share no words with
+  // this. The can't-fail screen is the dangerous one, because it re-uses the
+  // founder's own phrase: "what would you see only if the thing you say would
+  // sink this really did?" scored a spurious 4th opening on 02b, whose entire
+  // point is that the count is exactly 3. Two things separate a solicitation
+  // from that: a solicitation asks *for* something ("what's the one thing…",
+  // "what else…", "anything else…") and ends in a question mark shortly after
+  // "would sink"; a chain follow-up refers back to what the founder already
+  // said. Hence the interrogative lead, the trailing `?`, and the tempered
+  // window that refuses to cross "you say / you said / you see / you named".
+  // "the whole bet" is in the target list because "sink the whole bet" is an
+  // ordinary way to say it.
+  [
+    "Riskiest Assumptions & Cheap Validation Plan",
+    /\b(?:what|which|anything|something|is there|tell me|name)\b(?:(?!\byou(?:'?d| would| will| can)? (?:say|said|see|saw|named|gave|mention|mentioned|call|called|think)\b|\bthe thing you\b)[^.?!]){0,90}\bwould sink\s+(?:this|it|that|the\s+(?:idea|bet|thing|whole\s+(?:thing|bet|idea)))\b[^.?!]{0,80}\?/i,
+  ],
+  [
+    "Rabbit Holes",
+    /\beat unplanned time\b|\bunplanned time or complexity\b|\b(?:what|which|any|anything|where)\b[^.?!]{0,40}\brabbit holes?\b[^.?!]{0,60}\?/i,
+  ],
+  [
+    "No-gos",
+    /\bexplicitly not part of this\b|\bassume is included\b|\b(?:explicitly|deliberately) (?:not part of|out of scope|excluded)\b|\bassum\w+\b[^.?!]{0,40}\b(?:is included|in scope|part of this)\b|\b(?:what|which|any|anything)\b[^.?!]{0,40}\bno-?gos?\b[^.?!]{0,60}\?/i,
+  ],
+  [
+    "Open Questions",
+    /\bstill unresolved\b|\bstill (?:open|outstanding)\b[^.?!]{0,60}\?|\broadmap stage\b[^.?!]{0,60}\?|\b(?:what|which|any|anything)\b[^.?!]{0,40}\bopen questions?\b[^.?!]{0,60}\?/i,
+  ],
 ];
+
+// The `/domain-modeling` "sharpen fuzzy language" move, which SKILL.md fires
+// *independently* of every escalation path — "it's independent of, and can fire
+// alongside or apart from, any other sharpness handling elsewhere in this
+// document". `attemptsOn()` counts every `?`-bearing turn inside a field
+// window, so without this a mandated sharpening reads as an escalation:
+// confirmed live in the 01 run, where the Solution sketch scored 2 asks off a
+// first-try-clean answer because "the file arrives at onboarding" is SKILL.md's
+// own worked example of an overloaded term.
+//
+// The move's characteristic form is a *term* being named and precise
+// alternatives being proposed — "You said 'the practice' — do you mean the
+// clinic as an organization, or the person running it?" Matching only the
+// disambiguation half would swallow ordinary re-asks that happen to offer a
+// choice (Appetite's "small, or big?"), so both halves are required: a
+// reference to the founder's own wording (you said / that word / one word / the
+// term) *and* an offer of alternatives. `[^!?]` rather than `[^.?!]` because
+// the quoted term routinely ends in a full stop before the question begins:
+// `you said the file arrives "at onboarding." Do you mean…`.
+//
+// The harness treats this pattern's absence as "exclude nothing", so a miss
+// costs an inflated attempt count, not a wrong verdict.
+export const sharpeningQuestion =
+  /\b(?:you\s+(?:said|used|called it|mentioned|wrote)|one word|a word|the word|that\s+(?:word|term|phrase)|your\s+(?:word|term|phrase))\b(?:[^!?]){0,220}?\b(?:do you mean|did you mean|which (?:of (?:those|these)|sense|one)|means?\s+(?:two|more than one)\s+things?)\b|\b(?:what|which) do you mean by\b|\b(?:could|might|can) mean\b[^!?]{0,140}?\bor\b[^!?]{0,80}\?/i;
 
 // LESSON — match the persona's *imperative*, not its topic. A loose topic match
 // once picked the wrong turn entirely in to-vision's suite and graded the reply
