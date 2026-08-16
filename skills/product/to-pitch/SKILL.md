@@ -31,7 +31,7 @@ The Problem question below is asked *against* those two. The founder committed t
 
 Last, settle whether this run is a **new pitch** or a **re-entry** into one that already exists. `docs/product/pitches/` may already hold several, and that's the intended shape rather than a conflict to resolve: one vision fanning out into several concurrent bets is what this skill is for. Pitches are never merged with, compared against, or sequenced relative to each other. A fresh run therefore defaults to a new pitch in a new slug directory (see Naming the pitch), however many are already recorded.
 
-Re-entry is when the founder is pointing at a pitch that already exists — they say which one, or the slug they confirm names a directory already on disk. Take that as intent to continue that pitch, not as a naming clash: an existing slug is a re-entry, not a collision, so don't suffix it to make it unique and don't refuse it.
+Re-entry is when the founder is pointing at a pitch that already exists — normally by saying which one here, at the start, which is what lets the interview below be conducted as a continuation rather than asked cold. It can also surface later, at Naming the pitch, when the slug derived from what the founder just described turns out to name a directory already on disk. Either way, take it as intent to continue that pitch, not as a naming clash: an existing slug is a re-entry, not a collision, so don't suffix it to make it unique and don't refuse it. Surfacing late costs nothing much — read the recorded pitch, reconcile it against what the founder has just told you, confirm each difference with them as an edit, and pick up the branch below from there.
 
 On re-entry, read `docs/product/pitches/<slug>/pitch.md`, tell the founder a pitch is already recorded there, and show them its current fields. Continue with the interview below, using the existing content as the starting point for each field's answer (read it back to the founder and let them confirm or revise it, rather than asking cold). Check the frontmatter for `approved_by`/`approved_at` first, since that changes what an edit here means, then follow whichever of these two applies:
 
@@ -76,7 +76,7 @@ The **swap-test** — "would this be equally true of a competitor's customer?" �
 6. **No-gos** (single offer, no chase) — "What's explicitly not part of this, that someone might reasonably assume is included?" A bullet list of the boundary drawn *around* the approach. This is a different question from Rabbit Holes, not a rephrasing of it — one is what could go wrong inside the lines, the other is where the lines are. Ask them as two separate questions, one after the other, and **never collapse them into one** "anything risky or out of scope?" — that question gets answered once, on whichever side of the line the founder happened to be thinking about, and the other side goes unnamed.
 7. **Open Questions** (single offer, no chase) — "What's still unresolved that the roadmap stage will need to answer?" A bullet list of at most five, so what lands downstream is a short list rather than a parking lot.
 
-No escalation applies to those last three. Each is one offer: a founder with nothing to say has the field skipped immediately and is not asked again. Nothing to name is a finished answer, not a gap to chase.
+Each of those last three is one offer: a founder with nothing to say has the field skipped immediately and is not asked again. Nothing to name is a finished answer, not a gap to chase.
 
 ### The falsifiability chain
 
@@ -157,7 +157,7 @@ This is a coherence check over the whole assembled draft, not a replay of the pe
 
 Show the founder the full assembled draft, then disclose every flagged field in plain language — naming the field and what's weak about it ("the Appetite is recorded as small, but you never confirmed that tier") — **before** asking for approval. Approving a pitch with disclosed flags is a legitimate, non-blocking outcome; don't withhold or delay the approval request because flags exist, and don't reopen a capped field to try to clear one.
 
-**Passing this gate-check is what makes the draft offered for approval.** There's no second check at approval time: the Approval section below assumes this one has already run, and the only thing that stops a session reaching it is the falsifiability chain's gate failure, which ends the session before a draft is ever assembled.
+**Passing this gate-check is what makes the draft offered for approval.** There's no second check at approval time: the Approval section below assumes this one has already run. Only two things stop a session ever reaching this point, and both act earlier — the upstream vision gate, which refuses before the first question is asked, and the falsifiability chain's gate failure, which ends the session before a draft is ever assembled. Neither is a check applied to a finished draft, which is why nothing further is checked once this one passes.
 
 ## Approval
 
