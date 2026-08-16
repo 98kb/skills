@@ -11,9 +11,16 @@ Run an adaptive interview that turns one bet a founder wants to make into a seve
 
 ## Before starting
 
-Read the upstream vision at `docs/product/vision.md` — a repo holds exactly one — **before asking the first interview question**.
+**A pitch is never shaped on an ungated vision.** Before asking the first interview question, check `docs/product/vision.md` — a repo holds exactly one — for its `approved_by`/`approved_at` approval marker. The same single read described below serves both the check and the interview, so this costs no extra visit to the file. Two cases refuse the session outright:
 
-Read it **once**. Everything the interview needs from the vision is in hand after that single read, so don't re-open it partway through: the session gets one stable upstream reference, and the founder's answers are never quietly re-litigated against a file that shifted underneath them.
+- **The approval marker is absent** — either the vision was never approved, or its marker was cleared by an in-place revision. These are one case, not two: `to-vision` clears `approved_by`/`approved_at` in the same write that lands a revision, so a vision mid-edit reads exactly like one never approved, and gets exactly the same refusal. That equivalence is the point. An in-flight vision edit must not leak into a pitch: the pitch would end up pointing one hop back at a customer, or a thesis, that the founder is in the middle of changing, and nothing downstream would show that the ground had moved.
+- **There is no vision artifact at all** — tell the founder to run `/to-vision` first, and stop. Never author, infer, or stub a vision to get past this check. A vision the founder didn't write and approve isn't a foundation, and inventing one would hide the exact gap this check exists to surface.
+
+In both cases, refuse to start and name the reason plainly — the vision's missing approval, or the missing vision itself. No interview question is asked, no draft is assembled, no slug is proposed, and nothing is written under `docs/product/pitches/`. **Nothing happening is the correct and complete outcome here** — not an error to work around or recover from. The founder is left with one clear next action (approve the vision, or write one), which is more useful than a pitch built on a foundation that wasn't ready to carry it.
+
+The check runs **here, at session start** — before the first interview question, not at approval time. And it runs only here: don't ask the founder to re-affirm the vision when they approve the pitch. Whether the vision still holds is the vision's own approval-and-revision lifecycle to settle, and this session-start check is the only vision-related gate `to-pitch` carries.
+
+Once the vision passes, read it **once**. Everything the interview needs from the vision is in hand after that single read, so don't re-open it partway through: the session gets one stable upstream reference, and the founder's answers are never quietly re-litigated against a file that shifted underneath them.
 
 Carry two things forward from that read:
 
