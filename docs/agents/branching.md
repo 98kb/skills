@@ -74,3 +74,4 @@ git branch -d trunk/<slug>
 
 - The `EnterWorktree` / `ExitWorktree` tools do steps 1 and 4 when available; the commands above are the fallback and the source of truth for naming.
 - Pushing and PR creation are outward-facing — ask before doing either unless already told to proceed.
+- The granularity rule above was recorded from #59's ten-ticket decomposition, before any converging ticket set had been worked end to end. Revisit it once one has.
