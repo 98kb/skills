@@ -7,6 +7,10 @@ a lockfile, updated deliberately rather than auto-pulled.
 
 - **`skills/engineering/`** — hand-authored engineering skills, written and
   maintained in this repo. Edit these directly.
+- **`skills/product/`** — hand-authored product-planning skills (the
+  vision → pitch → roadmap → milestone pipeline). Also edited directly.
+  `to-vision` carries its own eval suite under `evals/` — see its README for
+  how to run it and what "eval-complete" requires.
 - **`.claude/skills/`** — vendored skills installed from
   [mattpocock/skills](https://github.com/mattpocock/skills) via the
   [`skills`](https://github.com/vercel-labs/skills) CLI. **Never edit these by

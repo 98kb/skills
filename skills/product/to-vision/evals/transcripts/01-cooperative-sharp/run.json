@@ -1,0 +1,7 @@
+{
+  "scenario": "01-cooperative-sharp",
+  "model": "opus",
+  "turns": 11,
+  "endedBecause": "founder-sentinel",
+  "artifact": "written"
+}

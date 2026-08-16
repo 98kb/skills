@@ -1,0 +1,72 @@
+{
+  "scenario": "02b-evasive-hard-blocked",
+  "passed": true,
+  "counts": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "disclosedFlags": [],
+  "results": [
+    {
+      "id": "floor/approval-marker",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected approval marker absent, found absent"
+    },
+    {
+      "id": "floor/artifact-written",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected artifact not-written, found none"
+    },
+    {
+      "id": "floor/no-skill-invocations",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no Skill tool calls"
+    },
+    {
+      "id": "floor/no-subagents",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no subagents"
+    },
+    {
+      "id": "floor/no-research-tools",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no research tools used"
+    },
+    {
+      "id": "floor/never-touches-context-md",
+      "layer": "floor",
+      "pass": true,
+      "detail": "CONTEXT.md untouched"
+    },
+    {
+      "id": "floor/no-stray-artifacts",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no stray files written"
+    },
+    {
+      "id": "scenario/approval-never-offered",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "approval was never offered, as required"
+    },
+    {
+      "id": "scenario/escalation-cap:Grounding Insight",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "\"Grounding Insight\" pressed 3× (cap 2, tolerated 2–3)"
+    },
+    {
+      "id": "scenario/grounding-insight",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "expected Grounding Insight absent, found absent"
+    }
+  ]
+}

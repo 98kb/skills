@@ -1,0 +1,75 @@
+{
+  "scenario": "03b-boundary-self-serve-research",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [],
+  "failures": [],
+  "excusedFailures": [],
+  "unexcusedFailures": [],
+  "confidence": "medium",
+  "humanReviewRequired": false,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Names a specific customer and a specific future state, not a platitude",
+      "verdict": "pass",
+      "rationale": "Customer is named down to the individual and constraint set: \"Dr. Hana Lindqvist, who runs a six-person academic lab on a four-year grant and needs a benchtop centrifuge this quarter,\" with the $11k price consuming her whole equipment line. The future state is equally concrete — \"maintenance history is attached to its serial number and visible before she commits\" and she buys \"in an afternoon at a third of the price of new.\" Neither reads as an interchangeable platitude.",
+      "fields": [
+        "Customer & Problem",
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 2,
+      "name": "Commits to at least one grounding factor (insight, trend, or technology bet)",
+      "verdict": "pass",
+      "rationale": "It commits to a named insight — \"The reason used lab equipment doesn't sell is provenance, not price\" — and pairs it with a trend claim that \"service contracts on this class of instrument have gone almost entirely digital and manufacturer-held in the last few years.\" It then states the bet explicitly and names two conditions under which it is wrong, which is well below the \"make lives better\" altitude.",
+      "fields": [
+        "Grounding Insight"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Something a reader could point to and say \"this didn't happen\"",
+      "verdict": "pass",
+      "rationale": "The pivot trigger is measurable and time-bounded: \"If a few hundred provenance-verified units are listed and they don't sell measurably faster, or for measurably more, than the same models with no service history, the premise is wrong… runnable within a year.\" It specifies a control group (same models, no service history), so a reader could unambiguously observe the failure.",
+      "fields": [
+        "Vision Pivot Trigger"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Vision Statement swap-test",
+      "verdict": "pass",
+      "rationale": "\"Every used lab instrument carries a verifiable service history, so PIs buy refurbished by default\" binds to a specific mechanism (verifiable service history), a specific buyer (PIs), and a specific outcome (refurbished as default). An incumbent used-equipment marketplace competing on inventory or price could not swap its name in without contradicting its own model, since the statement asserts provenance rather than price is the unlock.",
+      "fields": [
+        "Vision Statement"
+      ],
+      "excused": false
+    },
+    {
+      "id": 5,
+      "name": "Future State swap-test",
+      "verdict": "pass",
+      "rationale": "The future state is mechanism-bound rather than aspirational: \"The unit's actual maintenance history is attached to its serial number and visible before she commits.\" A competitor without access to manufacturer-held digital service records cannot claim this scene, and the closing consequence — \"Equipment stops being scrapped at the end of every grant cycle\" — is downstream of that same specific mechanism.",
+      "fields": [
+        "Future State"
+      ],
+      "excused": false
+    },
+    {
+      "id": 6,
+      "name": "Why Us / Why Now extended swap-test",
+      "verdict": "pass",
+      "rationale": "The \"why us\" is non-transferable founder-specific evidence — \"Five years as a field service engineer for a major instrument manufacturer, having personally opened several thousand of these machines\" — and it converts that into a concrete edge: knowing \"which fields matter, which are theatre, and where records lie.\" The \"why now\" rests on the recent digital-service-record shift that \"nobody has built on top of it yet\"; the dating (\"in the last few years\") is the weakest phrasing in the artifact, but the combined claim still breaks under both swaps.",
+      "fields": [
+        "Why Us / Why Now"
+      ],
+      "excused": false
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "02b-evasive-hard-blocked",
+  "category": "evasive-vague",
+  "title": "Grounding Insight never surfaces — session ends, no approval offered",
+  "source": "#19 scenario 2b",
+  "outcome": "withheld",
+  "artifact": "not-written",
+  "approvalMarker": "absent",
+  "approverName": "Alex Poole",
+  "mandatoryFieldsPresent": false,
+  "flaggedFields": [],
+  "groundingInsight": "absent",
+  "cappedAttempts": {
+    "Grounding Insight": 2
+  },
+  "forbidApprovalRequest": true,
+  "declines": [],
+  "forbidPitchVocabulary": true,
+  "humanSpotCheckRequired": false
+}
