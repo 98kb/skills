@@ -17,10 +17,31 @@
 //                                             it is the only way into a session
 //   "artifact": {
 //     "path":            "docs/product/vision.md",   graded artifact, relative
-//                                                    to the SUT workspace
+//                                             to the SUT workspace. Read as a
+//                                             **glob**: `*` and `?` are
+//                                             wildcards and neither crosses a
+//                                             `/`. A path with no wildcard —
+//                                             every pipeline skill before
+//                                             to-pitch — matches exactly itself,
+//                                             so this is the same key it always
+//                                             was. to-pitch needs the wildcard
+//                                             because a pitch lands at
+//                                             `docs/product/pitches/*/pitch.md`
+//                                             under a slug the founder confirms
+//                                             at runtime, which no config can
+//                                             know in advance. Matching more
+//                                             than one file is a graded failure,
+//                                             not a choice — see artifact.mjs.
 //     "additionalPaths": [],                  other files the skill may
 //                                             legitimately write; anything else
-//                                             in the workspace is a stray write
+//                                             in the workspace is a stray write.
+//                                             Globbed the same way.
+//     "upstreamKey":      "upstream",         frontmatter key holding the
+//                                             one-hop pointer back to the
+//                                             artifact this session read. Only
+//                                             checked where a scenario declares
+//                                             `upstreamResolvesTo`; a root
+//                                             artifact like a vision has none.
 //     "storedFieldOrder": ["Vision Statement", ...],  the schema: which `##`
 //                                             sections may appear, in the order
 //                                             they must be stored in
@@ -97,6 +118,14 @@ export function loadConfig(arg) {
   }
 
   const artifact = config.artifact;
+  // Checked by hand rather than through REQUIRED, because REQUIRED only reaches
+  // top-level keys and a config with an `artifact` block but no `path` fails
+  // much later and much less legibly — as a stray-write check that exempts
+  // nothing and a driver that copies no artifact.
+  if (!artifact.path) {
+    console.error(`${configPath} is missing: artifact.path`);
+    process.exit(2);
+  }
   const storedFieldOrder = artifact.storedFieldOrder ?? [];
   const optionalFields = artifact.optionalFields ?? [];
 
@@ -111,6 +140,7 @@ export function loadConfig(arg) {
     artifact: {
       additionalPaths: [],
       allowedFrontmatter: [],
+      upstreamKey: "upstream",
       ...artifact,
       storedFieldOrder,
       optionalFields,

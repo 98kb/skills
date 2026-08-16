@@ -55,6 +55,54 @@ JSON. Anything structural — how a disclosure window is scanned, how attempts
 are counted, how a decline is graded — is shared and must not be copied into a
 skill's module.
 
+## Finding the artifact when the skill picks the path
+
+`artifact.path` is read as a **glob**, not a literal. `to-vision` writes to one
+fixed path and every artifact used to look like that; `to-pitch` is the first
+that doesn't. A pitch lives at `docs/product/pitches/<slug>/pitch.md` where the
+slug is derived at runtime from the founder's own Problem and Solution sketch,
+proposed by the skill and confirmed by them — so the harness cannot know it in
+advance, and shouldn't: one vision fanning out into several pitches is the point,
+and a fixed path would collapse them.
+
+```json
+"artifact": { "path": "docs/product/pitches/*/pitch.md" }
+```
+
+A path with no wildcard compiles to a pattern matching exactly itself, which is
+why `"docs/product/vision.md"` keeps behaving as it always did and no existing
+config needed touching. There is deliberately no second `pathGlob` key: one key
+answering one question is fewer things to keep in sync than two that must be
+mutually exclusive.
+
+Supported wildcards are `*` and `?`, and **neither crosses a `/`**. `**` is
+absent rather than half-implemented — the `a/**/b` must also match `a/b` rule is
+exactly the kind of thing that silently mis-matches once and is never noticed.
+`additionalPaths` and seeded destinations go through the same matcher, so a
+stray-write exemption can be a pattern too.
+
+**More than one match is a finding, not a choice.** A session that produced two
+pitches has broken the one-run-one-bet rule, and picking one to grade would hide
+it. So nothing chooses: `run-scenario.sh` records `artifact: "ambiguous"` in
+`run.json` and copies nothing, and `check.mjs` fails `floor/artifact-unique`,
+which is where a finding belongs because `check.mjs` is what produces the
+verdict. That check is registered only when the configured path actually
+contains a wildcard — with a literal path it could never fire, and an assertion
+that cannot fail is noise in a report rather than reassurance.
+
+The matching rule lives in one place, `harness/artifact.mjs`, which the bash
+driver reaches as a CLI and the checker as an import — the same arrangement as
+`seeds.mjs`, for the same reason. Resolving it in `find -path` on one side and JS
+on the other is how the driver's idea of where the artifact is drifts from the
+checker's stray-write exemption.
+
+A mid-pipeline artifact also carries a one-hop `upstream` pointer. Name the
+frontmatter key in `artifact.upstreamKey` (default `"upstream"`) and a scenario
+asserts where it must land with `"upstreamResolvesTo": "docs/product/vision.md"`;
+the checker resolves the stored relative path from the artifact's own directory.
+A root artifact like a vision has nothing above it, omits the assertion, and the
+check does not run.
+
 ## Seeding the workspace with upstream artifacts
 
 `to-vision` is the pipeline root and starts from an empty workspace. Every skill
@@ -128,6 +176,7 @@ $H/promote.sh         $E --all                # scratch run → committed eviden
 
 $H/run-scenario.sh    $E 01-cooperative-sharp --seed-only
 node $H/seeds.mjs     $E 01-cooperative-sharp
+node $H/artifact.mjs  $E /path/to/a/workspace  # which files are the artifact
 ```
 
 `--seed-only` builds the SUT workspace — the skill plus this scenario's seeded
@@ -135,7 +184,8 @@ fixtures — prints where it is, and stops before the first model call, leaving 
 workspace behind instead of cleaning it up. It touches no run directory. That is
 how you inspect what a session would have started from without paying for a
 session; `seeds.mjs` on its own answers the narrower question of which fixtures
-a scenario resolved to.
+a scenario resolved to, and `artifact.mjs` the question of which file in a
+workspace the grader would treat as the artifact.
 
 Requires `claude`, `node` (≥18) and `jq`. Knobs: `EVAL_MODEL` (default `opus`),
 `EVAL_JUDGE_MODEL`, `EVAL_MAX_TURNS` (40), `EVAL_MAX_BUDGET_USD` (10),
