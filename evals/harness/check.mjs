@@ -26,6 +26,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadChecks, loadConfig, requireArgs, runDirFor } from "./config.mjs";
+import { seedsFor } from "./seeds.mjs";
 
 const [, , configArg, scenario] = process.argv;
 requireArgs("check.mjs", configArg, scenario);
@@ -224,12 +225,14 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
   // The sharpening's only output is better field prose — no glossary artifact,
   // no roadmap, no stray CONTEXT.md. Seeded upstream fixtures are exempt: they
   // were in the workspace before the session started, so their presence is not
-  // evidence the SUT wrote anything.
+  // evidence the SUT wrote anything. The exemption set is resolved the same way
+  // run-scenario.sh resolved what to copy — config default merged with this
+  // scenario's override — so seeding a fixture can never read as a stray write.
   const allowedFiles = new Set(
     [
       config.artifact.path,
       ...config.artifact.additionalPaths,
-      ...config.workspace.seed.map((s) => s.to),
+      ...seedsFor(config, scenario).map((s) => s.to),
     ].map((p) => (p.startsWith("./") ? p : `./${p}`)),
   );
   const strayFiles = workspaceFiles.filter((f) => !allowedFiles.has(f));

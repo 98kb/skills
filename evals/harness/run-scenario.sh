@@ -3,6 +3,7 @@
 # Run one eval scenario end to end, for any skill wired to this harness.
 #
 #   ./run-scenario.sh <evals-dir|eval.config.json> <scenario-id>
+#   ./run-scenario.sh <evals-dir|eval.config.json> <scenario-id> --seed-only
 #
 # Drives two separate Claude Code sessions against each other:
 #
@@ -21,14 +22,30 @@
 #   run.json         run metadata
 #   raw/             raw stream-json from each SUT turn
 #
+# --seed-only builds the SUT workspace — the skill plus this scenario's seeded
+# upstream fixtures — prints where it is, and stops before the first model call.
+# It leaves the workspace behind instead of cleaning it up, which is the only way
+# to inspect what a session would have started from without paying for a session.
+#
 set -euo pipefail
 
-CONFIG_ARG="${1:-}"
-SCENARIO="${2:-}"
+SEED_ONLY=0
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --seed-only) SEED_ONLY=1 ;;
+    *) POSITIONAL+=("$1") ;;
+  esac
+  shift
+done
+CONFIG_ARG="${POSITIONAL[0]-}"
+SCENARIO="${POSITIONAL[1]-}"
 if [[ -z "$CONFIG_ARG" || -z "$SCENARIO" ]]; then
-  echo "usage: run-scenario.sh <evals-dir|eval.config.json> <scenario-id>" >&2
+  echo "usage: run-scenario.sh <evals-dir|eval.config.json> <scenario-id> [--seed-only]" >&2
   exit 2
 fi
+
+HARNESS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [[ -d "$CONFIG_ARG" ]]; then
   EVALS_DIR="$(cd "$CONFIG_ARG" && pwd)"
@@ -63,9 +80,6 @@ MAX_TURNS="${EVAL_MAX_TURNS:-40}"
 BUDGET="${EVAL_MAX_BUDGET_USD:-10}"
 OUT_DIR="${EVAL_OUT_DIR:-$EVALS_DIR/runs/$SCENARIO}"
 
-rm -rf "$OUT_DIR"
-mkdir -p "$OUT_DIR/raw"
-
 # Throwaway workspace for the SUT. Deliberately outside this repo so the SUT
 # inherits none of its CLAUDE.md, settings, or vendored skills — the only skill
 # it can see is the one under test.
@@ -79,15 +93,30 @@ cp "$SKILL_DIR/SKILL.md" "$WORKSPACE/.claude/skills/$SKILL/SKILL.md"
 
 # Seed the workspace with whatever the skill needs to already exist — for a
 # mid-pipeline skill, the approved upstream artifact it reads before it will
-# start. `from` is relative to the evals dir so fixtures live with the suite.
-# Per-scenario seed selection (an approved vision for most scenarios, an
-# unapproved one for the refusal scenario) hooks in here.
+# start (#61). Which fixtures those are for *this* scenario is seeds.mjs's
+# answer: the skill's config-level default, overridden per destination by
+# anything the scenario's expect.json declares. The merge rule lives there and
+# not here, so the checker's stray-write exemption and this loop can never
+# disagree about what was seeded.
+SEEDS="$(node "$HARNESS_DIR/seeds.mjs" "$CONFIG" "$SCENARIO")"
 while IFS=$'\t' read -r seed_from seed_to; do
   [[ -z "$seed_from" ]] && continue
   mkdir -p "$WORKSPACE/$(dirname "$seed_to")"
-  cp "$EVALS_DIR/$seed_from" "$WORKSPACE/$seed_to"
-  echo "seeded     : $seed_to"
-done < <(jq -r '(.workspace.seed // [])[] | "\(.from)\t\(.to)"' "$CONFIG")
+  cp "$seed_from" "$WORKSPACE/$seed_to"
+  echo "seeded     : $seed_to ← $seed_from"
+done <<<"$SEEDS"
+
+if [[ "$SEED_ONLY" -eq 1 ]]; then
+  rm -rf "$FOUNDER_CWD"
+  trap - EXIT
+  echo "skill      : $SKILL"
+  echo "scenario   : $SCENARIO"
+  echo "workspace  : $WORKSPACE (kept — --seed-only, no session run)"
+  exit 0
+fi
+
+rm -rf "$OUT_DIR"
+mkdir -p "$OUT_DIR/raw"
 
 SUT_SID="$(node -e 'console.log(crypto.randomUUID())')"
 FOUNDER_SID="$(node -e 'console.log(crypto.randomUUID())')"

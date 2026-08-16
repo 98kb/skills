@@ -2,8 +2,10 @@
 
 One driver, graded per skill. `harness/` holds the session driver, the
 deterministic checker, the LLM-judge runner, the summarizer, and the
-`run-all`/`promote` wrappers; each skill keeps only its own scenarios, rubric,
-config, and pattern block under `skills/<area>/<skill>/evals/`.
+`run-all`/`promote` wrappers; `fixtures/` holds the upstream artifacts a
+mid-pipeline skill's session starts from. Each skill keeps only its own
+scenarios, rubric, config, and pattern block under
+`skills/<area>/<skill>/evals/`.
 
 Extracted from `to-vision`'s suite in #60. It lives at the repo root rather than
 under `skills/product/` because it is not `product`'s to own — nothing in it
@@ -29,7 +31,7 @@ short version:
     "optionalFields": ["Additional Grounding"],
     "allowedFrontmatter": ["approved_by", "approved_at", "..."]
   },
-  "workspace": { "seed": [{ "from": "fixtures/vision.md", "to": "docs/product/vision.md" }] },
+  "workspace": { "seed": [{ "from": "evals/fixtures/vision-approved.md", "to": "docs/product/vision.md" }] },
   "sut": { "allowedTools": ["Read", "Write", "Edit", "Glob", "Grep"] },
   "founder": { "finishedWhen": "it has told you the vision is written or recorded, ..." },
   "checksModule": "checks.mjs",
@@ -53,6 +55,62 @@ JSON. Anything structural — how a disclosure window is scanned, how attempts
 are counted, how a decline is graded — is shared and must not be copied into a
 skill's module.
 
+## Seeding the workspace with upstream artifacts
+
+`to-vision` is the pipeline root and starts from an empty workspace. Every skill
+after it opens its session by reading the artifact upstream of it, so its
+scenarios need that artifact already on disk before the first turn (#61).
+
+**Where a seed is declared — two levels that compose.** `eval.config.json`'s
+`workspace.seed` is the skill's default: what most of its scenarios need in
+place. A scenario departs from that default in its own `expect.json`, using the
+same shape:
+
+```json
+{
+  "id": "04-upstream-gate-refusal",
+  "workspace": {
+    "seed": [{ "from": "evals/fixtures/vision-unapproved.md", "to": "docs/product/vision.md" }]
+  }
+}
+```
+
+The two lists are merged **by destination, and the scenario wins**. So the
+refusal scenario above names the same `to` as the config default and swaps the
+fixture under it; every other scenario inherits the approved vision by saying
+nothing, and a scenario that declares no seed at all behaves exactly as it did
+before any of this existed.
+
+There is deliberately no syntax for *removing* a config-level seed. A suite that
+needs some scenarios to start empty should leave the config default out and
+declare the seed per scenario.
+
+**Where fixtures live.** `from` resolves against the **repo root**, not the
+skill's evals directory, so shared pipeline material can be named directly:
+`evals/fixtures/vision-approved.md` and `evals/fixtures/vision-unapproved.md`.
+An upstream artifact belongs to neither end of the hop — the vision `to-pitch`,
+`to-roadmap` and `to-milestone` all interview against is one file, not three
+divergent copies written by whoever needed one first. The two variants differ in
+exactly one thing, the `approved_by`/`approved_at` frontmatter pair, because
+that is the only thing an upstream-gate scenario discriminates on; any other
+difference would confound it. Both are Dana Okafor's PT-clinic vision, taken
+verbatim from `to-vision`'s recorded `01-cooperative-sharp` artifact, so the
+fixture and that founder's persona agree.
+
+A fixture that genuinely is one skill's own is still nameable — just spell it in
+full: `skills/product/<skill>/evals/fixtures/...`.
+
+**Seeded files are not stray writes.** They land in `workspace-files.txt` like
+anything else, and `check.mjs` exempts exactly the destinations that were
+seeded, resolved by the same merge — so seeding a fixture never reads as the
+skill having written it, and a stray write beside a seeded fixture is still
+caught.
+
+The merge rule lives in one place, `harness/seeds.mjs`, which both the bash
+driver (as a CLI) and the checker (as an import) go through. It was tempting to
+let `run-scenario.sh` do it in `jq`; two copies of one rule is exactly how the
+driver's idea of what was seeded drifts from the checker's.
+
 ## Running
 
 Every entry point takes the skill's evals directory (or its `eval.config.json`)
@@ -67,7 +125,17 @@ node $H/check.mjs     $E 01-cooperative-sharp # deterministic half
 node $H/judge.mjs     $E 01-cooperative-sharp # LLM-judge half
 node $H/summarize.mjs $E transcripts          # roll up, exit 1 on any failure
 $H/promote.sh         $E --all                # scratch run → committed evidence
+
+$H/run-scenario.sh    $E 01-cooperative-sharp --seed-only
+node $H/seeds.mjs     $E 01-cooperative-sharp
 ```
+
+`--seed-only` builds the SUT workspace — the skill plus this scenario's seeded
+fixtures — prints where it is, and stops before the first model call, leaving the
+workspace behind instead of cleaning it up. It touches no run directory. That is
+how you inspect what a session would have started from without paying for a
+session; `seeds.mjs` on its own answers the narrower question of which fixtures
+a scenario resolved to.
 
 Requires `claude`, `node` (≥18) and `jq`. Knobs: `EVAL_MODEL` (default `opus`),
 `EVAL_JUDGE_MODEL`, `EVAL_MAX_TURNS` (40), `EVAL_MAX_BUDGET_USD` (10),
