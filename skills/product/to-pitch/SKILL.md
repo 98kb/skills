@@ -11,9 +11,16 @@ Run an adaptive interview that turns one bet a founder wants to make into a seve
 
 ## Before starting
 
-Read the upstream vision at `docs/product/vision.md` — a repo holds exactly one — **before asking the first interview question**.
+**A pitch is never shaped on an ungated vision.** Before asking the first interview question, check `docs/product/vision.md` — a repo holds exactly one — for its `approved_by`/`approved_at` approval marker. The same single read described below serves both the check and the interview, so this costs no extra visit to the file. Two cases refuse the session outright:
 
-Read it **once**. Everything the interview needs from the vision is in hand after that single read, so don't re-open it partway through: the session gets one stable upstream reference, and the founder's answers are never quietly re-litigated against a file that shifted underneath them.
+- **The approval marker is absent** — either the vision was never approved, or its marker was cleared by an in-place revision. These are one case, not two: `to-vision` clears `approved_by`/`approved_at` in the same write that lands a revision, so a vision mid-edit reads exactly like one never approved, and gets exactly the same refusal. That equivalence is the point. An in-flight vision edit must not leak into a pitch: the pitch would end up pointing one hop back at a customer, or a thesis, that the founder is in the middle of changing, and nothing downstream would show that the ground had moved.
+- **There is no vision artifact at all** — tell the founder to run `/to-vision` first, and stop. Never author, infer, or stub a vision to get past this check. A vision the founder didn't write and approve isn't a foundation, and inventing one would hide the exact gap this check exists to surface.
+
+In both cases, refuse to start and name the reason plainly — the vision's missing approval, or the missing vision itself. No interview question is asked, no draft is assembled, no slug is proposed, and nothing is written under `docs/product/pitches/`. **Nothing happening is the correct and complete outcome here** — not an error to work around or recover from. The founder is left with one clear next action (approve the vision, or write one), which is more useful than a pitch built on a foundation that wasn't ready to carry it.
+
+The check runs **here, at session start** — before the first interview question, not at approval time. And it runs only here: don't ask the founder to re-affirm the vision when they approve the pitch. Whether the vision still holds is the vision's own approval-and-revision lifecycle to settle, and this session-start check is the only vision-related gate `to-pitch` carries.
+
+Once the vision passes, read it **once**. Everything the interview needs from the vision is in hand after that single read, so don't re-open it partway through: the session gets one stable upstream reference, and the founder's answers are never quietly re-litigated against a file that shifted underneath them.
 
 Carry two things forward from that read:
 
@@ -21,6 +28,15 @@ Carry two things forward from that read:
 - **the thesis it bets on** (its Grounding Insight).
 
 The Problem question below is asked *against* those two. The founder committed to them already; making them restate them cold wastes the one thing reading the vision bought you.
+
+Last, settle whether this run is a **new pitch** or a **re-entry** into one that already exists. `docs/product/pitches/` may already hold several, and that's the intended shape rather than a conflict to resolve: one vision fanning out into several concurrent bets is what this skill is for. Pitches are never merged with, compared against, or sequenced relative to each other. A fresh run therefore defaults to a new pitch in a new slug directory (see Naming the pitch), however many are already recorded.
+
+Re-entry is when the founder is pointing at a pitch that already exists — they say which one, or the slug they confirm names a directory already on disk. Take that as intent to continue that pitch, not as a naming clash: an existing slug is a re-entry, not a collision, so don't suffix it to make it unique and don't refuse it.
+
+On re-entry, read `docs/product/pitches/<slug>/pitch.md`, tell the founder a pitch is already recorded there, and show them its current fields. Continue with the interview below, using the existing content as the starting point for each field's answer (read it back to the founder and let them confirm or revise it, rather than asking cold). Check the frontmatter for `approved_by`/`approved_at` first, since that changes what an edit here means, then follow whichever of these two applies:
+
+- **Drafted** (no `approved_by`/`approved_at` present) — an ordinary continuation of an unfinished draft. `update` the file in place, rather than treating this as a second `create`, once the founder approves (see Approval and Writing the artifact).
+- **Approved** (`approved_by`/`approved_at` present) — any field edit the founder lands here is a *revision* to an already-approved artifact. As soon as an edited field is confirmed, `update` `docs/product/pitches/<slug>/pitch.md` in place with the change — same mechanism, no parallel version history — and in that same write add a dated revision-reason marker to the frontmatter (see Writing the artifact) and clear `approved_by`/`approved_at` back to unset. Do this immediately; a stale approval must never survive an in-place edit, not even for the rest of this session. The pitch is now back to drafted status — continue the session (further edits, gate-check) as normal, and don't write `approved_by`/`approved_at` again until the founder gives a fresh explicit approval (see Approval).
 
 ## The artifact schema
 
@@ -112,6 +128,8 @@ Ask the founder to explicitly approve the draft (e.g. "Do you approve this pitch
 
 Once given, confirm back in your own words ("Recording this as approved.") before writing anything. This confirmation step exists so an offhand "looks good" is never silently treated as a formal approval.
 
+Re-approving a pitch after a revision cleared its `approved_by`/`approved_at` (see Before starting) uses this exact same mechanism — an explicit affirmative phrase, confirmed back, before `approved_by`/`approved_at` are written again. No separate re-approval flow exists.
+
 The approver is whoever is running the session. Their identity is self-attested — take it as given in this session; there's no separate verification step and no second approver to collect.
 
 ## Writing the artifact
@@ -123,6 +141,8 @@ Write `docs/product/pitches/<slug>/pitch.md`, using the slug the founder confirm
 upstream: ../../vision.md
 approved_by: <founder's name or identifier, as given in this session>
 approved_at: <ISO 8601 timestamp, at the moment of approval>
+revised_at: <ISO 8601 timestamp, at the moment of the most recent revision>
+revision_reason: <one-line reason for the most recent revision, in the founder's words>
 ---
 
 # Pitch: <short title, in the founder's own words>
@@ -167,4 +187,6 @@ The frontmatter `upstream` key is the pitch's one-hop pointer back to the vision
 
 The sibling `roadmap.md` and `milestones/` that later skills put in this same slug directory are theirs to create. Write `pitch.md` and nothing else.
 
-The frontmatter `approved_by`/`approved_at` pair is the artifact's approval marker — its presence is what distinguishes an approved pitch from a merely-drafted one, which is the distinction `to-roadmap` gates on. **Only write the file after the founder has approved.** A session that ends before approval leaves no pitch behind at all — no partial draft, no stub, no empty slug directory. Nothing is written under `docs/product/pitches/` until the approval has been given and confirmed back.
+The frontmatter `approved_by`/`approved_at` pair is the artifact's approval marker — its presence is what distinguishes an approved pitch from a merely-drafted one, which is the distinction `to-roadmap` gates on. In a from-scratch or still-drafted session, **only write the file after the founder has approved**. A session that ends before approval leaves no pitch behind at all — no partial draft, no stub, no empty slug directory. Nothing is written under `docs/product/pitches/` until the approval has been given and confirmed back. This rule doesn't apply to the Approved case in Before starting: there, the file already exists and approval was already given in an earlier session, so a landed edit writes immediately, as described there — waiting for a fresh approval before writing would leave the stale, now-inaccurate approval marker on disk in the meantime, which is exactly what that section exists to prevent.
+
+The frontmatter `revised_at`/`revision_reason` pair is the artifact's revision-reason marker — it records only the most recent in-place edit to an already-approved pitch (no parallel version history), and is written per the Approved case in Before starting: at the moment the edit lands, alongside clearing `approved_by`/`approved_at`. A pitch that has never been revised omits this pair entirely — leave the two keys out of the frontmatter rather than writing them empty. Likewise, "clear `approved_by`/`approved_at` back to unset" means removing those two keys from the frontmatter, not writing them as empty values.
