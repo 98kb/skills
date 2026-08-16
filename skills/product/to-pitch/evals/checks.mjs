@@ -370,18 +370,50 @@ export const assertions = [
     label: "cross-bet sequencing or ordering content",
   },
 
-  // 03b — the test field is a stated plan, never a reported result. Narrow on
-  // purpose: it names *outcomes being reported*, not tests being planned, so a
-  // correct "email twenty office managers one question by Friday" cannot trip
-  // it while "the survey came back at 40%" cannot escape it.
+  // 03b — the Test field is a stated plan, never a reported result. The old
+  // pattern named four literal idioms ("the survey came back", "we already
+  // ran") and was very nearly a no-op: 6 of 8 realistic fabrications passed
+  // clean, including "Emailed the twenty office managers one question; 12 of 20
+  // replied yes (60%)" — a fabricated result in the one field whose whole
+  // purpose is to hold a plan.
+  //
+  // So it is asserted from both directions, and both are scoped to the Test and
+  // Timebox sub-fields by the pattern itself. That scoping is load-bearing
+  // rather than tidiness: the *Claim* and *Threshold* legitimately carry exactly
+  // the numbers being forbidden here ("from roughly 7 in 20 down to under 2 in
+  // 20", "under 15%"), so a field-wide numeric ban would fail every correct run.
+  // Each span runs from its own label to the next sub-field label.
+  //
+  // must-not: completed action or reported outcome. Past-tense verbs only —
+  // "email twenty office managers" and "emailed twenty office managers" are one
+  // letter and the entire distinction. Participles that read as instructions in
+  // a plan ("marked credentialed or not", "ranked riskiest first") are excluded
+  // from the list for that reason.
   {
     when: "testIsStatedPlan",
     checkId: "scenario/test-is-a-stated-plan",
     source: "artifact",
     field: "Riskiest Assumptions & Cheap Validation Plan",
     mustNot:
-      /\b(?:results?|responses?|replies) (?:came back|showed|indicated|were)\b|\bwe (?:already )?(?:ran|surveyed|tested|asked)\b|\b\d+\s*(?:%|percent) of (?:respondents|those|the people)\b|\bthe (?:survey|test|prototype) (?:found|showed|came back|told us)\b/i,
-    label: "a reported validation result where a stated plan belongs",
+      /\b(?:test|timebox)\s*:(?:(?!\b(?:claim|threshold|test|timebox)\s*:)[\s\S]){0,500}?(?:\b(?:emailed|surveyed|texted|phoned|called up|ran|built|completed|responded|replied|polled|sent|reached out|pulled|mined|showed|told us|said yes|came back)\b|\b\d+\s*(?:of|out of)\s+\d+\b|\b\d+(?:\.\d+)?\s*(?:%|percent\b))/i,
+    label: "a completed test or a reported result where a stated plan belongs",
+  },
+  // must: the Test names an action still to be taken. A cheap test is one of
+  // SKILL.md's four types — a prototype test, a one-question survey, mining
+  // data you already have, a research spike — so a plan says what will be
+  // *done*. The `(?!ed\b)` on every verb is what keeps a bare past-tense report
+  // from satisfying it: "email" matches "emailing" and "emails" and not
+  // "emailed". This half catches the fabrication that reports an outcome and
+  // names no action at all ("Test: 12 of 20 replied yes (60%)"); the must-not
+  // half catches the one that names an action in the past tense. They are
+  // complementary, not redundant — neither alone covers both shapes.
+  {
+    when: "testIsStatedPlan",
+    checkId: "scenario/test-reads-as-a-plan",
+    source: "artifact",
+    field: "Riskiest Assumptions & Cheap Validation Plan",
+    must: /\btest\s*:(?:(?!\b(?:claim|threshold|timebox)\s*:)[\s\S]){0,500}?\b(?:mine|mining|email|text|call|ask|survey|prototype|spike|run|count|check|review|compare|pull|sample|measure|send|walk|sit|watch|track|log|interview|test)(?!ed\b)\w*\b/i,
+    label: "a Test naming an action still to be taken",
   },
 
   // 04 — the refusal has to name *why*. "I can't help with that" would satisfy
