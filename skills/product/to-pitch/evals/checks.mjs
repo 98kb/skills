@@ -338,15 +338,35 @@ export const assertions = [
   // naming who decides "in what order" slots surface, is describing the shape
   // of this bet — not ranking it against another. An earlier draft matched both
   // and would have false-failed 03a in particular, whose whole subject is a
-  // ranked list of scheduling candidates: the check was aimed at itself.
-  // Cross-bet ordering always has to name the other bets to mean anything, so
-  // that is what these alternatives require.
+  // ranked list of scheduling candidates: the check was aimed at itself. That
+  // narrowing still stands, and one of its casualties has been repaired: the
+  // narrowed pattern also fired on "prioritise these over merely-open slots",
+  // an ordinary Solution-sketch sentence for scheduling software, because it
+  // asked only for `priorit… these` with no sibling named at all. Every
+  // alternative below now requires a sibling.
+  //
+  // Cross-bet ordering always has to name the other bet to mean anything — but
+  // it names it the way a founder would, not with the word "bet" in it. The
+  // narrowed pattern demanded the generic nouns `pitch|bet|idea` and so missed
+  // every real leak in 03a: "before the self-serve onboarding flow",
+  // "onboarding is second and reminders third", "lands end of March, onboarding
+  // late April". So the sibling set is both: the generic nouns *and* 03a's own
+  // other two bets, which are fixed by its persona (a self-serve onboarding
+  // flow, a patient-reminder rework). `forbidSequencingContent` is opted into
+  // by that scenario alone, so the coupling is contained — but if the persona's
+  // other two bets are ever renamed, rename them here too.
+  //
+  // Bare "onboarding" is only a sibling in the ordinal alternatives ("onboarding
+  // is second"), never in the before/after ones: "the credentialing file the
+  // clinic uploads at onboarding" is legitimate Solution-sketch prose in this
+  // very fixture, and only the full phrase distinguishes the bet from the
+  // moment.
   {
     when: "forbidSequencingContent",
     checkId: "scenario/no-sequencing-content",
     source: "artifact",
     mustNot:
-      /\bsequenc(?:e|es|ed|ing)\s+(?:this|these|them|the\s+(?:pitches|bets|ideas|work))\b|\bpriorit(?:is|iz)(?:e|ed|ation)\s+(?:this|these|them|against)\b|\bbuild (?:this|that|it) first\b|\b(?:first|second|third|next|then|after|before|alongside)\b[^.?!]{0,60}\b(?:other|another|second|third|remaining)\s+(?:(?:two|three|four|\d+)\s+)?(?:pitch|bet|idea)e?s?\b|\b(?:pitch|bet|idea)e?s?\b[^.?!]{0,40}\bin (?:what|which|this|priority) order\b/i,
+      /\b(?:sequenc\w+|rank\w*|priorit(?:is|iz)\w+)\b[^.?!]{0,60}\b(?:(?:the|my|your|these|those|all)\s+)?(?:other\s+|remaining\s+|two\s+|three\s+)?(?:(?:pitch|bet|idea|initiative)\w*|onboarding|reminders?)\b|\b(?:onboarding|reminders?|(?:pitch|bet|idea)\w*)\b[^.?!]{0,40}\b(?:is|are|goes?|comes?|lands?|ships?)\s+(?:first|second|third|fourth|next|last)\b|\b(?:self-serve\s+onboarding(?:\s+flow)?|onboarding\s+(?:flow|rework|bet|pitch|work)|patient[- ]reminders?(?:\s+rework)?|reminders?\s+rework|(?:other|remaining|second|third|two|three)\s+(?:two\s+|three\s+)?(?:pitch|bet|idea|initiative)\w*)\b[^.?!]{0,60}\b(?:first|second|third|fourth|next|last|before|after|ahead of|behind|earlier|later)\b|\b(?:first|second|third|fourth|next|last|before|after|ahead of|behind)\b[^.?!]{0,60}\b(?:self-serve\s+onboarding(?:\s+flow)?|onboarding\s+(?:flow|rework|bet|pitch|work)|patient[- ]reminders?(?:\s+rework)?|reminders?\s+rework|(?:other|remaining|second|third|two|three)\s+(?:two\s+|three\s+)?(?:pitch|bet|idea|initiative)\w*)\b|\b(?:lands?|ships?|due|delivered|starts?)\b[^.?!]{0,60}\b(?:onboarding|reminders?)\b[^.?!]{0,40}\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|q[1-4]|weeks?|months?|quarters?)\b|\bbuild (?:this|that|it) first\b|\b(?:pitch|bet|idea)\w*\b[^.?!]{0,40}\bin (?:what|which|this|priority) order\b/i,
     label: "cross-bet sequencing or ordering content",
   },
 
