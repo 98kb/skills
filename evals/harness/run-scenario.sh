@@ -1,36 +1,47 @@
 #!/usr/bin/env bash
 #
-# Run one to-vision eval scenario end to end.
+# Run one eval scenario end to end, for any skill wired to this harness.
 #
-#   ./run-scenario.sh <scenario-id>
+#   ./run-scenario.sh <evals-dir|eval.config.json> <scenario-id>
 #
 # Drives two separate Claude Code sessions against each other:
 #
-#   SUT     — a session in a throwaway workspace with only the to-vision skill
-#             installed, started with the literal `/to-vision` slash command
-#             (the skill is disable-model-invocation, so that is the only way
-#             in).
+#   SUT     — a session in a throwaway workspace with only the skill under test
+#             installed, started with the literal slash command from the config
+#             (these skills are disable-model-invocation, so that is the only
+#             way in).
 #   FOUNDER — a session whose system prompt is the scenario's persona fixture,
 #             with no tools, replying as the founder.
 #
-# Writes to evals/runs/<scenario-id>/:
+# Writes to <evals>/runs/<scenario-id>/:
 #   transcript.md    human-readable conversation
 #   transcript.json  structured turns, consumed by check.mjs
 #   toolcalls.json   every tool the SUT invoked, for the composition check
-#   artifact.md      the produced docs/product/vision.md, if any
+#   artifact.md      the produced artifact at config.artifact.path, if any
 #   run.json         run metadata
 #   raw/             raw stream-json from each SUT turn
 #
 set -euo pipefail
 
-SCENARIO="${1:-}"
-if [[ -z "$SCENARIO" ]]; then
-  echo "usage: run-scenario.sh <scenario-id>" >&2
+CONFIG_ARG="${1:-}"
+SCENARIO="${2:-}"
+if [[ -z "$CONFIG_ARG" || -z "$SCENARIO" ]]; then
+  echo "usage: run-scenario.sh <evals-dir|eval.config.json> <scenario-id>" >&2
   exit 2
 fi
 
-HARNESS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EVALS_DIR="$(cd "$HARNESS_DIR/.." && pwd)"
+if [[ -d "$CONFIG_ARG" ]]; then
+  EVALS_DIR="$(cd "$CONFIG_ARG" && pwd)"
+  CONFIG="$EVALS_DIR/eval.config.json"
+else
+  CONFIG="$(cd "$(dirname "$CONFIG_ARG")" && pwd)/$(basename "$CONFIG_ARG")"
+  EVALS_DIR="$(dirname "$CONFIG")"
+fi
+if [[ ! -f "$CONFIG" ]]; then
+  echo "no eval.config.json at $CONFIG" >&2
+  exit 2
+fi
+
 SKILL_DIR="$(cd "$EVALS_DIR/.." && pwd)"
 SCENARIO_DIR="$EVALS_DIR/scenarios/$SCENARIO"
 
@@ -38,6 +49,14 @@ if [[ ! -d "$SCENARIO_DIR" ]]; then
   echo "unknown scenario '$SCENARIO' — expected $SCENARIO_DIR" >&2
   exit 2
 fi
+
+cfg() { jq -r "$1" "$CONFIG"; }
+
+SKILL="$(cfg '.skill')"
+SLASH_COMMAND="$(cfg '.slashCommand')"
+ARTIFACT_PATH="$(cfg '.artifact.path')"
+FINISHED_WHEN="$(cfg '.founder.finishedWhen // "it has told you the artifact is written or recorded, or that the session is ending or closing, or if it is no longer asking you anything and is only acknowledging you"')"
+mapfile -t SUT_ALLOWED_TOOLS < <(cfg '(.sut.allowedTools // ["Read","Write","Edit","Glob","Grep"])[]')
 
 MODEL="${EVAL_MODEL:-opus}"
 MAX_TURNS="${EVAL_MAX_TURNS:-40}"
@@ -50,17 +69,30 @@ mkdir -p "$OUT_DIR/raw"
 # Throwaway workspace for the SUT. Deliberately outside this repo so the SUT
 # inherits none of its CLAUDE.md, settings, or vendored skills — the only skill
 # it can see is the one under test.
-WORKSPACE="$(mktemp -d -t to-vision-eval-XXXXXX)"
-FOUNDER_CWD="$(mktemp -d -t to-vision-founder-XXXXXX)"
+WORKSPACE="$(mktemp -d -t "$SKILL-eval-XXXXXX")"
+FOUNDER_CWD="$(mktemp -d -t "$SKILL-founder-XXXXXX")"
 cleanup() { rm -rf "$WORKSPACE" "$FOUNDER_CWD"; }
 trap cleanup EXIT
 
-mkdir -p "$WORKSPACE/.claude/skills/to-vision"
-cp "$SKILL_DIR/SKILL.md" "$WORKSPACE/.claude/skills/to-vision/SKILL.md"
+mkdir -p "$WORKSPACE/.claude/skills/$SKILL"
+cp "$SKILL_DIR/SKILL.md" "$WORKSPACE/.claude/skills/$SKILL/SKILL.md"
+
+# Seed the workspace with whatever the skill needs to already exist — for a
+# mid-pipeline skill, the approved upstream artifact it reads before it will
+# start. `from` is relative to the evals dir so fixtures live with the suite.
+# Per-scenario seed selection (an approved vision for most scenarios, an
+# unapproved one for the refusal scenario) hooks in here.
+while IFS=$'\t' read -r seed_from seed_to; do
+  [[ -z "$seed_from" ]] && continue
+  mkdir -p "$WORKSPACE/$(dirname "$seed_to")"
+  cp "$EVALS_DIR/$seed_from" "$WORKSPACE/$seed_to"
+  echo "seeded     : $seed_to"
+done < <(jq -r '(.workspace.seed // [])[] | "\(.from)\t\(.to)"' "$CONFIG")
 
 SUT_SID="$(node -e 'console.log(crypto.randomUUID())')"
 FOUNDER_SID="$(node -e 'console.log(crypto.randomUUID())')"
 
+echo "skill      : $SKILL"
 echo "scenario   : $SCENARIO"
 echo "model      : $MODEL"
 echo "workspace  : $WORKSPACE"
@@ -90,12 +122,11 @@ is_winding_down() { # text -> 0 if short and question-free
   [[ "${#t}" -lt 240 && "$t" != *"?"* ]]
 }
 
-# The SUT gets a narrow allowlist — exactly the file tools a vision session
-# legitimately needs. Anything else (WebSearch in scenario 3b, Skill, Task) is
+# The SUT gets a narrow allowlist from the config — exactly the file tools that
+# skill's session legitimately needs. Anything else (WebSearch, Skill, Task) is
 # denied non-interactively, but the *attempt* is still emitted as a tool_use
 # block into the raw stream, so check.mjs can see the skill reaching for a tool
 # it shouldn't. The composition check therefore catches intent, not just effect.
-SUT_ALLOWED_TOOLS=(Read Write Edit Glob Grep)
 
 run_sut() { # message -> stdout: assistant text
   local msg="$1" turn="$2" raw="$OUT_DIR/raw/turn-$turn.jsonl"
@@ -118,6 +149,10 @@ run_sut() { # message -> stdout: assistant text
 # system prompt. Relying on the system prompt alone let a run degenerate into a
 # polite closing loop — the agent had plainly finished, and the founder kept
 # saying "understood" instead of emitting the sentinel.
+#
+# What counts as "finished" is the one skill-specific sentence in this prompt,
+# so it comes from the config: a to-vision session ends differently from a
+# to-pitch one that failed its assumption gate.
 founder_prompt() { # agent text -> stdout: wrapped prompt
   cat <<EOF
 The agent said:
@@ -132,9 +167,7 @@ never answer at all. Those rules outrank being helpful to the agent.
 
 STOP RULE — check this first, every single turn: if the agent has finished, say
 nothing else and reply with exactly <<<END>>> on its own. The agent has finished
-if it has told you the vision is written or recorded, or that the session is
-ending / closing / cannot continue without a grounding insight, or if it is no
-longer asking you anything and is only acknowledging you. Do not thank it, do
+if $FINISHED_WHEN. Do not thank it, do
 not sign off, do not say "understood" — emit <<<END>>> instead.
 EOF
 }
@@ -166,7 +199,7 @@ ended="max-turns"
 while [[ "$turn" -le "$MAX_TURNS" ]]; do
   echo "── turn $turn ─────────────────────────────"
 
-  agent_text="$(run_sut "${next_msg:-/to-vision}" "$turn")"
+  agent_text="$(run_sut "${next_msg:-$SLASH_COMMAND}" "$turn")"
   if [[ -z "${agent_text//[[:space:]]/}" ]]; then
     echo "  (agent returned nothing — ending)"
     ended="agent-silent"
@@ -211,15 +244,16 @@ jq -rs '[.[] | select(.type=="assistant") | .message.content[]?
         | select(.type=="tool_use") | {name, input}]' \
   "$OUT_DIR"/raw/turn-*.jsonl >"$OUT_DIR/toolcalls.json"
 
-if [[ -f "$WORKSPACE/docs/product/vision.md" ]]; then
-  cp "$WORKSPACE/docs/product/vision.md" "$OUT_DIR/artifact.md"
+if [[ -f "$WORKSPACE/$ARTIFACT_PATH" ]]; then
+  cp "$WORKSPACE/$ARTIFACT_PATH" "$OUT_DIR/artifact.md"
   echo "artifact   : written"
 else
   echo "artifact   : none"
 fi
 
-# Any file the SUT wrote outside docs/product/vision.md — a stray glossary, a
-# roadmap, a CONTEXT.md — is itself a finding, so record the whole tree.
+# Any file the SUT wrote outside its own artifact — a stray glossary, a roadmap,
+# a CONTEXT.md — is itself a finding, so record the whole tree. Seeded fixtures
+# show up here too; check.mjs knows which paths were seeded and exempts them.
 (cd "$WORKSPACE" && find . -type f -not -path './.claude/*' | sort) \
   >"$OUT_DIR/workspace-files.txt"
 

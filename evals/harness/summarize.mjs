@@ -2,18 +2,25 @@
 //
 // Roll the per-scenario grades up into one suite result.
 //
-//   node summarize.mjs [runs|transcripts]     (default: transcripts)
+//   node summarize.mjs <evals-dir|eval.config.json> [runs|transcripts]
+//                                                    (default: transcripts)
 //
-// Writes <dir>/summary.json and prints the table. Exits 1 if any scenario
-// failed, so this can gate CI.
+// Writes <evals>/<dir>/summary.json and prints the table. Exits 1 if any
+// scenario failed, so this can gate CI.
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { loadConfig } from "./config.mjs";
 
-const EVALS = dirname(dirname(fileURLToPath(import.meta.url)));
-const dir = join(EVALS, process.argv[2] ?? "transcripts");
-const scenarios = readdirSync(join(EVALS, "scenarios")).sort();
+const [, , configArg, which] = process.argv;
+if (!configArg) {
+  console.error("usage: summarize.mjs <evals-dir|eval.config.json> [runs|transcripts]");
+  process.exit(2);
+}
+
+const config = loadConfig(configArg);
+const dir = join(config.evalsDir, which ?? "transcripts");
+const scenarios = readdirSync(config.scenariosDir).sort();
 
 const read = (p) => (existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : null);
 
@@ -21,7 +28,7 @@ const results = scenarios.map((s) => {
   const det = read(join(dir, s, "deterministic.json"));
   const jud = read(join(dir, s, "judge.json"));
   const run = read(join(dir, s, "run.json"));
-  const exp = read(join(EVALS, "scenarios", s, "expect.json"));
+  const exp = read(join(config.scenariosDir, s, "expect.json"));
   const ok = Boolean(det?.passed && jud?.passed);
   // A diagnostic scenario has no agreed correct outcome yet — it exists to
   // produce a transcript for an open design question, so it reports but never
@@ -79,11 +86,16 @@ if (diagnostics.length) {
   );
 }
 
-const pendingSpotCheck = results.some((r) => r.humanReviewRequired);
-if (pendingSpotCheck) {
+// Which scenarios need a human is a property of the runs, not of any one
+// skill's suite — name them rather than pointing at a hardcoded path.
+const pendingSpotCheck = results.filter((r) => r.humanReviewRequired);
+if (pendingSpotCheck.length) {
   console.log(
-    "  note: at least one run requires human review — see " +
-      "transcripts/01-cooperative-sharp/human-spot-check.md\n",
+    "  note: human review required — see " +
+      pendingSpotCheck
+        .map((r) => join(dir, r.scenario, "human-spot-check.md"))
+        .join(", ") +
+      "\n",
   );
 }
 
