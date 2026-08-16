@@ -15,6 +15,17 @@ main
 
 One change → one trunk branch → one worktree → one PR into `main`.
 
+## Choosing the granularity: one trunk, or several?
+
+A parent issue that decomposes into several tickets can map either way. The predicate is **shared file surface, not the ticket hierarchy**.
+
+- **Tickets touching disjoint files → one trunk each, worked in parallel.** Each is its own change with its own PR into `main`.
+- **Tickets converging on the same file → one trunk for the set, tickets as subtask branches merging into it.** Integration happens on trunk, where conflicting edits are reconciled once instead of across several racing PRs.
+
+Sharing a parent issue proves nothing either way: two subtasks of one issue are often independent, and two tickets under different parents can collide. Check what the tickets edit, not how they're filed.
+
+Semantic conflicts matter more than textual ones here. Two tickets can edit non-adjacent lines of one document and still contradict each other — a value stated once in one ticket and restated differently in another. A shared trunk is the cheap defence.
+
 ## 1. Open an isolated worktree and a trunk branch
 
 Before touching any source file, create a worktree with a fresh trunk branch cut from `main`:
