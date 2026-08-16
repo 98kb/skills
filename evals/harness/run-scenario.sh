@@ -76,6 +76,20 @@ ARTIFACT_PATH="$(cfg '.artifact.path')"
 FINISHED_WHEN="$(cfg '.founder.finishedWhen // "it has told you the artifact is written or recorded, or that the session is ending or closing, or if it is no longer asking you anything and is only acknowledging you"')"
 mapfile -t SUT_ALLOWED_TOOLS < <(cfg '(.sut.allowedTools // ["Read","Write","Edit","Glob","Grep"])[]')
 
+# Everything the founder session is denied, minus whatever this skill's config
+# legitimately allows the SUT. `--allowed-tools` on its own does not deny the
+# rest — it grants; a run that passed only an allowlist still executed `date -u`
+# and `ls` through Bash with is_error:false. So the denial has to be spelled
+# out, exactly as run_founder already spells it out.
+SUT_DISALLOWED_TOOLS=()
+for candidate in Bash Read Write Edit Glob Grep WebFetch WebSearch Task NotebookEdit TodoWrite Skill; do
+  allowed=0
+  for t in "${SUT_ALLOWED_TOOLS[@]}"; do
+    [[ "$t" == "$candidate" ]] && allowed=1 && break
+  done
+  [[ "$allowed" -eq 0 ]] && SUT_DISALLOWED_TOOLS+=("$candidate")
+done
+
 MODEL="${EVAL_MODEL:-opus}"
 MAX_TURNS="${EVAL_MAX_TURNS:-40}"
 BUDGET="${EVAL_MAX_BUDGET_USD:-10}"
@@ -153,10 +167,22 @@ is_winding_down() { # text -> 0 if short and question-free
 }
 
 # The SUT gets a narrow allowlist from the config — exactly the file tools that
-# skill's session legitimately needs. Anything else (WebSearch, Skill, Task) is
-# denied non-interactively, but the *attempt* is still emitted as a tool_use
-# block into the raw stream, so check.mjs can see the skill reaching for a tool
-# it shouldn't. The composition check therefore catches intent, not just effect.
+# skill's session legitimately needs — *and* an explicit denylist of everything
+# else, because an allowlist alone grants without denying and a live run proved
+# it: with only `--allowed-tools` the session ran `date -u` and `ls` through
+# Bash and got real output back.
+#
+# The denial does not replace the grading. A denied call is still emitted as a
+# `tool_use` block into the raw stream, so toolcalls.json still records it and
+# check.mjs still fails `floor/no-research-tools` or `scenario/forbidden-tool:X`
+# on it. The composition checks therefore keep grading intent; what changes is
+# that a skill reaching for Bash no longer gets to *have* the answer, which
+# matters for the scenario whose whole subject is a skill that must not go and
+# run the founder's validation for her.
+#
+# Note that a tool the config allows is never denied here even when a scenario
+# forbids it — 04 forbids Write and Edit, which every other scenario needs, and
+# the point there is to catch the reach, not to make it impossible.
 
 run_sut() { # message -> stdout: assistant text
   local msg="$1" turn="$2" raw="$OUT_DIR/raw/turn-$turn.jsonl"
@@ -170,9 +196,30 @@ run_sut() { # message -> stdout: assistant text
     "${resume[@]}" \
     --model "$MODEL" \
     --allowed-tools "${SUT_ALLOWED_TOOLS[@]}" \
+    --disallowed-tools "${SUT_DISALLOWED_TOOLS[@]}" \
     --output-format stream-json --verbose \
     --max-budget-usd "$BUDGET") >"$raw" 2>"$OUT_DIR/raw/turn-$turn.err" || true
-  jq -rs '[.[] | select(.type=="result") | .result // ""] | last // ""' <"$raw"
+
+  # Every assistant text block of the turn, in order, not just the last one.
+  # `.result` holds only the final block, so any prose the agent emitted
+  # *before* a tool call was dropped from transcript.md and transcript.json —
+  # and a decline or a refusal is exactly that shape: "I'm not going to run
+  # that. Let me re-read what you have." then a Read. The checker was grading a
+  # conversation the founder never had, with the declines cut out of it.
+  #
+  # This changes two things at once, deliberately: what the founder sees next
+  # (run_founder is handed this string) and what check.mjs reads.
+  local text
+  text="$(jq -rs '[.[] | select(.type=="assistant") | .message.content[]?
+                  | select(.type=="text") | .text | select(. != "")]
+                 | join("\n\n")' <"$raw")"
+  # A turn that produced only tool calls has no text block; fall back to the
+  # result envelope rather than reporting silence, which the caller reads as
+  # "the agent has stopped".
+  if [[ -z "${text//[[:space:]]/}" ]]; then
+    text="$(jq -rs '[.[] | select(.type=="result") | .result // ""] | last // ""' <"$raw")"
+  fi
+  printf '%s\n' "$text"
 }
 
 # The persona is reminded of the stop rule on every turn rather than once in the
