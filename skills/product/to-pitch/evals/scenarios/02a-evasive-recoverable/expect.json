@@ -1,0 +1,24 @@
+{
+  "id": "02a-evasive-recoverable",
+  "category": "evasive-vague",
+  "title": "Generic Problem and a hedged Appetite — both capped, flagged, disclosed, approved anyway",
+  "source": "#59 scenario 2a",
+  "outcome": "approved",
+  "artifact": "written",
+  "approvalMarker": "present",
+  "approverName": "Dana Okafor",
+  "upstreamResolvesTo": "docs/product/vision.md",
+  "mandatoryFieldsPresent": true,
+  "flaggedFields": ["Problem", "Appetite"],
+  "riskiestAssumptions": "present",
+  "assumptionItems": {},
+  "appetiteRecordedSmall": true,
+  "appetiteFounderUnconfirmed": true,
+  "cappedAttempts": {
+    "Problem": 2,
+    "Appetite": 2
+  },
+  "declines": [],
+  "forbidRoadmapVocabulary": true,
+  "humanSpotCheckRequired": false
+}

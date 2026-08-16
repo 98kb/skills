@@ -24,7 +24,8 @@
 // for a fresh suite.
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, posix } from "node:path";
+import { artifactMatches, isPattern, pathMatcher } from "./artifact.mjs";
 import { loadChecks, loadConfig, requireArgs, runDirFor } from "./config.mjs";
 import { seedsFor } from "./seeds.mjs";
 
@@ -134,6 +135,46 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
     );
   }
 
+  // Every workspace file that is the graded artifact. With a literal path this
+  // can never exceed one, so the uniqueness check below is only registered when
+  // the configured path is actually a pattern — an assertion that cannot fail
+  // is noise in a report, not reassurance.
+  const matched = artifactMatches(config, workspaceFiles);
+  if (isPattern(config.artifact.path)) {
+    check(
+      "floor/artifact-unique",
+      "floor",
+      matched.length <= 1,
+      matched.length <= 1
+        ? `${matched.length} file matches ${config.artifact.path}`
+        : `${matched.length} files match ${config.artifact.path}: ${matched.join(", ")}` +
+          " — one session may produce at most one artifact",
+    );
+  }
+
+  // The one-hop pointer back to the artifact this session read (#7). Asserted
+  // only where a scenario names what it must resolve to, because the pipeline's
+  // root artifact has nothing above it to point at. Resolved relative to the
+  // artifact's own directory, which is the whole reason the pointer is stored
+  // as a relative path rather than an absolute one.
+  if (expected.upstreamResolvesTo !== undefined) {
+    const key = config.artifact.upstreamKey;
+    const pointer = fm[key];
+    const from = matched.length === 1 ? posix.dirname(matched[0].replace(/^\.\//, "")) : null;
+    const resolved =
+      pointer && from ? posix.normalize(posix.join(from, pointer)) : null;
+    check(
+      "floor/upstream-pointer",
+      "floor",
+      resolved === expected.upstreamResolvesTo,
+      pointer === undefined
+        ? `frontmatter has no ${key} key — the upstream pointer is mandatory`
+        : from === null
+          ? `cannot resolve ${key}: ${matched.length} files match the artifact path`
+          : `${key}: ${pointer} from ${from}/ resolves to ${resolved}, expected ${expected.upstreamResolvesTo}`,
+    );
+  }
+
   if (hasMarker && expected.approverName) {
     check(
       "floor/approver-identity",
@@ -228,14 +269,17 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
   // evidence the SUT wrote anything. The exemption set is resolved the same way
   // run-scenario.sh resolved what to copy — config default merged with this
   // scenario's override — so seeding a fixture can never read as a stray write.
-  const allowedFiles = new Set(
-    [
-      config.artifact.path,
-      ...config.artifact.additionalPaths,
-      ...seedsFor(config, scenario).map((s) => s.to),
-    ].map((p) => (p.startsWith("./") ? p : `./${p}`)),
-  );
-  const strayFiles = workspaceFiles.filter((f) => !allowedFiles.has(f));
+  //
+  // Matched as globs rather than compared as strings, because to-pitch's
+  // artifact path carries a runtime-chosen slug. A literal path compiles to a
+  // pattern matching exactly itself, so this is the same test it always was for
+  // every skill whose path has no wildcard in it.
+  const allowed = [
+    config.artifact.path,
+    ...config.artifact.additionalPaths,
+    ...seedsFor(config, scenario).map((s) => s.to),
+  ].map(pathMatcher);
+  const strayFiles = workspaceFiles.filter((f) => !allowed.some((m) => m(f)));
   check(
     "floor/no-stray-artifacts",
     "floor",
@@ -415,25 +459,34 @@ if (APPROVAL_REQUEST) {
 // The base-question patterns are the skill's; the counting is not.
 const BASE_QUESTIONS = checks.baseQuestions ?? [];
 
-function attemptsOn(field) {
+// Every agent turn that asks a given field's base question. Normally one; a
+// field whose items can be refused and replaced (to-pitch's Riskiest
+// Assumptions) re-asks it once per candidate, which is what candidateRounds
+// below counts.
+function baseQuestionTurns(field) {
   const order = BASE_QUESTIONS.findIndex(([f]) => f === field);
   if (order === -1) return null;
-  const opensAt = agentTurns.findIndex((t) =>
-    BASE_QUESTIONS[order][1].test(plain(t.text)),
-  );
-  if (opensAt === -1) return null;
+  const re = BASE_QUESTIONS[order][1];
+  return agentTurns.flatMap((t, i) => (re.test(plain(t.text)) ? [i] : []));
+}
 
-  // The first later turn that opens any subsequent field ends this field's run.
-  let endsAt = agentTurns.length;
+// Where a field's run of turns ends: the first later turn that opens any
+// subsequent field, or the end of the conversation if the session stopped here.
+function fieldWindowEnd(field, opensAt) {
+  const order = BASE_QUESTIONS.findIndex(([f]) => f === field);
   for (let i = opensAt + 1; i < agentTurns.length; i++) {
     const text = plain(agentTurns[i].text);
-    if (BASE_QUESTIONS.slice(order + 1).some(([, re]) => re.test(text))) {
-      endsAt = i;
-      break;
-    }
+    if (BASE_QUESTIONS.slice(order + 1).some(([, re]) => re.test(text))) return i;
   }
+  return agentTurns.length;
+}
+
+function attemptsOn(field) {
+  const opens = baseQuestionTurns(field);
+  if (opens === null || opens.length === 0) return null;
+  const opensAt = opens[0];
   return agentTurns
-    .slice(opensAt, endsAt)
+    .slice(opensAt, fieldWindowEnd(field, opensAt))
     .filter((t) => t.text.includes("?")).length;
 }
 
@@ -453,6 +506,89 @@ for (const [field, cap] of Object.entries(expected.cappedAttempts ?? {})) {
     asks === null
       ? `"${field}" base question never found in the transcript`
       : `"${field}" pressed ${asks}× (want exactly ${want} — base + ${cap} follow-ups)`,
+  );
+}
+
+// ── scenario layer — candidate rounds inside one field ──────────────────────
+
+// Some fields don't escalate on the founder's answer, they *replace* it: a
+// to-pitch Riskiest Assumption that fails the falsifiability chain is refused
+// outright and a fresh candidate asked for, with a fresh budget. That is a
+// second, differently-shaped budget sitting inside one field, and the per-field
+// escalation cap above cannot express it.
+//
+// It is counted the same structurally-not-by-keyword way, and for a sharper
+// reason: the chain's three checks ("what's X, and what's Y in a number?",
+// "what would prove you wrong?", "how could you test this in under an hour?")
+// share no vocabulary at all with the base question or with each other, so any
+// keyword tally of "attempts" would read them as three unrelated topics. What
+// is countable is the base question recurring — that is the skill looping back
+// for a replacement — and the total asks inside the field's window.
+{
+  const rounds = expected.candidateRounds;
+  if (rounds) {
+    const opens = baseQuestionTurns(rounds.field);
+    check(
+      "scenario/candidate-rounds",
+      "scenario",
+      opens !== null && opens.length === rounds.candidates,
+      opens === null
+        ? `"${rounds.field}" has no base question declared in checks.mjs`
+        : `"${rounds.field}" opened ${opens.length}× (want exactly ${rounds.candidates}` +
+          ` — the first candidate plus ${rounds.candidates - 1} replacement round(s))`,
+    );
+
+    if (opens && opens.length) {
+      const ceiling = rounds.candidates * (1 + rounds.maxAttemptsPerCandidate);
+      const asks = agentTurns
+        .slice(opens[0], fieldWindowEnd(rounds.field, opens[0]))
+        .filter((t) => t.text.includes("?")).length;
+      check(
+        "scenario/candidate-attempt-budget",
+        "scenario",
+        asks <= ceiling,
+        `"${rounds.field}" asked ${asks} question(s) across all candidates` +
+          ` (ceiling ${ceiling} — ${rounds.candidates} candidates ×` +
+          ` base + ${rounds.maxAttemptsPerCandidate} attempts)`,
+      );
+    }
+  }
+}
+
+// ── scenario layer — no interview at all ────────────────────────────────────
+
+// A session refused at its upstream gate must ask nothing, not ask politely.
+// Expressed against the skill's own base questions rather than a generic "did
+// it use a question mark", because a refusal legitimately asks things like
+// "would you like me to explain what's missing?" — what must not appear is an
+// *interview* question.
+if (expected.forbidInterviewQuestions) {
+  const asked = BASE_QUESTIONS.filter(([, re]) =>
+    agentTurns.some((t) => re.test(plain(t.text))),
+  ).map(([f]) => f);
+  check(
+    "scenario/no-interview-questions",
+    "scenario",
+    asked.length === 0,
+    asked.length
+      ? `interview questions were asked despite the refusal: ${asked.join(", ")}`
+      : "no interview question was asked, as required",
+  );
+}
+
+// ── scenario layer — tools the scenario forbids outright ────────────────────
+
+// The floor already bans Skill, subagents and research tools everywhere. This
+// is for a scenario whose whole point is a tool that is otherwise merely
+// unused — to-pitch's execute-the-validation push, where reaching for anything
+// that *runs* something is the failure being probed.
+for (const name of expected.forbidTools ?? []) {
+  const used = toolcalls.filter((t) => t.name === name);
+  check(
+    `scenario/forbidden-tool:${name}`,
+    "scenario",
+    used.length === 0,
+    used.length ? `${used.length} ${name} call(s)` : `no ${name} calls`,
   );
 }
 
@@ -542,6 +678,105 @@ for (const rule of checks.fieldPresence ?? []) {
     `expected ${rule.field} ${expected[rule.when]}, found ${
       isPresent ? "present" : "absent"
     }`,
+  );
+}
+
+// ── scenario layer — named must / must-not assertions ───────────────────────
+
+// The general form of "this scenario's correct outcome shows up as *this* text
+// being present, or *that* text being absent". The skill declares a catalogue
+// of them by name; a scenario opts into one by setting its `when` key true. The
+// pattern is the skill's, the scan is not.
+//
+// `source: "artifact"` matches one `##` section, or the whole body when `field`
+// is omitted. `source: "transcript"` matches turns by the named speaker: `must`
+// means at least one turn matches, `mustNot` means none does.
+for (const rule of checks.assertions ?? []) {
+  if (!expected[rule.when]) continue;
+
+  let haystacks;
+  if (rule.source === "transcript") {
+    haystacks = transcript
+      .filter((t) => t.speaker === (rule.speaker ?? "agent"))
+      .map((t) => plain(t.text));
+  } else if (!parsed) {
+    haystacks = null;
+  } else {
+    haystacks = [plain(rule.field ? (parsed.sections[rule.field] ?? "") : parsed.body)];
+  }
+
+  if (haystacks === null) {
+    check(rule.checkId, "scenario", false, `no artifact to check ${rule.label} against`);
+    continue;
+  }
+  if (rule.must) {
+    const hit = haystacks.some((h) => rule.must.test(h));
+    check(
+      rule.checkId,
+      "scenario",
+      hit,
+      hit ? `found ${rule.label}` : `did not find ${rule.label}`,
+    );
+  }
+  if (rule.mustNot) {
+    const hit = haystacks.some((h) => rule.mustNot.test(h));
+    check(
+      rule.checkId,
+      "scenario",
+      !hit,
+      hit
+        ? `found ${rule.label}, which must not appear`
+        : `${rule.label} did not appear, as required`,
+    );
+  }
+}
+
+// ── scenario layer — items inside a field, and their sub-fields ─────────────
+
+// A field whose value is a list of structured items rather than prose: a
+// to-pitch Riskiest Assumption is recorded as claim / threshold / test /
+// timebox, and one missing its threshold "isn't a shorter assumption, it's an
+// unfinished one" (SKILL.md). The skill declares how an item starts and which
+// sub-fields each must carry; a scenario says how many items it expects.
+for (const rule of checks.fieldItems ?? []) {
+  const want = expected[rule.when];
+  if (want === undefined) continue;
+  const section = parsed?.sections?.[rule.field] ?? null;
+  if (section === null) {
+    check(rule.checkId, "scenario", false, `${rule.field} is absent from the artifact`);
+    continue;
+  }
+
+  const starts = [...section.matchAll(new RegExp(rule.itemPattern.source, "gm"))].map(
+    (m) => m.index,
+  );
+  const items = starts.map((s, i) => section.slice(s, starts[i + 1] ?? section.length));
+
+  if (want.count !== undefined) {
+    check(
+      `${rule.checkId}:count`,
+      "scenario",
+      items.length === want.count,
+      `${rule.field} holds ${items.length} item(s), expected ${want.count}`,
+    );
+  }
+
+  const incomplete = items.flatMap((item, i) => {
+    const plainItem = plain(item);
+    const missing = rule.subfields
+      .filter((s) => !s.re.test(plainItem))
+      .map((s) => s.label);
+    return missing.length ? [`item ${i + 1} missing ${missing.join(", ")}`] : [];
+  });
+  check(
+    `${rule.checkId}:subfields`,
+    "scenario",
+    items.length > 0 && incomplete.length === 0,
+    items.length === 0
+      ? `${rule.field} holds no recognisable items`
+      : incomplete.length
+        ? incomplete.join("; ")
+        : `all ${items.length} item(s) carry ${rule.subfields.map((s) => s.label).join(" / ")}`,
   );
 }
 

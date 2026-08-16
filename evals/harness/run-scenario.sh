@@ -18,7 +18,8 @@
 #   transcript.md    human-readable conversation
 #   transcript.json  structured turns, consumed by check.mjs
 #   toolcalls.json   every tool the SUT invoked, for the composition check
-#   artifact.md      the produced artifact at config.artifact.path, if any
+#   artifact.md      the produced artifact — the one workspace file matching
+#                    config.artifact.path, which is a glob (see artifact.mjs)
 #   run.json         run metadata
 #   raw/             raw stream-json from each SUT turn
 #
@@ -273,12 +274,34 @@ jq -rs '[.[] | select(.type=="assistant") | .message.content[]?
         | select(.type=="tool_use") | {name, input}]' \
   "$OUT_DIR"/raw/turn-*.jsonl >"$OUT_DIR/toolcalls.json"
 
-if [[ -f "$WORKSPACE/$ARTIFACT_PATH" ]]; then
-  cp "$WORKSPACE/$ARTIFACT_PATH" "$OUT_DIR/artifact.md"
-  echo "artifact   : written"
-else
-  echo "artifact   : none"
-fi
+# Where the artifact landed is artifact.mjs's answer, not a `[[ -f ]]` test:
+# config.artifact.path is a glob, because a to-pitch session picks its own slug
+# at runtime and no config can name the path in advance. Resolving it here in
+# bash — with globstar, or find -path — would be a second copy of the matching
+# rule, and the checker's stray-write exemption uses the first one.
+ARTIFACT_MATCHES=()
+mapfile -t ARTIFACT_MATCHES < <(node "$HARNESS_DIR/artifact.mjs" "$CONFIG" "$WORKSPACE")
+
+case "${#ARTIFACT_MATCHES[@]}" in
+  0)
+    ARTIFACT_STATE=none
+    echo "artifact   : none"
+    ;;
+  1)
+    ARTIFACT_STATE=written
+    cp "$WORKSPACE/${ARTIFACT_MATCHES[0]}" "$OUT_DIR/artifact.md"
+    echo "artifact   : written (${ARTIFACT_MATCHES[0]})"
+    ;;
+  *)
+    # Two files matching one skill's artifact pattern means the session produced
+    # two artifacts where it may produce one. Copying either would hide that, so
+    # copy neither: workspace-files.txt already lists both, and check.mjs fails
+    # floor/artifact-unique on exactly this.
+    ARTIFACT_STATE=ambiguous
+    echo "artifact   : AMBIGUOUS — ${#ARTIFACT_MATCHES[@]} files match $ARTIFACT_PATH" >&2
+    printf '             %s\n' "${ARTIFACT_MATCHES[@]}" >&2
+    ;;
+esac
 
 # Any file the SUT wrote outside its own artifact — a stray glossary, a roadmap,
 # a CONTEXT.md — is itself a finding, so record the whole tree. Seeded fixtures
@@ -291,7 +314,7 @@ jq -n \
   --arg model "$MODEL" \
   --arg ended "$ended" \
   --argjson turns "$turn" \
-  --arg artifact "$([[ -f "$OUT_DIR/artifact.md" ]] && echo written || echo none)" \
+  --arg artifact "$ARTIFACT_STATE" \
   '{scenario:$scenario, model:$model, turns:$turns, endedBecause:$ended, artifact:$artifact}' \
   >"$OUT_DIR/run.json"
 

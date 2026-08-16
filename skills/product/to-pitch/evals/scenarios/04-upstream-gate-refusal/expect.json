@@ -1,0 +1,25 @@
+{
+  "id": "04-upstream-gate-refusal",
+  "category": "boundary-testing",
+  "title": "Workspace seeded with an unapproved vision — the session refuses to start",
+  "source": "#59 scenario 4",
+  "workspace": {
+    "seed": [
+      { "from": "evals/fixtures/vision-unapproved.md", "to": "docs/product/vision.md" }
+    ]
+  },
+  "outcome": "refused",
+  "artifact": "not-written",
+  "approvalMarker": "absent",
+  "approverName": "Dana Okafor",
+  "mandatoryFieldsPresent": false,
+  "flaggedFields": [],
+  "riskiestAssumptions": "absent",
+  "forbidApprovalRequest": true,
+  "forbidInterviewQuestions": true,
+  "refusalNamesMissingApproval": true,
+  "cappedAttempts": {},
+  "declines": [],
+  "forbidRoadmapVocabulary": true,
+  "humanSpotCheckRequired": false
+}

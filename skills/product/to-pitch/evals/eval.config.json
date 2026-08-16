@@ -1,0 +1,48 @@
+{
+  "skill": "to-pitch",
+  "slashCommand": "/to-pitch",
+  "artifact": {
+    "path": "docs/product/pitches/*/pitch.md",
+    "additionalPaths": [],
+    "upstreamKey": "upstream",
+    "storedFieldOrder": [
+      "Problem",
+      "Appetite",
+      "Solution sketch",
+      "Riskiest Assumptions & Cheap Validation Plan",
+      "Rabbit Holes",
+      "No-gos",
+      "Open Questions"
+    ],
+    "optionalFields": ["Rabbit Holes", "No-gos", "Open Questions"],
+    "allowedFrontmatter": [
+      "upstream",
+      "approved_by",
+      "approved_at",
+      "revised_at",
+      "revision_reason"
+    ]
+  },
+  "workspace": {
+    "seed": [
+      { "from": "evals/fixtures/vision-approved.md", "to": "docs/product/vision.md" }
+    ]
+  },
+  "sut": {
+    "allowedTools": ["Read", "Write", "Edit", "Glob", "Grep"]
+  },
+  "founder": {
+    "finishedWhen": "it has told you the pitch is written or recorded, or that it cannot start because the vision has not been approved, or that the session is ending because no testable assumption could be produced, or if it is no longer asking you anything and is only acknowledging you"
+  },
+  "checksModule": "checks.mjs",
+  "judge": {
+    "artifactLabel": "product pitch artifact",
+    "swapTestSubject": "pitch",
+    "criterionFields": {
+      "1": ["Problem"],
+      "2": ["Appetite"],
+      "3": ["Solution sketch"],
+      "4": ["Riskiest Assumptions & Cheap Validation Plan"]
+    }
+  }
+}
