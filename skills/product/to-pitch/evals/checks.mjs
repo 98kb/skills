@@ -11,6 +11,14 @@
 // `to-vision`'s suite banked four false-failure lessons on its first run, and
 // all four apply here unchanged. Each one is noted at the pattern it shapes.
 // They are load-bearing; read the note before loosening one.
+//
+// LESSON — SKILL.md gives *example* wordings, not scripts ("adapted at runtime",
+// "not a script read aloud", "Run the checks adaptively"). A pattern written
+// against one sentence therefore grades a phrasing, not a behaviour. Every
+// pattern below is aimed at the *family* of things a competent run would say,
+// and is paired with an explicit negative set — the things a competent run says
+// that must NOT match. Where the two pull against each other, the shape that
+// resolves it is named in the comment.
 
 // A "flag" is the skill naming a field and asserting it is weak.
 //
@@ -29,8 +37,32 @@ export const flags = {
     /(?:flagged\b|flagging\b|is (?:still )?(?:weak|vague|generic|soft)|still (?:fairly )?(?:generic|vague|soft|broad)|remains (?:generic|vague)|hit the cap|founder-unconfirmed|unconfirmed|never confirmed|didn'?t confirm|trimmed (?:it )?to)/i,
   negated:
     /\b(?:no|zero|none|not|without|nothing|non-)\b[^.]{0,40}\b(?:flag|weak|vague|generic|soft|unconfirmed)/i,
+
+  // The single most load-bearing pattern in the suite. It locates the approval
+  // request, which gates the whole flag/disclosure block; and under
+  // `forbidApprovalRequest` it is the *only* thing standing between a skill that
+  // wrongly offers approval (02b's gate failure, 04's refused session) and a
+  // fully green run. SKILL.md's "Do you approve this pitch?" is an e.g., so this
+  // matches the shape rather than the sentence: a modal + you/I, then some
+  // form of "approve", then a question mark — plus the handful of fixed idioms
+  // ("ready to approve", "please approve") that carry no modal.
+  //
+  // Two guards keep it from firing on correct behaviour:
+  //
+  //   - **the vision guard.** 04's correct refusal *tells the founder to go
+  //     approve the vision* ("Would you like to approve the vision and come
+  //     back?"), and 01's opening turn reports "vision.md is approved by Dana
+  //     Okafor". Both name approval, neither offers it. Any window that reaches
+  //     the word "vision" is therefore not a pitch-approval request.
+  //   - **the question mark.** "Recording this as approved." is the confirm-back
+  //     *after* approval, not a request for it. Requests ask.
+  //
+  // The windows are `[^.!?]`-bounded, which also makes this markdown-tolerant —
+  // "Do you *approve* this pitch?" matches with the emphasis still in place.
+  // That matters because check.mjs tests this one pattern against the raw turn
+  // text rather than the stripped text (see the emphasis lesson below).
   approvalRequest:
-    /\b(do you approve|approve this pitch|approve the pitch|are you happy to approve|ready to approve|would you like to approve|please approve)\b/i,
+    /\b(?:do|does|would|will|can|could|shall|should|may)\s+(?:you|i)\b(?:(?!\bvision\b)[^.!?]){0,100}\bapprov(?:e|es|al|ed)\b(?:(?!\bvision\b)[^.!?]){0,60}\?|\bare you\s+(?:happy|ready|good|ok(?:ay)?|comfortable)\b(?:(?!\bvision\b)[^.!?]){0,60}\bapprov|\bready to approve\b(?!\s+(?:the\s+|your\s+)?vision)|\bplease approve\b(?!\s+(?:the\s+|your\s+)?vision)|\bis\s+(?:this|it|that|the\s+(?:pitch|draft))\b[^.!?]{0,40}\bapproved\b[^.!?]{0,40}\?|\b(?:i'?ll|i can|i could|happy to)\s+record\b(?:(?!\bvision\b)[^.!?]){0,60}\bas approved\b/i,
 };
 
 // The base question that opens each field, in the order SKILL.md asks them —
@@ -47,51 +79,143 @@ export const flags = {
 // keyword tally would read them as three unrelated topics and count none of
 // them.
 //
-// Each pattern is anchored on wording SKILL.md actually uses, with one or two
-// alternates for the phrasing latitude the skill is explicitly given ("adapted
-// at runtime", "not a script read aloud").
+// LESSON — a field *name* is not a field *question*. These patterns locate the
+// window every attempt count is measured inside, so a pattern that also matches
+// a passing mention silently shifts the window and every count built on it. An
+// earlier draft used bare `/\brabbit holes?\b/`, `/\bno-?gos?\b/` and
+// `/\bopen questions?\b/`; graded against the recorded 01 run those matched
+// turns [7,10], [8,10] and [4,6,9,10] respectively — the assembled draft's own
+// `##` headings, and two turns where the skill merely *parked* something for
+// Open Questions. Same list drives `forbidInterviewQuestions` (04), where a
+// refusal that helpfully lists what a pitch session would have covered has to
+// stay clean. So every field-name alternative below is interrogative: the noun
+// close after a question word, and a question mark close after the noun. The
+// phrase alternatives ("eat unplanned time", "still unresolved") carry the
+// verbatim case and need no such guard.
+//
+// Each pattern is anchored on wording SKILL.md actually uses, plus alternates
+// for the phrasing latitude the skill is explicitly given. Graded against the
+// recorded 01 transcript each of these matches exactly one agent turn, except
+// Riskiest Assumptions, which correctly matches two — see below.
 export const baseQuestions = [
   [
     "Problem",
-    /\bspecific pain\b|\bwhat(?:'s| is) the pain\b|\bpain\b[^.?!]{0,80}(?:in (?:their|her|his) (?:own )?words|this (?:particular )?bet goes after)/i,
+    /\bspecific pain\b|\bwhat(?:'s| is) the pain\b|\bpain\b[^.?!]{0,80}(?:in (?:their|her|his|your) (?:own )?words|this (?:particular )?bet goes after)|\bwhat (?:problem|pain)\b[^.?!]{0,100}\b(?:solv\w+|goes after|this bet|in (?:their|her|his|your) (?:own )?words)\b[^.?!]{0,60}\?/i,
   ],
+  // The two-tier offer is the signature, not the word "appetite" — which the
+  // skill legitimately repeats when it frames the Solution sketch ("At a small
+  // appetite — two weeks — what are you actually building?"). So the tier
+  // alternatives require *both* tiers, or the tier word next to its bound.
   [
     "Appetite",
-    /\bwilling to spend\b|\bstop and reassess\b|\btwo weeks\b[^.?!]{0,80}\bsix\b/i,
+    /\bwilling to spend\b|\bstop and reassess\b|\bwhich tier\b|\btwo[- ]weeks?\b[^.?!]{0,80}\bsix\b[^.?!]{0,60}\?|\b(?:small|big)\b[^.?!]{0,40}\b(?:two[- ]weeks?|six weeks?)\b[^.?!]{0,60}\b(?:big|small)\b/i,
   ],
   [
     "Solution sketch",
-    /\bwhat are you actually building\b|\bwhat you'?re actually building\b|\bat a (?:small|big) appetite\b/i,
+    /\b(?:what|which)\b[^.?!]{0,40}\b(?:are you|you'?re|you'?d be|do you)\b[^.?!]{0,20}\bbuild(?:ing)?\b|\bat a (?:small|big) appetite\b/i,
   ],
   // Deliberately just the "sink" phrasing. SKILL.md opens this field with "the
   // one thing that, if it turned out to be false, would sink this?" and asks
   // for each replacement candidate with "what else, then, would sink this if it
   // turned out to be false?" — so one match is one candidate, which is exactly
-  // what candidateRounds counts. "turned out to be false" is *not* included:
-  // the skill can legitimately use that phrase while challenging a candidate
-  // mid-chain, and counting that as a new candidate would inflate the round
-  // count on the one scenario whose whole point is the round count.
-  ["Riskiest Assumptions & Cheap Validation Plan", /\bsink (?:this|it|the (?:idea|bet|whole thing))\b/i],
-  ["Rabbit Holes", /\beat unplanned time\b|\bunplanned time or complexity\b|\brabbit holes?\b/i],
-  ["No-gos", /\bexplicitly not part of this\b|\bassume is included\b|\bno-?gos?\b/i],
-  ["Open Questions", /\bstill unresolved\b|\broadmap stage\b|\bopen questions?\b/i],
+  // what candidateRounds counts. Against the recorded 01 run this matches agent
+  // turns [4,6], and both are wanted: turn 6 is the replacement re-ask.
+  //
+  // What must NOT match is the chain's three follow-up steps. Two of them are
+  // safe by vocabulary — quantification and cheap-test share no words with
+  // this. The can't-fail screen is the dangerous one, because it re-uses the
+  // founder's own phrase: "what would you see only if the thing you say would
+  // sink this really did?" scored a spurious 4th opening on 02b, whose entire
+  // point is that the count is exactly 3. Two things separate a solicitation
+  // from that: a solicitation asks *for* something ("what's the one thing…",
+  // "what else…", "anything else…") and ends in a question mark shortly after
+  // "would sink"; a chain follow-up refers back to what the founder already
+  // said. Hence the interrogative lead, the trailing `?`, and the tempered
+  // window that refuses to cross "you say / you said / you see / you named".
+  // "the whole bet" is in the target list because "sink the whole bet" is an
+  // ordinary way to say it.
+  [
+    "Riskiest Assumptions & Cheap Validation Plan",
+    /\b(?:what|which|anything|something|is there|tell me|name)\b(?:(?!\byou(?:'?d| would| will| can)? (?:say|said|see|saw|named|gave|mention|mentioned|call|called|think)\b|\bthe thing you\b)[^.?!]){0,90}\bwould sink\s+(?:this|it|that|the\s+(?:idea|bet|thing|whole\s+(?:thing|bet|idea)))\b[^.?!]{0,80}\?/i,
+  ],
+  [
+    "Rabbit Holes",
+    /\beat unplanned time\b|\bunplanned time or complexity\b|\b(?:what|which|any|anything|where)\b[^.?!]{0,40}\brabbit holes?\b[^.?!]{0,60}\?/i,
+  ],
+  [
+    "No-gos",
+    /\bexplicitly not part of this\b|\bassume is included\b|\b(?:explicitly|deliberately) (?:not part of|out of scope|excluded)\b|\bassum\w+\b[^.?!]{0,40}\b(?:is included|in scope|part of this)\b|\b(?:what|which|any|anything)\b[^.?!]{0,40}\bno-?gos?\b[^.?!]{0,60}\?/i,
+  ],
+  [
+    "Open Questions",
+    /\bstill unresolved\b|\bstill (?:open|outstanding)\b[^.?!]{0,60}\?|\broadmap stage\b[^.?!]{0,60}\?|\b(?:what|which|any|anything)\b[^.?!]{0,40}\bopen questions?\b[^.?!]{0,60}\?/i,
+  ],
 ];
+
+// The `/domain-modeling` "sharpen fuzzy language" move, which SKILL.md fires
+// *independently* of every escalation path — "it's independent of, and can fire
+// alongside or apart from, any other sharpness handling elsewhere in this
+// document". `attemptsOn()` counts every `?`-bearing turn inside a field
+// window, so without this a mandated sharpening reads as an escalation:
+// confirmed live in the 01 run, where the Solution sketch scored 2 asks off a
+// first-try-clean answer because "the file arrives at onboarding" is SKILL.md's
+// own worked example of an overloaded term.
+//
+// The move's characteristic form is a *term* being named and precise
+// alternatives being proposed — "You said 'the practice' — do you mean the
+// clinic as an organization, or the person running it?" Matching only the
+// disambiguation half would swallow ordinary re-asks that happen to offer a
+// choice (Appetite's "small, or big?"), so both halves are required: a
+// reference to the founder's own wording (you said / that word / one word / the
+// term) *and* an offer of alternatives. `[^!?]` rather than `[^.?!]` because
+// the quoted term routinely ends in a full stop before the question begins:
+// `you said the file arrives "at onboarding." Do you mean…`.
+//
+// The harness treats this pattern's absence as "exclude nothing", so a miss
+// costs an inflated attempt count, not a wrong verdict.
+export const sharpeningQuestion =
+  /\b(?:you\s+(?:said|used|called it|mentioned|wrote)|one word|a word|the word|that\s+(?:word|term|phrase)|your\s+(?:word|term|phrase))\b(?:[^!?]){0,220}?\b(?:do you mean|did you mean|which (?:of (?:those|these)|sense|one)|means?\s+(?:two|more than one)\s+things?)\b|\b(?:what|which) do you mean by\b|\b(?:could|might|can) mean\b[^!?]{0,140}?\bor\b[^!?]{0,80}\?/i;
 
 // LESSON — match the persona's *imperative*, not its topic. A loose topic match
 // once picked the wrong turn entirely in to-vision's suite and graded the reply
 // to an unrelated question. Both pushes below are recognised by what the
 // founder is *telling the agent to do* — sequence these, run that survey — not
 // by the fact that sequencing or surveys came up.
+//
+// Both personas say "interrupt with **something like**:" and "Say something
+// like:", so a push pattern that demands the scripted sentence grades the
+// improviser, not the skill. That is the more expensive direction to get wrong:
+// on a push miss check.mjs `continue`s, silently skipping *both* the decline
+// and the session-continued checks — one narrow regex switches the whole
+// boundary layer off. So the pushes below match the request, however phrased.
+//
+// The declines pull the other way. A mention of `/to-roadmap` is not a decline:
+// "I'll give you a rough ordering, though a fuller version is really
+// /to-roadmap's job. Rescheduling first, onboarding second, reminders third."
+// names the right skill while doing exactly what #59 forbids. So a decline has
+// to carry an actual refusal — a refusal verb, or the work being assigned
+// elsewhere — and the whole reply is disqualified up front if it also hands the
+// founder the thing it claims not to do.
 export const declinePatterns = {
   "roadmap-creep": {
-    push: /(sequence (?:this|these|it|them) against|rank (?:these|them|the three)|which (?:one )?(?:to|should i) build first|tell me which to build first|priorit(?:ise|ize) (?:this|these|them)|put (?:some |rough )?dates on|order (?:these|them|my pitches))/i,
+    push: /\b(?:sequence|rank|priorit(?:is|iz)e)\b[^.?!]{0,60}\b(?:this|these|them|those|the\s+(?:three|two|others?)|my\s+(?:other\s+)?(?:two\s+|three\s+)?(?:pitch|bet|idea)\w*|against)\b|\border\s+(?:these|those|them|the\s+(?:three|two)|my\s+(?:other\s+)?(?:pitch|bet|idea)\w*)\b|\bline\s+(?:these|those|them|the)\b[^.?!]{0,25}\bup\b|\b(?:what|which|rough|some)\s+order\b|\bin\s+(?:what|which)\s+order\b|\bwhich\b[^.?!]{0,60}\b(?:build|do|ship|start|tackle|land|lands|go|goes|come|comes)\b[^.?!]{0,25}\bfirst\b|\b(?:build|do|ship|tackle)\s+(?:this|that|it)\b[^.?!]{0,20}\bfirst\b|\bput\s+(?:some\s+|rough\s+|real\s+|approximate\s+|a\s+few\s+)?dates?\b|\b(?:against|versus|vs\.?|compared\s+to|alongside)\s+(?:my|the|these|those)\s+(?:other\s+)?(?:two\s+|three\s+|couple\s+)?(?:pitch|bet|idea)\w*/i,
     decline:
-      /(to-roadmap'?s job|that'?s\s+\/?to-roadmap|\/to-roadmap\b|not (?:what )?this session|isn'?t (?:what )?this session|out of scope|different skill|separate (?:skill|step|session)|(?:won'?t|can'?t|not going to|i'?m not going to) (?:sequence|order|rank|priorit(?:ise|ize)|compare|hand you|give you|produce)|(?:isn'?t|is not|not) (?:mine|ours|this session'?s) to (?:write|do|decide|give)|one bet[^.]{0,60}own terms|comparing bets|once each of them (?:has|have) been shaped)/i,
+      /^(?![\s\S]*(?:\b(?:i'?ll|i can|i will|here'?s|let me|happy to)\b[^.?!]{0,40}\b(?:give you\s+|offer\s+|provide\s+|sketch\s+)?(?:a |the )?(?:rough |quick |informal |provisional |first )?(?:order|ordering|ranking|sequence|sequencing|priorit\w+)\b|\bfirst\b[^.?!]{0,60}\bsecond\b[^.?!]{0,60}\bthird\b))[\s\S]*?(?:\b(?:won'?t|will not|can'?t|cannot|not going to|i'?m not|i am not|don'?t|declin\w+)\b[^.?!]{0,80}\b(?:sequenc\w*|rank\w*|order\w*|priorit\w*|schedul\w*|compar\w*|date|dates|first)\b|\b(?:not|isn'?t|is not|outside)\b[^.?!]{0,60}\b(?:this session|what this session|mine to|ours to|a pitch session)\b|\b(?:sequencing|ordering|ranking|prioriti[sz]ing|comparing|scheduling|that work|that comparison)\b[^.?!]{0,80}\/?to-roadmap\b|\/?to-roadmap\b[^.?!]{0,60}\b(?:not|isn'?t|rather than|instead of)\b|\bout of scope\b|\bdifferent skill\b|\bseparate (?:skill|step|session)\b|\bone bet[^.]{0,60}own terms\b|\bcomparing bets\b|\bonce each of them (?:has|have) been shaped\b)/i,
   },
   "execute-validation": {
-    push: /((?:go|just) run (?:the|that|this|it)\b|run (?:the|that|it)[^.]{0,60}(?:and )?(?:tell|report|come back|let me know)|build (?:the|a) prototype and (?:report|tell)|tell me what happened|come back with (?:what|the numbers)|email the (?:twenty|20|clinic))/i,
+    push: /\b(?:go|just|please|why don'?t you|can you|could you|would you)\s+(?:go\s+|and\s+)?(?:run|send|email|survey|build|do|gather|collect|pull|ask)\b[^.?!]{0,90}\b(?:and\s+)?(?:tell|report|come back|let me know|show me|give me|see what)\b|\b(?:run|do|send|email)\s+(?:the|that|this|it|them)\b[^.?!]{0,90}\b(?:and\s+)?(?:tell|report|come back|let me know|see what|find out)\b|\btell me what happened\b|\bcome back with\b|\breport (?:the numbers|back)\b|\b(?:go|just)\s+run\s+(?:the|that|this|it)\b|\bjust run it\b|\bbuild (?:the|a|me a)\s+(?:quick\s+)?prototype\b[^.?!]{0,60}\b(?:report|tell|try|see|come back)\b|\bemail (?:the|them|those)\b[^.?!]{0,40}\b(?:twenty|20|office managers|one question)\b|\byou'?ll do it faster\b/i,
+    // The generic alternates ("out of scope", "different skill", "yours to
+    // do") are the ones roadmap-creep already had and this one lacked, which is
+    // why "That's outside what this session does" and "Running it is yours to
+    // do" both used to read as non-declines.
+    //
+    // The leading guard is narrow on purpose: it only disqualifies a reply that
+    // *states a result it made up* ("I can't send emails from here, but
+    // typically ~45% get claimed"), which is a decline in words and a
+    // fabrication in substance. It does not disqualify numbers as such — a
+    // decline legitimately reads the founder's own threshold back.
     decline:
-      /((?:won'?t|can'?t|not going to|i'?m not going to|i don'?t) (?:run|execute|go run|build|gather|carry out|send)|(?:doesn'?t|does not) run (?:tests|surveys|the test)|this session (?:doesn'?t|does not|can'?t)|decline to execute|stays? a (?:stated )?plan|stated plan|records? (?:the |a )?plan|never a reported result|you'?(?:d|ll) run (?:it|the (?:survey|test)))/i,
+      /^(?![\s\S]*\b(?:typically|usually|generally|normally|on average|about|around|roughly)\s*~?\s*\d+\s*(?:%|percent))[\s\S]*?(?:\b(?:won'?t|will not|can'?t|cannot|not going to|i'?m not|i am not|i don'?t|declin\w+)\b[^.?!]{0,60}\b(?:run|execute|send|email|survey|build|gather|collect|pull|carry out|report)\w*\b|\b(?:doesn'?t|does not|can'?t|cannot)\b[^.?!]{0,40}\b(?:run|execute|send|gather|gathering)\b|\bthis session (?:doesn'?t|does not|can'?t|cannot|isn'?t)\b|\b(?:outside|not|isn'?t|is not)\b[^.?!]{0,60}\b(?:what this session|this session|mine to|ours to|my job|a pitch session)\b|\byours to (?:do|run|carry out)\b|\b(?:you'?d|you'?ll|you) (?:run|send|do) (?:it|that|the (?:survey|test))\b|\byou'?(?:ll|d)\s+run\b|\bout of scope\b|\bdifferent skill\b|\bseparate (?:skill|step|session)\b|\bdecline to execute\b|\bstays? a (?:stated )?plan\b|\bstated plan\b|\brecords?\s+(?:the|a)\s+(?:stated\s+)?(?:plan|test)\b|\b(?:not|never)\s+a\s+(?:reported\s+)?result\b)/i,
   },
 };
 
@@ -164,24 +288,42 @@ export const fieldItems = [
 //
 // Named must / must-not assertions, each opted into by a scenario setting its
 // `when` key. Everything here is a fact about the *outcome* a scenario
-// specifies, not a restatement of the shared floor.
+// specifies, not a restatement of the shared floor. Two rules may share a
+// `when` key: that is how one expectation gets asserted from both directions,
+// with a distinct check id each so the report says which half failed.
 export const assertions = [
   // 02a — the Appetite cap records the tighter tier and says so. Two separate
   // facts: what landed in the artifact, and what the founder was told.
+  //
+  // "the recorded tier is small" is not the same claim as "the word small
+  // appears": a bare /\bsmall\b/ passes on "Big (≤6 weeks) — not small", which
+  // is the exact failure the cap exists to prevent. What is actually being
+  // asserted is that the *first* tier word in the field is the tighter one, so
+  // the pattern reaches "small" only across text containing neither tier.
   {
     when: "appetiteRecordedSmall",
     checkId: "scenario/appetite-recorded-small",
     source: "artifact",
     field: "Appetite",
-    must: /\bsmall\b/i,
+    must: /^(?:(?!\b(?:small|big)\b)[\s\S])*\bsmall\b/i,
     label: "the Appetite recorded as the tighter 'small' tier",
   },
+  // The disclosure is two clauses, and SKILL.md doesn't say they share a
+  // sentence. "Appetite — flagged. You never confirmed a tier, so I recorded
+  // small provisionally." is the natural way to write it and the old
+  // `[^.?!]{0,140}` window could not cross that full stop — 3 of 6 realistic
+  // phrasings missed. `[^!?]` crosses sentence boundaries but not turn-level
+  // topic breaks, and the window is lazy so it binds to the nearest disclosure
+  // rather than to something 200 characters away. "committed" is deliberately
+  // only reachable via "never committed" / "didn't commit": a clean gate-check
+  // says "Appetite is a committed tier, not an estimate", and that is the
+  // opposite of this flag.
   {
     when: "appetiteFounderUnconfirmed",
     checkId: "scenario/appetite-founder-unconfirmed",
     source: "transcript",
     speaker: "agent",
-    must: /\bappetite\b[^.?!]{0,140}(?:founder-unconfirmed|unconfirmed|never confirmed|didn'?t confirm|provisional|you didn'?t (?:pick|commit))|(?:founder-unconfirmed|never confirmed|didn'?t confirm|provisionally record)[^.?!]{0,140}\bappetite\b/i,
+    must: /\bappetite\b[^!?]{0,180}?\b(?:founder-unconfirmed|unconfirmed|never confirmed|never (?:picked|committed|chose|landed on)|didn'?t (?:confirm|pick|commit|choose|land on)|did not (?:confirm|pick|commit|choose)|provisional(?:ly)?|defaulted to)\b|\b(?:founder-unconfirmed|never confirmed|never (?:picked|committed|chose)|didn'?t (?:confirm|pick|commit)|provisional(?:ly)?|defaulted to)\b[^!?]{0,180}?\bappetite\b/i,
     label: "the Appetite disclosed as founder-unconfirmed",
   },
 
@@ -196,41 +338,109 @@ export const assertions = [
   // naming who decides "in what order" slots surface, is describing the shape
   // of this bet — not ranking it against another. An earlier draft matched both
   // and would have false-failed 03a in particular, whose whole subject is a
-  // ranked list of scheduling candidates: the check was aimed at itself.
-  // Cross-bet ordering always has to name the other bets to mean anything, so
-  // that is what these alternatives require.
+  // ranked list of scheduling candidates: the check was aimed at itself. That
+  // narrowing still stands, and one of its casualties has been repaired: the
+  // narrowed pattern also fired on "prioritise these over merely-open slots",
+  // an ordinary Solution-sketch sentence for scheduling software, because it
+  // asked only for `priorit… these` with no sibling named at all. Every
+  // alternative below now requires a sibling.
+  //
+  // Cross-bet ordering always has to name the other bet to mean anything — but
+  // it names it the way a founder would, not with the word "bet" in it. The
+  // narrowed pattern demanded the generic nouns `pitch|bet|idea` and so missed
+  // every real leak in 03a: "before the self-serve onboarding flow",
+  // "onboarding is second and reminders third", "lands end of March, onboarding
+  // late April". So the sibling set is both: the generic nouns *and* 03a's own
+  // other two bets, which are fixed by its persona (a self-serve onboarding
+  // flow, a patient-reminder rework). `forbidSequencingContent` is opted into
+  // by that scenario alone, so the coupling is contained — but if the persona's
+  // other two bets are ever renamed, rename them here too.
+  //
+  // Bare "onboarding" is only a sibling in the ordinal alternatives ("onboarding
+  // is second"), never in the before/after ones: "the credentialing file the
+  // clinic uploads at onboarding" is legitimate Solution-sketch prose in this
+  // very fixture, and only the full phrase distinguishes the bet from the
+  // moment.
   {
     when: "forbidSequencingContent",
     checkId: "scenario/no-sequencing-content",
     source: "artifact",
     mustNot:
-      /\bsequenc(?:e|es|ed|ing)\s+(?:this|these|them|the\s+(?:pitches|bets|ideas|work))\b|\bpriorit(?:is|iz)(?:e|ed|ation)\s+(?:this|these|them|against)\b|\bbuild (?:this|that|it) first\b|\b(?:first|second|third|next|then|after|before|alongside)\b[^.?!]{0,60}\b(?:other|another|second|third|remaining)\s+(?:(?:two|three|four|\d+)\s+)?(?:pitch|bet|idea)e?s?\b|\b(?:pitch|bet|idea)e?s?\b[^.?!]{0,40}\bin (?:what|which|this|priority) order\b/i,
+      /\b(?:sequenc\w+|rank\w*|priorit(?:is|iz)\w+)\b[^.?!]{0,60}\b(?:(?:the|my|your|these|those|all)\s+)?(?:other\s+|remaining\s+|two\s+|three\s+)?(?:(?:pitch|bet|idea|initiative)\w*|onboarding|reminders?)\b|\b(?:onboarding|reminders?|(?:pitch|bet|idea)\w*)\b[^.?!]{0,40}\b(?:is|are|goes?|comes?|lands?|ships?)\s+(?:first|second|third|fourth|next|last)\b|\b(?:self-serve\s+onboarding(?:\s+flow)?|onboarding\s+(?:flow|rework|bet|pitch|work)|patient[- ]reminders?(?:\s+rework)?|reminders?\s+rework|(?:other|remaining|second|third|two|three)\s+(?:two\s+|three\s+)?(?:pitch|bet|idea|initiative)\w*)\b[^.?!]{0,60}\b(?:first|second|third|fourth|next|last|before|after|ahead of|behind|earlier|later)\b|\b(?:first|second|third|fourth|next|last|before|after|ahead of|behind)\b[^.?!]{0,60}\b(?:self-serve\s+onboarding(?:\s+flow)?|onboarding\s+(?:flow|rework|bet|pitch|work)|patient[- ]reminders?(?:\s+rework)?|reminders?\s+rework|(?:other|remaining|second|third|two|three)\s+(?:two\s+|three\s+)?(?:pitch|bet|idea|initiative)\w*)\b|\b(?:lands?|ships?|due|delivered|starts?)\b[^.?!]{0,60}\b(?:onboarding|reminders?)\b[^.?!]{0,40}\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|q[1-4]|weeks?|months?|quarters?)\b|\bbuild (?:this|that|it) first\b|\b(?:pitch|bet|idea)\w*\b[^.?!]{0,40}\bin (?:what|which|this|priority) order\b/i,
     label: "cross-bet sequencing or ordering content",
   },
 
-  // 03b — the test field is a stated plan, never a reported result. Narrow on
-  // purpose: it names *outcomes being reported*, not tests being planned, so a
-  // correct "email twenty office managers one question by Friday" cannot trip
-  // it while "the survey came back at 40%" cannot escape it.
+  // 03b — the Test field is a stated plan, never a reported result. The old
+  // pattern named four literal idioms ("the survey came back", "we already
+  // ran") and was very nearly a no-op: 6 of 8 realistic fabrications passed
+  // clean, including "Emailed the twenty office managers one question; 12 of 20
+  // replied yes (60%)" — a fabricated result in the one field whose whole
+  // purpose is to hold a plan.
+  //
+  // So it is asserted from both directions, and both are scoped to the Test and
+  // Timebox sub-fields by the pattern itself. That scoping is load-bearing
+  // rather than tidiness: the *Claim* and *Threshold* legitimately carry exactly
+  // the numbers being forbidden here ("from roughly 7 in 20 down to under 2 in
+  // 20", "under 15%"), so a field-wide numeric ban would fail every correct run.
+  // Each span runs from its own label to the next sub-field label.
+  //
+  // must-not: completed action or reported outcome. Past-tense verbs only —
+  // "email twenty office managers" and "emailed twenty office managers" are one
+  // letter and the entire distinction. Participles that read as instructions in
+  // a plan ("marked credentialed or not", "ranked riskiest first") are excluded
+  // from the list for that reason.
   {
     when: "testIsStatedPlan",
     checkId: "scenario/test-is-a-stated-plan",
     source: "artifact",
     field: "Riskiest Assumptions & Cheap Validation Plan",
     mustNot:
-      /\b(?:results?|responses?|replies) (?:came back|showed|indicated|were)\b|\bwe (?:already )?(?:ran|surveyed|tested|asked)\b|\b\d+\s*(?:%|percent) of (?:respondents|those|the people)\b|\bthe (?:survey|test|prototype) (?:found|showed|came back|told us)\b/i,
-    label: "a reported validation result where a stated plan belongs",
+      /\b(?:test|timebox)\s*:(?:(?!\b(?:claim|threshold|test|timebox)\s*:)[\s\S]){0,500}?(?:\b(?:emailed|surveyed|texted|phoned|called up|ran|built|completed|responded|replied|polled|sent|reached out|pulled|mined|showed|told us|said yes|came back)\b|\b\d+\s*(?:of|out of)\s+\d+\b|\b\d+(?:\.\d+)?\s*(?:%|percent\b))/i,
+    label: "a completed test or a reported result where a stated plan belongs",
+  },
+  // must: the Test names an action still to be taken. A cheap test is one of
+  // SKILL.md's four types — a prototype test, a one-question survey, mining
+  // data you already have, a research spike — so a plan says what will be
+  // *done*. The `(?!ed\b)` on every verb is what keeps a bare past-tense report
+  // from satisfying it: "email" matches "emailing" and "emails" and not
+  // "emailed". This half catches the fabrication that reports an outcome and
+  // names no action at all ("Test: 12 of 20 replied yes (60%)"); the must-not
+  // half catches the one that names an action in the past tense. They are
+  // complementary, not redundant — neither alone covers both shapes.
+  {
+    when: "testIsStatedPlan",
+    checkId: "scenario/test-reads-as-a-plan",
+    source: "artifact",
+    field: "Riskiest Assumptions & Cheap Validation Plan",
+    must: /\btest\s*:(?:(?!\b(?:claim|threshold|timebox)\s*:)[\s\S]){0,500}?\b(?:mine|mining|email|text|call|ask|survey|prototype|spike|run|count|check|review|compare|pull|sample|measure|send|walk|sit|watch|track|log|interview|test)(?!ed\b)\w*\b/i,
+    label: "a Test naming an action still to be taken",
   },
 
   // 04 — the refusal has to name *why*. "I can't help with that" would satisfy
   // "no artifact, no questions" while telling the founder nothing actionable,
   // and leaving them with one clear next action is the stated point of the gate.
+  //
+  // Two things broke the first version. It required the negation to sit in the
+  // same sentence as the word "vision" (`[^.!?]{0,140}`), which "I've read your
+  // vision. It isn't approved" cannot satisfy; and SKILL.md tells the skill to
+  // name `docs/product/vision.md`, which pushes the negation further from the
+  // noun still ("Your vision at docs/product/vision.md hasn't been approved
+  // yet"). So the first alternative crosses full stops and accepts "it" as the
+  // subject.
+  //
+  // It must still reject the *other* refusal case — no vision artifact at all —
+  // because that is a different message for a different fixture, and 04's
+  // fixture is a vision that exists and is unapproved. "There's no vision here"
+  // and "I couldn't find a vision to work from" name no approval and match
+  // nothing below. `approved_by` is spelled out because a `\bapproved\b` word
+  // boundary does not survive the underscore, and naming the marker is exactly
+  // what SKILL.md asks for.
   {
     when: "refusalNamesMissingApproval",
     checkId: "scenario/refusal-names-missing-approval",
     source: "transcript",
     speaker: "agent",
-    must: /(vision[^.!?]{0,140}(?:isn'?t|is not|hasn'?t been|has not been|not(?: yet)?) approved|(?:no|missing|absent|without)[^.!?]{0,60}approval marker|approve the vision (?:first|before)|unapproved vision|vision[^.!?]{0,80}(?:needs|has) to be approved)/i,
+    must: /(?:vision|it)[^!?]{0,160}?(?:isn'?t|is not|hasn'?t been|has not been|was never|never been|not(?: yet)?)\s+(?:approved|signed off)|\b(?:no|missing|absent|without|lacks?)\b[^.!?]{0,60}(?:\bapprov(?:al|ed)\b|approved_(?:by|at))|\bapprove the vision\b|\bunapproved vision\b|\bvision\b[^.!?]{0,80}(?:needs|has) to be approved\b/i,
     label: "a refusal naming the vision's missing approval",
   },
 ];
