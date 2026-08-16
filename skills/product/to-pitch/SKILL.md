@@ -54,6 +54,38 @@ Ask one base question per field, in the order above. Ask them one at a time, in 
 6. **No-gos** — "What's explicitly not part of this, that someone might reasonably assume is included?" A bullet list of the boundary drawn *around* the approach. This is a different question from Rabbit Holes, not a rephrasing of it — one is what could go wrong inside the lines, the other is where the lines are.
 7. **Open Questions** — "What's still unresolved that the roadmap stage will need to answer?" A bullet list of at most five, so what lands downstream is a short list rather than a parking lot.
 
+## Staying in scope
+
+At any point during the interview, a founder may try to pull the session out of pitch scope. Three situations to decline and redirect, rather than let derail or end the session:
+
+- **Roadmap scope creep** — e.g. "sequence these against my other pitches," "tell me which of these to build first," or any request to order, prioritize, or put dates on this bet against another. Decline: that's `to-roadmap`'s job, not this session's. A pitch is one bet, shaped on its own terms, and comparing bets is work that can only be done once each of them has been shaped. No sequencing, ordering, prioritization, or scheduling content goes into the artifact anywhere — not as a field, not as an aside inside one. The seven fields have no place for it and there is no eighth.
+- **Execute-the-validation** — e.g. "just run the survey and tell me what happened," or "build the prototype and report back." Decline to execute; this session doesn't run tests, build prototypes, or gather data. The Riskiest Assumptions field records a **stated plan** — claim, threshold, test, timebox — and never a reported result. Write a result the founder never actually got and the bet reads as settled when nothing has been settled, which is worse than recording no validation at all. The founder runs the test after the pitch is approved; the pitch's job is to say precisely what the test is and what would count as failing it.
+- **Self-serve research** — e.g. "go research my competitors," or "make up a market-size number for the Problem." Decline to invent or look up market or competitor claims to fill a gap in an answer. Ask the founder for their own material instead, whatever they've got — a customer conversation, a support ticket, a number from their own analytics. The evidence in a pitch has to be theirs, because they're the one betting on it and they're the one who'll be wrong. Don't write speculative or fabricated research into any field to close the gap; an unfilled gap the founder can see is recoverable, an invented claim they later act on is not.
+
+**`to-roadmap`'s vocabulary stays out of the pitch** — Strategic Frame, Moves, Evidence Thresholds, Target Check-ins. This is the mirror of the way `to-vision` keeps *pitch* vocabulary out of a vision: don't fold content shaped like any of those into the seven pitch fields, even if the founder phrases it as an addition to an answer they've already given. A pitch that drifts into roadmap shape is as out of scope as a vision that drifts into pitch shape.
+
+That vocabulary is kept out **structurally**, not by validation. The interview tree above only ever elicits the seven fields, so there's nothing for roadmap-shaped content to be recorded *as* — no check runs over the finished draft hunting for those four terms, and none needs to. The declines above are conversational; the shape of the interview is what actually holds the line.
+
+All three declines are conversational, not session-ending: after redirecting, resume the interview at the field you were on before the request.
+
+Separately from scope, watch every answer for vague or overloaded **terms** as they come up — see "Sharpening vague terms" below.
+
+## Sharpening vague terms
+
+While listening to any field answer, watch for individual terms that are vague or overloaded — words that could mean more than one thing in this founder's context (e.g. "the practice" when it's unclear whether that means the clinic as an organization or the practitioner running it; "onboarding" covering both the signup flow and the sales handover; "user" vs. "account"; "the platform"). This is a check on the founder's **language**, not on the answer's overall specificity — it's independent of, and can fire alongside or apart from, any other sharpness handling elsewhere in this document.
+
+When a term like this appears:
+
+1. Pause before moving on to the next question.
+2. Embed `/domain-modeling`'s "sharpen fuzzy language" move only — propose the precise alternatives and ask the founder to pick (e.g. "You said 'the practice' — do you mean the clinic as an organization, or the person running it? Those are different customers with different pains."). Don't reach for `/domain-modeling`'s "challenge against the glossary" move, or its `CONTEXT.md`/`CONTEXT-MAP.md` read/write machinery: a `to-pitch` session never reads or writes either of those files at any point, and the founder isn't expected to already have a project glossary to challenge against.
+3. Once the founder clarifies, fold the sharpened language directly into that field's own working answer — it flows into the draft naturally when the fields are assembled later. Don't produce a separate glossary note, table, or file; the sharpening's only output is a better-worded field.
+
+Only fire this when a term is actually vague or overloaded. A clear, unambiguous answer passes straight through to the next question with no detour — clarity isn't punished with process.
+
+**Reading the upstream vision does not widen this move's scope.** The session opened by reading the vision, so its customer and thesis are sitting in front of you — but that doesn't make them extra material to sharpen the founder's answers against. Whether the pitch's Problem is *consistent* with the vision's thesis is a **content** question — does this bet actually serve that customer, does it follow from that insight — not a terminology one, and it is out of scope here. This move only ever asks what a word means inside the founder's own answer. The rule needs stating because `to-pitch` is the first skill in the pipeline with an upstream artifact at all; it has no `to-vision` analogue, since the vision is the pipeline's root and has nothing above it to be checked against.
+
+**Both of the skills `to-pitch` composes are embedded, and neither is invoked.** There are exactly two: `/grilling`, whose discipline *is* the field-by-field adaptive interview above, instantiated inline; and `/domain-modeling`, whose "sharpen fuzzy language" move is written out in this section. Both are folded into this document's own text, which means a `to-pitch` session makes **zero `Skill` tool calls at runtime** — no round trip to either skill, and no runtime dependency on either one. That's the composition contract, and it's the same one `to-vision` holds to.
+
 ## Assembling the draft
 
 Once all seven questions have been asked, assemble the draft in document order: Problem, Appetite, Solution sketch, Riskiest Assumptions & Cheap Validation Plan, Rabbit Holes, No-gos, Open Questions.
