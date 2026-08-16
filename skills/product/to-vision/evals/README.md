@@ -122,13 +122,28 @@ The persona's governing rule is that he answers **concrete** questions richly
 apologetic rather than sharper when the same abstract question is re-asked. He
 can confirm a synthesis offered to him but never generate one.
 
-So the skill's current escalation — an abstract re-ask of an abstract question —
-cannot reach his material by construction, while any move that asks for a
-specific memory reaches it immediately. Whatever the transcript shows is a fact
-about the skill, not about the persona being obliging or obstructive.
+The persona is written so that whatever the transcript shows is a fact about the
+skill, not about the founder being obliging or obstructive: he approves a thin
+draft rather than defending the skill from itself, and he never volunteers a
+synthesis.
 
-Graduate this to an ordinary graded scenario, with real expectations filled in,
-once #55 is decided.
+**Result — the skill passed, and #55's premise was wrong.** The expectation
+going in was that the spec'd escalation (an abstract re-ask of an abstract
+question) could not reach his material. It did. When Future State went blank the
+skill shrank the scope to a single scene, and when that failed too it asked him
+to describe the *past* instead — "tell me what Thursday looked like when you were
+standing in it" — then inverted his answer back into a future state. For
+Grounding Insight it dropped the word "believe" and asked where the numbers would
+come from. 16 turns, 6/6 on the judge, an artifact he said he couldn't have
+written.
+
+None of those moves are in `SKILL.md`. The real finding is narrower than #55
+asked: the adaptive behaviour is **emergent, not specified** — a capable model
+invents it, and nothing in the spec requires it.
+
+Kept as a diagnostic rather than graduated to a graded scenario, because one run
+of a stochastic conversation doesn't establish a reliable outcome to assert. It
+would need several consistent runs first.
 
 ## Grading
 
@@ -210,15 +225,27 @@ scenario before the skill counts as eval-complete. That record lives at
 `transcripts/01-cooperative-sharp/human-spot-check.md` and is the one part of
 this suite an agent cannot sign off.
 
-## Known spec ambiguity — escalation cap arithmetic
+## Escalation cap arithmetic — resolved (#56)
 
-`SKILL.md` states the cap two ways that don't quite agree: its preamble says
-escalation is "capped at **2 follow-up attempts** per field" (base question + 2
-follow-ups = 3 asks), while each per-field entry says "capped at **2
-attempts**" (2 asks total), matching #16's table. #47 inherited the same phrasing
-without resolving it.
+`SKILL.md` used to state the cap twice in words that didn't clearly agree: its
+preamble said escalation is "capped at **2 follow-up attempts** per field" (base
+question + 2 follow-ups = 3 asks), while each per-field entry said "capped at **2
+attempts**," which reads as 2 asks total.
 
-`check.mjs` accepts either reading — it asserts a field was asked `cap` to
-`cap + 1` times — so the suite only fails a genuine runaway loop, not a defensible
-interpretation. This is a spec bug in `SKILL.md` worth fixing at the source; the
-tolerance here is a deliberate accommodation, not the intended end state.
+Resolved in favour of the preamble: **the cap is 2 follow-ups — base question
+plus at most 2 further asks, 3 in total.** `SKILL.md` now states the number in
+exactly one place and the per-field entries say "at the cap" instead of
+restating it.
+
+Two things settled it. #49 words each field as "triggers [the follow-up], capped
+at 2 attempts," so the thing being capped is the follow-up, not the total. And
+every capped field in every recorded transcript lands on 3 asks — 02a's Future
+State and Why Us/Why Now, 02b's Grounding Insight, and 04's Future State.
+
+`check.mjs` no longer tolerates a range. `cappedAttempts` counts *follow-ups*,
+and a capped field is asserted to have been asked exactly `cap + 1` times, so the
+suite now catches the skill giving up early as well as looping too long.
+
+04 is the reason this matters rather than being pedantry: its founder needed the
+third ask to produce the best material in the session. Under the 2-asks reading
+the skill would have had to stop at the second and flag the field.

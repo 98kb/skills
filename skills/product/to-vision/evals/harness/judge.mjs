@@ -46,7 +46,10 @@ const CRITERION_FIELDS = {
   6: ["Why Us / Why Now"],
 };
 
-if (expected.artifact !== "written") {
+// As in check.mjs: an expectation omitted from expect.json is not asserted. A
+// diagnostic scenario omits `artifact` because which way it goes is the open
+// question — so judge whatever was produced, and stay silent if nothing was.
+if (expected.artifact !== undefined && expected.artifact !== "written") {
   const ok = !existsSync(artifactPath);
   const out = {
     scenario,
@@ -59,6 +62,18 @@ if (expected.artifact !== "written") {
   writeFileSync(join(runDir, "judge.json"), JSON.stringify(out, null, 2) + "\n");
   console.log(`\njudge — ${scenario}\n\n  ${ok ? "PASS" : "FAIL"}  ${out.reason}\n`);
   process.exit(ok ? 0 : 1);
+}
+
+if (expected.artifact === undefined && !existsSync(artifactPath)) {
+  const out = {
+    scenario,
+    judged: false,
+    passed: true,
+    reason: "no artifact produced; scenario is diagnostic and asserts neither way",
+  };
+  writeFileSync(join(runDir, "judge.json"), JSON.stringify(out, null, 2) + "\n");
+  console.log(`\njudge — ${scenario}\n\n  SKIP  ${out.reason}\n`);
+  process.exit(0);
 }
 
 if (!existsSync(artifactPath)) {

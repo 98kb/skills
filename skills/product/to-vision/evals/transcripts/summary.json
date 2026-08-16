@@ -128,18 +128,23 @@
     {
       "scenario": "04-unclear-but-honest",
       "diagnostic": true,
-      "turns": null,
-      "artifact": null,
+      "turns": 16,
+      "artifact": "written",
       "deterministic": {
-        "passed": false,
-        "note": "not run"
+        "passed": 13,
+        "total": 14,
+        "failed": 1
       },
       "disclosedFlags": [],
       "judge": {
-        "passed": false,
-        "note": "not run"
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "medium"
       },
-      "humanReviewRequired": false,
+      "humanReviewRequired": true,
       "result": "diag"
     }
   ]
