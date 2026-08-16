@@ -1,0 +1,46 @@
+{
+  "skill": "to-vision",
+  "slashCommand": "/to-vision",
+  "artifact": {
+    "path": "docs/product/vision.md",
+    "additionalPaths": [],
+    "storedFieldOrder": [
+      "Vision Statement",
+      "Customer & Problem",
+      "Future State",
+      "Grounding Insight",
+      "Why Us / Why Now",
+      "Additional Grounding",
+      "Vision Pivot Trigger"
+    ],
+    "optionalFields": ["Additional Grounding"],
+    "allowedFrontmatter": [
+      "approved_by",
+      "approved_at",
+      "revised_at",
+      "revision_reason"
+    ]
+  },
+  "workspace": {
+    "seed": []
+  },
+  "sut": {
+    "allowedTools": ["Read", "Write", "Edit", "Glob", "Grep"]
+  },
+  "founder": {
+    "finishedWhen": "it has told you the vision is written or recorded, or that the session is ending / closing / cannot continue without a grounding insight, or if it is no longer asking you anything and is only acknowledging you"
+  },
+  "checksModule": "checks.mjs",
+  "judge": {
+    "artifactLabel": "product vision artifact",
+    "swapTestSubject": "vision",
+    "criterionFields": {
+      "1": ["Customer & Problem", "Future State"],
+      "2": ["Grounding Insight"],
+      "3": ["Vision Pivot Trigger"],
+      "4": ["Vision Statement"],
+      "5": ["Future State"],
+      "6": ["Why Us / Why Now"]
+    }
+  }
+}

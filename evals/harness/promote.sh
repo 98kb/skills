@@ -2,18 +2,29 @@
 #
 # Promote a scratch run into the committed graded-transcript record.
 #
-#   ./promote.sh <scenario-id> [...]
-#   ./promote.sh --all
+#   ./promote.sh <evals-dir|eval.config.json> <scenario-id> [...]
+#   ./promote.sh <evals-dir|eval.config.json> --all
 #
-# evals/runs/ is scratch and gitignored; evals/transcripts/ is the checked-in
+# <evals>/runs/ is scratch and gitignored; <evals>/transcripts/ is the checked-in
 # evidence that the suite was actually run and what it produced. Promotion drops
 # the raw stream-json (large, machine-specific) and keeps the transcript, the
 # artifact, and both halves of the grade.
 #
 set -euo pipefail
 
+CONFIG_ARG="${1:-}"
+if [[ -z "$CONFIG_ARG" ]]; then
+  echo "usage: promote.sh <evals-dir|eval.config.json> <scenario-id> [...] | --all" >&2
+  exit 2
+fi
+shift
+
 HARNESS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EVALS_DIR="$(cd "$HARNESS_DIR/.." && pwd)"
+if [[ -d "$CONFIG_ARG" ]]; then
+  EVALS_DIR="$(cd "$CONFIG_ARG" && pwd)"
+else
+  EVALS_DIR="$(cd "$(dirname "$CONFIG_ARG")" && pwd)"
+fi
 
 if [[ "${1:-}" == "--all" ]]; then
   mapfile -t SCENARIOS < <(cd "$EVALS_DIR/scenarios" && ls -d */ | tr -d /)
@@ -22,7 +33,7 @@ else
 fi
 
 if [[ ${#SCENARIOS[@]} -eq 0 ]]; then
-  echo "usage: promote.sh <scenario-id> [...] | --all" >&2
+  echo "usage: promote.sh <evals-dir|eval.config.json> <scenario-id> [...] | --all" >&2
   exit 2
 fi
 
@@ -41,4 +52,4 @@ for scenario in "${SCENARIOS[@]}"; do
   echo "promoted $scenario → transcripts/$scenario"
 done
 
-node "$HARNESS_DIR/summarize.mjs" transcripts || true
+node "$HARNESS_DIR/summarize.mjs" "$EVALS_DIR" transcripts || true
