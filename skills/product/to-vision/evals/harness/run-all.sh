@@ -2,7 +2,7 @@
 #
 # Run the whole to-vision eval suite: every scenario, both halves of the grade.
 #
-#   ./run-all.sh              # all five scenarios
+#   ./run-all.sh              # every scenario
 #   ./run-all.sh 01-cooperative-sharp 02b-evasive-hard-blocked
 #
 # Writes evals/runs/summary.json and prints a per-scenario table. Exits non-zero

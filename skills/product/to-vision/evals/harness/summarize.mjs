@@ -21,9 +21,15 @@ const results = scenarios.map((s) => {
   const det = read(join(dir, s, "deterministic.json"));
   const jud = read(join(dir, s, "judge.json"));
   const run = read(join(dir, s, "run.json"));
+  const exp = read(join(EVALS, "scenarios", s, "expect.json"));
   const ok = Boolean(det?.passed && jud?.passed);
+  // A diagnostic scenario has no agreed correct outcome yet — it exists to
+  // produce a transcript for an open design question, so it reports but never
+  // gates. Graduate it to an ordinary scenario once that question is settled.
+  const diagnostic = Boolean(exp?.diagnostic);
   return {
     scenario: s,
+    diagnostic,
     turns: run?.turns ?? null,
     artifact: run?.artifact ?? null,
     deterministic: det
@@ -41,11 +47,11 @@ const results = scenarios.map((s) => {
         }
       : { passed: false, note: "not run" },
     humanReviewRequired: jud?.humanReviewRequired ?? false,
-    result: ok ? "pass" : "fail",
+    result: diagnostic ? "diag" : ok ? "pass" : "fail",
   };
 });
 
-const passed = results.every((r) => r.result === "pass");
+const passed = results.every((r) => r.result !== "fail");
 const model = read(join(dir, scenarios[0], "run.json"))?.model ?? null;
 
 writeFileSync(
@@ -63,6 +69,15 @@ for (const r of results) {
   );
 }
 console.log(`\n  suite ${passed ? "PASSED" : "FAILED"} — ${join(dir, "summary.json")}`);
+
+const diagnostics = results.filter((r) => r.diagnostic);
+if (diagnostics.length) {
+  console.log(
+    `  note: ${diagnostics.map((r) => r.scenario).join(", ")} ` +
+      "reported but not gated — diagnostic, no agreed correct outcome yet. " +
+      "Read the transcript.",
+  );
+}
 
 const pendingSpotCheck = results.some((r) => r.humanReviewRequired);
 if (pendingSpotCheck) {

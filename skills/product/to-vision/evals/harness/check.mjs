@@ -110,28 +110,37 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
 
 // ── shared floor 1 — approval-marker state (#9) ─────────────────────────────
 
+// An expectation that is *omitted* from expect.json is not asserted. Ordinary
+// scenarios name every outcome; a diagnostic scenario (see README) deliberately
+// leaves the contested ones out, so only the invariants that hold whichever way
+// the open design question lands are checked.
+
 {
   const fm = parsed?.frontmatter ?? {};
   const hasMarker = Boolean(fm.approved_by && fm.approved_at);
-  const want = expected.approvalMarker === "present";
-  check(
-    "floor/approval-marker",
-    "floor",
-    hasMarker === want,
-    `expected approval marker ${expected.approvalMarker}, found ${
-      hasMarker ? "present" : "absent"
-    }${hasMarker ? ` (approved_by=${fm.approved_by})` : ""}`,
-  );
+  if (expected.approvalMarker !== undefined) {
+    const want = expected.approvalMarker === "present";
+    check(
+      "floor/approval-marker",
+      "floor",
+      hasMarker === want,
+      `expected approval marker ${expected.approvalMarker}, found ${
+        hasMarker ? "present" : "absent"
+      }${hasMarker ? ` (approved_by=${fm.approved_by})` : ""}`,
+    );
+  }
 
-  const wantArtifact = expected.artifact === "written";
-  check(
-    "floor/artifact-written",
-    "floor",
-    (artifact !== null) === wantArtifact,
-    `expected artifact ${expected.artifact}, found ${
-      artifact === null ? "none" : "written"
-    }`,
-  );
+  if (expected.artifact !== undefined) {
+    const wantArtifact = expected.artifact === "written";
+    check(
+      "floor/artifact-written",
+      "floor",
+      (artifact !== null) === wantArtifact,
+      `expected artifact ${expected.artifact}, found ${
+        artifact === null ? "none" : "written"
+      }`,
+    );
+  }
 
   if (hasMarker && expected.approverName) {
     check(
@@ -540,7 +549,7 @@ if (expected.forbidPitchVocabulary && parsed) {
 
 // ── scenario layer — grounding insight presence ─────────────────────────────
 
-{
+if (expected.groundingInsight !== undefined) {
   const gi = parsed?.sections?.["Grounding Insight"] ?? null;
   const wantPresent = expected.groundingInsight === "present";
   const isPresent = Boolean(gi && gi.trim().length > 0);

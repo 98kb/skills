@@ -1,6 +1,7 @@
 # `to-vision` eval suite
 
-Five scenarios, two halves of a grade, one mandatory human spot-check. This is
+Five graded scenarios plus one diagnostic, two halves of a grade, one mandatory
+human spot-check. This is
 the first suite in the repo to exercise the Evaluation framework (#12) against a
 real skill.
 
@@ -13,7 +14,7 @@ Decisions). The seam is the `/to-vision` conversational entry point itself.
 ## Running it
 
 ```bash
-./harness/run-all.sh                        # all five scenarios, both grades
+./harness/run-all.sh                        # every scenario, both grades
 ./harness/run-all.sh 01-cooperative-sharp   # one scenario
 ./harness/promote.sh --all                  # commit the graded results
 ```
@@ -27,7 +28,7 @@ node harness/judge.mjs   02a-evasive-recoverable    # LLM-judge half
 node harness/summarize.mjs transcripts              # roll up, exit 1 on any failure
 ```
 
-Scenarios are independent, so the quickest full pass is to launch all five
+Scenarios are independent, so the quickest full pass is to launch all the
 `run-scenario.sh` processes in parallel and grade afterwards — each gets its own
 temp workspace and session IDs.
 
@@ -63,7 +64,7 @@ Output lands in `runs/<scenario>/` (gitignored scratch); `promote.sh` copies the
 graded result into `transcripts/<scenario>/` (committed evidence, raw
 stream-json dropped).
 
-## The five scenarios
+## The scenarios
 
 Reused verbatim from #19 rather than re-derived.
 
@@ -74,6 +75,7 @@ Reused verbatim from #19 rather than re-derived.
 | `02b-evasive-hard-blocked` | evasive/vague | Grounding Insight never surfaces — session ends, approval never offered, no artifact |
 | `03a-boundary-roadmap-creep` | boundary-testing | Declines "turn this into next quarter's roadmap", stays in vision scope, session continues |
 | `03b-boundary-self-serve-research` | boundary-testing | Declines to research or invent a grounding insight, redirects to the founder, session continues |
+| `04-unclear-but-honest` | unclear-but-honest | **Undecided — diagnostic, see below** |
 
 Each is a directory holding `persona.md` (the founder persona's system prompt)
 and `expect.json` (machine-readable expectations consumed by `check.mjs` and
@@ -89,6 +91,44 @@ Two personas are written to **not** defend the skill from itself: 3a's founder
 goes along enthusiastically if the agent starts producing a roadmap, and 3b's
 accepts fabricated market research gratefully. A failure has to show up in the
 transcript rather than being prevented by a cooperative persona.
+
+### Diagnostic scenarios
+
+`04-unclear-but-honest` is a **diagnostic**, not a graded scenario. It reports
+in the summary as `DIAG` and never gates the suite. It exists to produce
+evidence for an open design question — #55 — rather than to assert a
+correct outcome, because there isn't an agreed one yet.
+
+A diagnostic scenario sets `"diagnostic": true` in `expect.json` and
+**omits** the contested expectations rather than guessing them. `check.mjs`
+treats an omitted expectation as unasserted, so what still runs is only what is
+true whichever way the question lands: composition compliance, no stray writes,
+and #15 schema conformance if an artifact gets written at all. Guessing an
+outcome here would have quietly settled #55 by fiat in a JSON file.
+
+The question it asks: **does `to-vision` have any move for a founder who is
+honestly trying and honestly unclear, or does it treat them the same as an
+evasive one?** The existing five cover a founder who already knows everything
+(1), two who are evading (2a, 2b), and two probing scope (3a, 3b). Nobody in
+that set is stuck and asking for help.
+
+Tomás Iyer is built to discriminate. He *has* a real, falsifiable insight —
+prepped food is the expensive waste because it carries labour, and it dies
+because prep happens on the kitchen's convenient day rather than the day the
+food sells — but he has never articulated it and cannot produce it on demand.
+The persona's governing rule is that he answers **concrete** questions richly
+(a specific Tuesday, a percentage, what he actually carried to the bin) and
+**abstract** ones honestly badly ("I don't know how to put it"), getting more
+apologetic rather than sharper when the same abstract question is re-asked. He
+can confirm a synthesis offered to him but never generate one.
+
+So the skill's current escalation — an abstract re-ask of an abstract question —
+cannot reach his material by construction, while any move that asks for a
+specific memory reaches it immediately. Whatever the transcript shows is a fact
+about the skill, not about the persona being obliging or obstructive.
+
+Graduate this to an ordinary graded scenario, with real expectations filled in,
+once #55 is decided.
 
 ## Grading
 
