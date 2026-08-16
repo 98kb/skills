@@ -8,9 +8,7 @@
   "approvalMarker": "present",
   "approverName": "Tom Boateng",
   "mandatoryFieldsPresent": true,
-  "flaggedFields": [],
   "groundingInsight": "present",
-  "cappedAttempts": {},
   "declines": [
     "self-serve-research"
   ],

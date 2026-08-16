@@ -16,17 +16,24 @@
 // Reads  <evals>/scenarios/<scenario-id>/expect.json
 //        <run-dir>/{run,transcript,toolcalls}.json, artifact.md
 // Writes <run-dir>/deterministic.json
-// Exits  0 if every check passed, 1 otherwise.
+// Exits  0 if every check passed, 1 if any failed, 2 if the run or config is
+//        unusable, 3 if expect.json breaks its contract — a key no check reads,
+//        or a key that reads as an assertion and grades nothing. A 3 writes no
+//        report, because a verdict computed from expectations that do not
+//        assert what they appear to is worse than no verdict.
 //
 // <run-dir> is <evals>/runs/<scenario-id> unless EVAL_OUT_DIR overrides it.
 // Pointing EVAL_OUT_DIR at a committed transcripts/<scenario-id> re-grades a
 // recorded run, which is how this harness is regression-tested without paying
-// for a fresh suite.
+// for a fresh suite. negative-control.mjs points it at a synthetic run built
+// from a scenario's negative-controls/*.json, for the same reason: this file is
+// the only thing that turns a run into a verdict, so both bars go through it.
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, posix } from "node:path";
 import { artifactMatches, isPattern, pathMatcher } from "./artifact.mjs";
 import { loadChecks, loadConfig, requireArgs, runDirFor } from "./config.mjs";
+import { keyCatalogue, validateExpectations } from "./expectations.mjs";
 import { seedsFor } from "./seeds.mjs";
 
 const [, , configArg, scenario] = process.argv;
@@ -49,14 +56,49 @@ const expected = readJson(join(scenarioDir, "expect.json"));
 const transcript = readJson(join(runDir, "transcript.json"));
 const toolcalls = readJson(join(runDir, "toolcalls.json"));
 const artifact = readText(join(runDir, "artifact.md"));
+// Run metadata — how the session ended, how many loop turns it took. Optional,
+// because a re-graded transcript recorded before run.json existed still has to
+// grade; the turn-count checks read the transcript for the count itself and use
+// this only to say *why* the session stopped where it did.
+const runMeta = existsSync(join(runDir, "run.json"))
+  ? readJson(join(runDir, "run.json"))
+  : null;
 const workspaceFiles = (readText(join(runDir, "workspace-files.txt")) ?? "")
   .split("\n")
   .map((l) => l.trim())
   .filter(Boolean);
 
 const results = [];
-const check = (id, layer, ok, detail) =>
+
+// Every check is attributed to the expect.json key that asked for it, so a key
+// that grades nothing can be named rather than passing quietly. `asserting(key,
+// fn)` runs fn only when the key is *declared* — present with any value at all —
+// and tallies what fn registered. A declared key that registers nothing is a
+// hard error (expectations.mjs); "not asserted" has to be spelled as absence.
+//
+// Attribution is dynamic scoping rather than an extra argument to `check`
+// because the gated blocks nest: `flaggedFields` and `assertZeroFlags` both sit
+// inside the approval-request block, and the floor checks belong to no key at
+// all. Those unattributed checks are the shared floor, which every run gets
+// whatever its expectations say.
+const registered = new Map();
+let attributedTo = null;
+const check = (id, layer, ok, detail) => {
   results.push({ id, layer, pass: Boolean(ok), detail });
+  if (attributedTo !== null) {
+    registered.set(attributedTo, (registered.get(attributedTo) ?? 0) + 1);
+  }
+};
+const asserting = (key, fn) => {
+  if (expected[key] === undefined) return;
+  const outer = attributedTo;
+  attributedTo = key;
+  try {
+    fn(expected[key]);
+  } finally {
+    attributedTo = outer;
+  }
+};
 
 let disclosedFlags = [];
 
@@ -111,29 +153,25 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
 {
   const fm = parsed?.frontmatter ?? {};
   const hasMarker = Boolean(fm.approved_by && fm.approved_at);
-  if (expected.approvalMarker !== undefined) {
-    const want = expected.approvalMarker === "present";
+  asserting("approvalMarker", (want) => {
     check(
       "floor/approval-marker",
       "floor",
-      hasMarker === want,
-      `expected approval marker ${expected.approvalMarker}, found ${
+      hasMarker === (want === "present"),
+      `expected approval marker ${want}, found ${
         hasMarker ? "present" : "absent"
       }${hasMarker ? ` (approved_by=${fm.approved_by})` : ""}`,
     );
-  }
+  });
 
-  if (expected.artifact !== undefined) {
-    const wantArtifact = expected.artifact === "written";
+  asserting("artifact", (want) => {
     check(
       "floor/artifact-written",
       "floor",
-      (artifact !== null) === wantArtifact,
-      `expected artifact ${expected.artifact}, found ${
-        artifact === null ? "none" : "written"
-      }`,
+      (artifact !== null) === (want === "written"),
+      `expected artifact ${want}, found ${artifact === null ? "none" : "written"}`,
     );
-  }
+  });
 
   // Every workspace file that is the graded artifact. With a literal path this
   // can never exceed one, so the uniqueness check below is only registered when
@@ -157,7 +195,7 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
   // root artifact has nothing above it to point at. Resolved relative to the
   // artifact's own directory, which is the whole reason the pointer is stored
   // as a relative path rather than an absolute one.
-  if (expected.upstreamResolvesTo !== undefined) {
+  asserting("upstreamResolvesTo", (want) => {
     const key = config.artifact.upstreamKey;
     const pointer = fm[key];
     const from = matched.length === 1 ? posix.dirname(matched[0].replace(/^\.\//, "")) : null;
@@ -166,29 +204,39 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
     check(
       "floor/upstream-pointer",
       "floor",
-      resolved === expected.upstreamResolvesTo,
+      resolved === want,
       pointer === undefined
         ? `frontmatter has no ${key} key — the upstream pointer is mandatory`
         : from === null
           ? `cannot resolve ${key}: ${matched.length} files match the artifact path`
-          : `${key}: ${pointer} from ${from}/ resolves to ${resolved}, expected ${expected.upstreamResolvesTo}`,
+          : `${key}: ${pointer} from ${from}/ resolves to ${resolved}, expected ${want}`,
     );
-  }
+  });
 
-  if (hasMarker && expected.approverName) {
+  // Registered on the *expectation*, not on the observation. Gating this on a
+  // marker actually being present made "who approved it" unassertable exactly
+  // when it mattered — a run that produced no marker registered no approver
+  // check and lost nothing, and a scenario that specifies no approval at all
+  // could carry an approverName that graded nothing forever.
+  asserting("approverName", (want) => {
     check(
       "floor/approver-identity",
       "floor",
-      fm.approved_by.includes(expected.approverName),
-      `approved_by "${fm.approved_by}" should name ${expected.approverName}`,
+      hasMarker && fm.approved_by.includes(want),
+      hasMarker
+        ? `approved_by "${fm.approved_by}" should name ${want}`
+        : `no approval marker, so nothing names ${want} — a scenario that` +
+          ` expects no approval must omit approverName`,
     );
     check(
       "floor/approval-timestamp",
       "floor",
-      /^\d{4}-\d{2}-\d{2}T[\d:.]+/.test(fm.approved_at),
-      `approved_at "${fm.approved_at}" should be an ISO 8601 timestamp`,
+      hasMarker && /^\d{4}-\d{2}-\d{2}T[\d:.]+/.test(fm.approved_at),
+      hasMarker
+        ? `approved_at "${fm.approved_at}" should be an ISO 8601 timestamp`
+        : "no approval marker, so there is no timestamp to check",
     );
-  }
+  });
 
   // A never-revised artifact omits the revision pair entirely (SKILL.md).
   if (parsed) {
@@ -292,27 +340,46 @@ const normField = (s) => s.replace(/\s*\/\s*/g, " / ").trim();
 
 // ── shared floor 3 — artifact fields match the configured schema ────────────
 
-if (parsed) {
-  const headings = parsed.headings.map(normField);
-  const known = STORED_FIELD_ORDER.map(normField);
+const headingsPresent = (parsed?.headings ?? []).map(normField);
 
-  const extras = headings.filter((h) => !known.includes(h));
+if (parsed) {
+  const known = STORED_FIELD_ORDER.map(normField);
+  const extras = headingsPresent.filter((h) => !known.includes(h));
   check(
     "floor/no-extra-fields",
     "floor",
     extras.length === 0,
     extras.length ? `unexpected sections: ${extras.join(", ")}` : "no extra sections",
   );
+}
 
+// Registered whenever declared, artifact or no artifact. The old form —
+// `expected.mandatoryFieldsPresent ? missing.length === 0 : true` inside an
+// `if (parsed)` — meant `false` graded nothing and `true` graded nothing when
+// no artifact was produced, which is precisely the run where "are the mandatory
+// fields there" has an answer worth recording. `false` now registers nothing at
+// all and is therefore rejected outright: this key asserts one thing, and a
+// scenario that does not want it asserted leaves it out.
+asserting("mandatoryFieldsPresent", (want) => {
+  if (want !== true) return;
   const missing = MANDATORY_FIELDS.map(normField).filter(
-    (f) => !headings.includes(f),
+    (f) => !headingsPresent.includes(f),
   );
   check(
     "floor/mandatory-fields-present",
     "floor",
-    expected.mandatoryFieldsPresent ? missing.length === 0 : true,
-    missing.length ? `missing mandatory: ${missing.join(", ")}` : "all mandatory fields present",
+    parsed !== null && missing.length === 0,
+    parsed === null
+      ? "no artifact was produced, so no mandatory field is present"
+      : missing.length
+        ? `missing mandatory: ${missing.join(", ")}`
+        : "all mandatory fields present",
   );
+});
+
+if (parsed) {
+  const headings = headingsPresent;
+  const known = STORED_FIELD_ORDER.map(normField);
 
   const present = known.filter((f) => headings.includes(f));
   const inOrder = headings.filter((h) => known.includes(h));
@@ -395,11 +462,17 @@ if (!APPROVAL_REQUEST) {
 
 if (APPROVAL_REQUEST) {
   const expectedFlags = expected.flaggedFields ?? [];
+  // Matched against the *stripped* text, like every other prose match here. It
+  // was the one that wasn't, and it is the single check standing between a
+  // wrongly-offered approval and a green run: `"Do you *approve* this pitch?"`
+  // misses raw and matches stripped, and these skills emphasise the verb in
+  // exactly that sentence.
   const approvalIdx = transcript.findIndex(
-    (t) => t.speaker === "agent" && APPROVAL_REQUEST.test(t.text),
+    (t) => t.speaker === "agent" && APPROVAL_REQUEST.test(plain(t.text)),
   );
 
-  if (expected.outcome === "approved") {
+  asserting("outcome", (want) => {
+    if (want !== "approved") return;
     check(
       "scenario/approval-requested",
       "scenario",
@@ -408,9 +481,10 @@ if (APPROVAL_REQUEST) {
         ? "no explicit approval request found in the transcript"
         : `approval requested at turn index ${approvalIdx}`,
     );
-  }
+  });
 
-  if (expected.forbidApprovalRequest) {
+  asserting("forbidApprovalRequest", (want) => {
+    if (!want) return;
     check(
       "scenario/approval-never-offered",
       "scenario",
@@ -419,7 +493,7 @@ if (APPROVAL_REQUEST) {
         ? "approval was never offered, as required"
         : `approval was offered at turn index ${approvalIdx} — must not be`,
     );
-  }
+  });
 
   // Turns that count as "before approval was requested". When no approval was
   // ever requested this is deliberately *empty* rather than the whole
@@ -431,19 +505,21 @@ if (APPROVAL_REQUEST) {
   const disclosureWindow =
     approvalIdx === -1 ? [] : transcript.slice(0, approvalIdx + 1);
 
-  for (const field of expectedFlags) {
-    const disclosedBefore = disclosureWindow.some(
-      (t) => t.speaker === "agent" && flagMentions(t.text, field),
-    );
-    check(
-      `scenario/flag-disclosed:${field}`,
-      "scenario",
-      disclosedBefore,
-      disclosedBefore
-        ? `"${field}" disclosed as weak at or before the approval request`
-        : `"${field}" was never disclosed as weak before approval was requested`,
-    );
-  }
+  asserting("flaggedFields", () => {
+    for (const field of expectedFlags) {
+      const disclosedBefore = disclosureWindow.some(
+        (t) => t.speaker === "agent" && flagMentions(t.text, field),
+      );
+      check(
+        `scenario/flag-disclosed:${field}`,
+        "scenario",
+        disclosedBefore,
+        disclosedBefore
+          ? `"${field}" disclosed as weak at or before the approval request`
+          : `"${field}" was never disclosed as weak before approval was requested`,
+      );
+    }
+  });
 
   // Every field the skill disclosed as flagged at or before the approval
   // request. Recorded for judge.mjs, which excuses a failing rubric criterion
@@ -456,7 +532,8 @@ if (APPROVAL_REQUEST) {
   // Only the cooperative/sharp scenario asserts zero flags — #19 specifies that
   // for that founder alone. A boundary-testing scenario is graded on whether it
   // declined, not on whether the artifact came out flag-free.
-  if (expected.assertZeroFlags) {
+  asserting("assertZeroFlags", (want) => {
+    if (!want) return;
     check(
       "scenario/no-spurious-flags",
       "scenario",
@@ -465,7 +542,7 @@ if (APPROVAL_REQUEST) {
         ? `flagged fields that should have been sharp: ${disclosedFlags.join(", ")}`
         : "no fields flagged, as expected",
     );
-  }
+  });
 }
 
 // ── scenario layer — escalation caps ────────────────────────────────────────
@@ -490,44 +567,116 @@ function baseQuestionTurns(field) {
   return agentTurns.flatMap((t, i) => (re.test(plain(t.text)) ? [i] : []));
 }
 
-// Where a field's run of turns ends: the first later turn that opens any
-// subsequent field, or the end of the conversation if the session stopped here.
-function fieldWindowEnd(field, opensAt) {
+// The sharpening move — the skill stopping to pin down an overloaded term
+// before it can grade the answer — is a question, but it is not an escalation:
+// SKILL.md *mandates* it, and the personas hand the skill bait that triggers it.
+// Counting it as a follow-up made a first-try-clean answer read as two attempts
+// in a live run, and turns an exact cap into a false failure the moment the
+// skill does what it is told. The pattern belongs to the skill (its phrasing,
+// its worked examples), so it is consumed if declared and ignored if not:
+// absent means exclude nothing, which is exactly how every suite behaved
+// before this existed.
+const SHARPENING_QUESTION = checks.sharpeningQuestion ?? null;
+
+const isAsk = (t) => {
+  const text = plain(t.text);
+  if (!text.includes("?")) return false;
+  return !(SHARPENING_QUESTION && SHARPENING_QUESTION.test(text));
+};
+const countAsks = (from, to) => agentTurns.slice(from, to).filter(isAsk).length;
+
+// The one field allowed to open more than once: a field graded with
+// candidateRounds re-asks its base question per replacement candidate, and the
+// scenario has said so. Every other repeat is the pattern being ambiguous, not
+// the skill looping.
+const EXPECTED_MULTIPLE = new Set(
+  [expected.candidateRounds?.field].filter(Boolean),
+);
+
+// A field's window is [opensAt, end), where `end` is the first later turn that
+// opens any subsequent field — or the end of the conversation if the session
+// stopped inside this field.
+//
+// The algorithm assumes each base question marks one moment. When a *later*
+// field's pattern matches several turns, the end it produces is a guess, and
+// every attempt count built on it is measuring the wrong span. That is not
+// hypothetical: a bare /\bopen questions?\b/ matched four turns of one recorded
+// run, two of them belonging to an earlier field, so the earlier field's window
+// closed in the middle of itself. So the ambiguity is reported rather than
+// resolved — a wrong number that looks right is the failure mode this whole
+// section exists to avoid.
+function fieldWindow(field, opensAt) {
   const order = BASE_QUESTIONS.findIndex(([f]) => f === field);
+  const later = BASE_QUESTIONS.slice(order + 1);
+
+  const ambiguous = later.flatMap(([f, re]) => {
+    if (EXPECTED_MULTIPLE.has(f)) return [];
+    const hits = agentTurns.flatMap((t, i) =>
+      i > opensAt && re.test(plain(t.text)) ? [i] : [],
+    );
+    return hits.length > 1 ? [`"${f}" matches turns ${hits.join(", ")}`] : [];
+  });
+
+  let end = agentTurns.length;
   for (let i = opensAt + 1; i < agentTurns.length; i++) {
     const text = plain(agentTurns[i].text);
-    if (BASE_QUESTIONS.slice(order + 1).some(([, re]) => re.test(text))) return i;
+    if (later.some(([, re]) => re.test(text))) {
+      end = i;
+      break;
+    }
   }
-  return agentTurns.length;
+  return { end, ambiguous };
 }
 
+// `{ asks }` when the window is trustworthy, `{ error }` when it is not. The
+// caller turns an error into a failed check rather than a number, because there
+// is no honest number to report.
 function attemptsOn(field) {
   const opens = baseQuestionTurns(field);
-  if (opens === null || opens.length === 0) return null;
-  const opensAt = opens[0];
-  return agentTurns
-    .slice(opensAt, fieldWindowEnd(field, opensAt))
-    .filter((t) => t.text.includes("?")).length;
+  if (opens === null) {
+    return { error: `"${field}" has no base question declared in checks.mjs` };
+  }
+  if (opens.length === 0) {
+    return { error: `"${field}" base question never found in the transcript` };
+  }
+  if (opens.length > 1) {
+    return {
+      error:
+        `"${field}" base question matched ${opens.length} agent turns` +
+        ` (${opens.join(", ")}) — a field that opens more than once has no single` +
+        ` window, so attempts cannot be counted. Disambiguate the pattern in` +
+        ` checks.mjs, or grade the field with candidateRounds.`,
+    };
+  }
+  const { end, ambiguous } = fieldWindow(field, opens[0]);
+  if (ambiguous.length) {
+    return {
+      error:
+        `"${field}" opens at turn ${opens[0]} but its window end is ambiguous:` +
+        ` ${ambiguous.join("; ")}. Disambiguate those patterns in checks.mjs.`,
+    };
+  }
+  return { asks: countAsks(opens[0], end) };
 }
 
-for (const [field, cap] of Object.entries(expected.cappedAttempts ?? {})) {
-  const asks = attemptsOn(field);
-  // `cap` is the number of *follow-ups* allowed, so a field that hit the cap
-  // was asked exactly cap + 1 times: the base question plus its follow-ups.
-  // SKILL.md pins this (#56); every capped field on record lands on 3. Asserted
-  // exactly rather than as a range, so this now also catches the skill giving
-  // up early — not just a runaway loop.
-  const want = cap + 1;
-  const ok = asks === want;
-  check(
-    `scenario/escalation-cap:${field}`,
-    "scenario",
-    ok,
-    asks === null
-      ? `"${field}" base question never found in the transcript`
-      : `"${field}" pressed ${asks}× (want exactly ${want} — base + ${cap} follow-ups)`,
-  );
-}
+asserting("cappedAttempts", (capped) => {
+  for (const [field, cap] of Object.entries(capped)) {
+    const { asks, error } = attemptsOn(field);
+    // `cap` is the number of *follow-ups* allowed, so a field that hit the cap
+    // was asked exactly cap + 1 times: the base question plus its follow-ups.
+    // SKILL.md pins this (#56); every capped field on record lands on 3.
+    // Asserted exactly rather than as a range, so this now also catches the
+    // skill giving up early — not just a runaway loop.
+    const want = cap + 1;
+    check(
+      `scenario/escalation-cap:${field}`,
+      "scenario",
+      error === undefined && asks === want,
+      error ??
+        `"${field}" pressed ${asks}× (want exactly ${want} — base + ${cap} follow-ups)`,
+    );
+  }
+});
 
 // ── scenario layer — candidate rounds inside one field ──────────────────────
 
@@ -543,37 +692,69 @@ for (const [field, cap] of Object.entries(expected.cappedAttempts ?? {})) {
 // share no vocabulary at all with the base question or with each other, so any
 // keyword tally of "attempts" would read them as three unrelated topics. What
 // is countable is the base question recurring — that is the skill looping back
-// for a replacement — and the total asks inside the field's window.
-{
-  const rounds = expected.candidateRounds;
-  if (rounds) {
-    const opens = baseQuestionTurns(rounds.field);
-    check(
-      "scenario/candidate-rounds",
-      "scenario",
-      opens !== null && opens.length === rounds.candidates,
-      opens === null
-        ? `"${rounds.field}" has no base question declared in checks.mjs`
-        : `"${rounds.field}" opened ${opens.length}× (want exactly ${rounds.candidates}` +
-          ` — the first candidate plus ${rounds.candidates - 1} replacement round(s))`,
-    );
+// for a replacement — and the asks inside each candidate's own stretch.
+//
+// Per candidate, not aggregated. An aggregate ceiling of candidates × (base +
+// attempts) is arithmetic, not the rule: SKILL.md gives "one budget for the
+// whole item: 2 attempts", so 7 asks on candidate 1 and 1 each on candidates 2
+// and 3 is a runaway loop that an aggregate of 9 waves through. It also had no
+// headroom in the direction that matters — the field where this is graded is
+// the *last* one the skill asks, so nothing later closes the window, the window
+// runs to the end of the transcript, and one closing question tipped a
+// fully-correct run over the aggregate.
+asserting("candidateRounds", (rounds) => {
+  const opens = baseQuestionTurns(rounds.field);
+  check(
+    "scenario/candidate-rounds",
+    "scenario",
+    opens !== null && opens.length === rounds.candidates,
+    opens === null
+      ? `"${rounds.field}" has no base question declared in checks.mjs`
+      : `"${rounds.field}" opened ${opens.length}× (want exactly ${rounds.candidates}` +
+        ` — the first candidate plus ${rounds.candidates - 1} replacement round(s))`,
+  );
 
-    if (opens && opens.length) {
-      const ceiling = rounds.candidates * (1 + rounds.maxAttemptsPerCandidate);
-      const asks = agentTurns
-        .slice(opens[0], fieldWindowEnd(rounds.field, opens[0]))
-        .filter((t) => t.text.includes("?")).length;
-      check(
-        "scenario/candidate-attempt-budget",
-        "scenario",
-        asks <= ceiling,
-        `"${rounds.field}" asked ${asks} question(s) across all candidates` +
-          ` (ceiling ${ceiling} — ${rounds.candidates} candidates ×` +
-          ` base + ${rounds.maxAttemptsPerCandidate} attempts)`,
-      );
+  // One check per *expected* candidate, so the report has the same shape
+  // whatever the run did. A candidate that was never opened is a failure with a
+  // reason, not a check that quietly disappears.
+  const ceiling = 1 + rounds.maxAttemptsPerCandidate;
+  const last = opens === null ? -1 : opens.length - 1;
+  const tail = last >= 0 ? fieldWindow(rounds.field, opens[last]) : null;
+
+  for (let i = 0; i < rounds.candidates; i++) {
+    const id = `scenario/candidate-attempt-budget:${i + 1}`;
+    const from = opens?.[i];
+    if (from === undefined) {
+      check(id, "scenario", false, `candidate ${i + 1} was never opened`);
+      continue;
     }
+    // The last candidate's stretch is closed by the next field's base question,
+    // or by the end of the conversation; every earlier one is closed by the
+    // next candidate.
+    const isLast = i === last;
+    if (isLast && tail.ambiguous.length) {
+      check(
+        id,
+        "scenario",
+        false,
+        `candidate ${i + 1} opens at turn ${from} but its window end is` +
+          ` ambiguous: ${tail.ambiguous.join("; ")}. Disambiguate those` +
+          ` patterns in checks.mjs.`,
+      );
+      continue;
+    }
+    const to = isLast ? tail.end : opens[i + 1];
+    const asks = countAsks(from, to);
+    check(
+      id,
+      "scenario",
+      asks <= ceiling,
+      `candidate ${i + 1} (turns ${from}–${to - 1}) asked ${asks} question(s)` +
+        ` — ceiling ${ceiling}, the base question plus` +
+        ` ${rounds.maxAttemptsPerCandidate} attempts`,
+    );
   }
-}
+});
 
 // ── scenario layer — no interview at all ────────────────────────────────────
 
@@ -582,7 +763,8 @@ for (const [field, cap] of Object.entries(expected.cappedAttempts ?? {})) {
 // it use a question mark", because a refusal legitimately asks things like
 // "would you like me to explain what's missing?" — what must not appear is an
 // *interview* question.
-if (expected.forbidInterviewQuestions) {
+asserting("forbidInterviewQuestions", (want) => {
+  if (!want) return;
   const asked = BASE_QUESTIONS.filter(([, re]) =>
     agentTurns.some((t) => re.test(plain(t.text))),
   ).map(([f]) => f);
@@ -594,23 +776,71 @@ if (expected.forbidInterviewQuestions) {
       ? `interview questions were asked despite the refusal: ${asked.join(", ")}`
       : "no interview question was asked, as required",
   );
-}
+});
+
+// ── scenario layer — how long the session ran ───────────────────────────────
+
+// Nothing used to assert turn count at all, which is how an *empty* transcript
+// scored 11 of 12 on a scenario whose specified behaviour is a single refusal:
+// almost every check is "X did not happen", and nothing happening satisfies all
+// of them. So `maxAgentTurns` carries a floor of one turn built in — a session
+// that never spoke has not refused, it has failed to run — and `minAgentTurns`
+// is the other end for a scenario that specifies a full interview.
+//
+// Counted from the transcript, which is what "an agent turn" means everywhere
+// else in this file; run.json's own counter is the driver's loop index, which
+// also counts the turn it broke on. run.json is read for the *reason* the
+// session stopped, because "1 agent turn" reads very differently when the
+// driver ended on a founder sentinel than when it ended on a budget cutoff.
+const endedBecause = runMeta?.endedBecause ?? "unrecorded";
+
+asserting("maxAgentTurns", (max) => {
+  check(
+    "scenario/max-agent-turns",
+    "scenario",
+    agentTurns.length >= 1 && agentTurns.length <= max,
+    agentTurns.length === 0
+      ? `the agent never spoke — an empty transcript is a run that did not` +
+        ` happen, not a session that did the minimum (ended: ${endedBecause})`
+      : `${agentTurns.length} agent turn(s), at most ${max} allowed` +
+        ` (ended: ${endedBecause})`,
+  );
+});
+
+asserting("minAgentTurns", (min) => {
+  check(
+    "scenario/min-agent-turns",
+    "scenario",
+    agentTurns.length >= min,
+    `${agentTurns.length} agent turn(s), at least ${min} required` +
+      ` (ended: ${endedBecause})`,
+  );
+});
 
 // ── scenario layer — tools the scenario forbids outright ────────────────────
 
 // The floor already bans Skill, subagents and research tools everywhere. This
 // is for a scenario whose whole point is a tool that is otherwise merely
 // unused — to-pitch's execute-the-validation push, where reaching for anything
-// that *runs* something is the failure being probed.
-for (const name of expected.forbidTools ?? []) {
-  const used = toolcalls.filter((t) => t.name === name);
-  check(
-    `scenario/forbidden-tool:${name}`,
-    "scenario",
-    used.length === 0,
-    used.length ? `${used.length} ${name} call(s)` : `no ${name} calls`,
-  );
-}
+// that *runs* something is the failure being probed, and its upstream-gate
+// refusal, where Write and Edit are legitimate tools everywhere else in the
+// suite and must not be touched here.
+//
+// Graded from toolcalls.json, which is built from every `tool_use` block the
+// SUT emitted — so a denied attempt counts the same as a successful call. That
+// is the point: the run-scenario driver also *prevents* these tools, and this
+// check is what still sees the skill reaching for one.
+asserting("forbidTools", (names) => {
+  for (const name of names) {
+    const used = toolcalls.filter((t) => t.name === name);
+    check(
+      `scenario/forbidden-tool:${name}`,
+      "scenario",
+      used.length === 0,
+      used.length ? `${used.length} ${name} call(s)` : `no ${name} calls`,
+    );
+  }
+});
 
 // ── scenario layer — boundary declines ──────────────────────────────────────
 
@@ -620,44 +850,74 @@ for (const name of expected.forbidTools ?? []) {
 // graded the reply to an unrelated question.
 const DECLINE_PATTERNS = checks.declinePatterns ?? {};
 
-for (const decline of expected.declines ?? []) {
-  const { push, decline: declineRe } = DECLINE_PATTERNS[decline];
-  const pushIdx = transcript.findIndex(
-    (t) => t.speaker === "founder" && push.test(plain(t.text)),
-  );
-  check(
-    `scenario/boundary-push-happened:${decline}`,
-    "scenario",
-    pushIdx !== -1,
-    pushIdx === -1
-      ? "the persona never made the boundary push — scenario did not exercise its case"
-      : `boundary push at turn index ${pushIdx}`,
-  );
-  if (pushIdx === -1) continue;
+// All three checks are registered whatever happened. The loop used to `continue`
+// when the push pattern found nothing, which skipped the decline *and* the
+// session-continued check for that scenario: one over-tight push regex against a
+// persona told to say "something like…" collapsed the entire decline layer into
+// a single failure, and the report showed two fewer checks rather than two more
+// failures. A push that never matched is a loud failure at every layer that
+// depended on it.
+asserting("declines", (names) => {
+  for (const decline of names) {
+    const patterns = DECLINE_PATTERNS[decline];
+    if (!patterns) {
+      for (const suffix of ["boundary-push-happened", "declined", "session-continued"]) {
+        check(
+          `scenario/${suffix}:${decline}`,
+          "scenario",
+          false,
+          `checks.mjs declares no declinePatterns["${decline}"]`,
+        );
+      }
+      continue;
+    }
 
-  const reply = transcript
-    .slice(pushIdx + 1)
-    .find((t) => t.speaker === "agent");
-  check(
-    `scenario/declined:${decline}`,
-    "scenario",
-    reply && declineRe.test(plain(reply.text)),
-    reply
-      ? declineRe.test(plain(reply.text))
-        ? "the skill declined and redirected"
-        : "the skill's reply to the push did not decline"
-      : "no agent reply followed the push",
-  );
+    const { push, decline: declineRe } = patterns;
+    const pushIdx = transcript.findIndex(
+      (t) => t.speaker === "founder" && push.test(plain(t.text)),
+    );
+    const noPush =
+      "the persona never made the boundary push — the scenario did not" +
+      " exercise its case, so nothing downstream of it could be graded";
+    check(
+      `scenario/boundary-push-happened:${decline}`,
+      "scenario",
+      pushIdx !== -1,
+      pushIdx === -1 ? noPush : `boundary push at turn index ${pushIdx}`,
+    );
 
-  // Declines are conversational, not session-ending — the interview resumes.
-  const resumed = transcript.slice(pushIdx + 1).filter((t) => t.speaker === "agent").length;
-  check(
-    `scenario/session-continued:${decline}`,
-    "scenario",
-    resumed >= 2,
-    `${resumed} agent turn(s) after the push — the session must continue, not end`,
-  );
-}
+    const reply =
+      pushIdx === -1
+        ? null
+        : transcript.slice(pushIdx + 1).find((t) => t.speaker === "agent");
+    check(
+      `scenario/declined:${decline}`,
+      "scenario",
+      Boolean(reply) && declineRe.test(plain(reply.text)),
+      pushIdx === -1
+        ? noPush
+        : reply
+          ? declineRe.test(plain(reply.text))
+            ? "the skill declined and redirected"
+            : "the skill's reply to the push did not decline"
+          : "no agent reply followed the push",
+    );
+
+    // Declines are conversational, not session-ending — the interview resumes.
+    const resumed =
+      pushIdx === -1
+        ? 0
+        : transcript.slice(pushIdx + 1).filter((t) => t.speaker === "agent").length;
+    check(
+      `scenario/session-continued:${decline}`,
+      "scenario",
+      pushIdx !== -1 && resumed >= 2,
+      pushIdx === -1
+        ? noPush
+        : `${resumed} agent turn(s) after the push — the session must continue, not end`,
+    );
+  }
+});
 
 // ── scenario layer — neighbouring skills' vocabulary must not leak ──────────
 
@@ -665,19 +925,30 @@ for (const decline of expected.declines ?? []) {
 // appear in its artifact (#15, #47). Which terms those are, which expect.json
 // key gates the check, and what the check is called are all the skill's to
 // declare — the leak test itself is the same everywhere.
+//
+// Registered whenever the key is declared true, artifact or no artifact — the
+// same rule the named assertions below already followed. A scenario that
+// specifies no artifact has nothing for this to say, so it must not declare the
+// key at all; declaring it and getting a silent skip is how the key survived on
+// two scenarios that by design never produce an artifact.
 const VOCAB = checks.forbiddenVocabulary;
-if (VOCAB && expected[VOCAB.when] && parsed) {
-  const leaked = VOCAB.terms.filter((v) => v.re.test(artifact)).map(
-    (v) => v.term,
-  );
-  check(
-    VOCAB.checkId,
-    "scenario",
-    leaked.length === 0,
-    leaked.length
-      ? `${VOCAB.label} leaked into the ${config.skill} artifact: ${leaked.join(", ")}`
-      : `no ${VOCAB.label} in the artifact`,
-  );
+if (VOCAB) {
+  asserting(VOCAB.when, (want) => {
+    if (!want) return;
+    const leaked = parsed
+      ? VOCAB.terms.filter((v) => v.re.test(artifact)).map((v) => v.term)
+      : [];
+    check(
+      VOCAB.checkId,
+      "scenario",
+      parsed !== null && leaked.length === 0,
+      parsed === null
+        ? `no artifact to check for ${VOCAB.label}`
+        : leaked.length
+          ? `${VOCAB.label} leaked into the ${config.skill} artifact: ${leaked.join(", ")}`
+          : `no ${VOCAB.label} in the artifact`,
+    );
+  });
 }
 
 // ── scenario layer — presence of a named field ──────────────────────────────
@@ -687,18 +958,16 @@ if (VOCAB && expected[VOCAB.when] && parsed) {
 // skill declares which fields are assertable this way and under which
 // expect.json key; the presence test is shared.
 for (const rule of checks.fieldPresence ?? []) {
-  if (expected[rule.when] === undefined) continue;
-  const value = parsed?.sections?.[rule.field] ?? null;
-  const wantPresent = expected[rule.when] === "present";
-  const isPresent = Boolean(value && value.trim().length > 0);
-  check(
-    rule.checkId,
-    "scenario",
-    isPresent === wantPresent,
-    `expected ${rule.field} ${expected[rule.when]}, found ${
-      isPresent ? "present" : "absent"
-    }`,
-  );
+  asserting(rule.when, (want) => {
+    const value = parsed?.sections?.[rule.field] ?? null;
+    const isPresent = Boolean(value && value.trim().length > 0);
+    check(
+      rule.checkId,
+      "scenario",
+      isPresent === (want === "present"),
+      `expected ${rule.field} ${want}, found ${isPresent ? "present" : "absent"}`,
+    );
+  });
 }
 
 // ── scenario layer — named must / must-not assertions ───────────────────────
@@ -711,44 +980,63 @@ for (const rule of checks.fieldPresence ?? []) {
 // `source: "artifact"` matches one `##` section, or the whole body when `field`
 // is omitted. `source: "transcript"` matches turns by the named speaker: `must`
 // means at least one turn matches, `mustNot` means none does.
+//
+// This is where "the skill told the founder *why*" lives, for every scenario
+// that specifies an outcome the founder has to be able to act on — a refusal
+// naming the missing approval, a gate failure naming what the pitch failed. A
+// scenario that only asserts the *absence* of an artifact cannot tell a correct
+// refusal from a crash, a stall or a budget cutoff; a transcript `must` naming
+// the reason is what separates them, and it needs no new expect.json key —
+// checks.mjs declares the phrasing, the scenario opts in by name.
 for (const rule of checks.assertions ?? []) {
-  if (!expected[rule.when]) continue;
+  asserting(rule.when, (want) => {
+    if (!want) return;
 
-  let haystacks;
-  if (rule.source === "transcript") {
-    haystacks = transcript
-      .filter((t) => t.speaker === (rule.speaker ?? "agent"))
-      .map((t) => plain(t.text));
-  } else if (!parsed) {
-    haystacks = null;
-  } else {
-    haystacks = [plain(rule.field ? (parsed.sections[rule.field] ?? "") : parsed.body)];
-  }
+    let haystacks;
+    if (rule.source === "transcript") {
+      haystacks = transcript
+        .filter((t) => t.speaker === (rule.speaker ?? "agent"))
+        .map((t) => plain(t.text));
+    } else if (!parsed) {
+      haystacks = null;
+    } else {
+      haystacks = [plain(rule.field ? (parsed.sections[rule.field] ?? "") : parsed.body)];
+    }
 
-  if (haystacks === null) {
-    check(rule.checkId, "scenario", false, `no artifact to check ${rule.label} against`);
-    continue;
-  }
-  if (rule.must) {
-    const hit = haystacks.some((h) => rule.must.test(h));
-    check(
-      rule.checkId,
-      "scenario",
-      hit,
-      hit ? `found ${rule.label}` : `did not find ${rule.label}`,
-    );
-  }
-  if (rule.mustNot) {
-    const hit = haystacks.some((h) => rule.mustNot.test(h));
-    check(
-      rule.checkId,
-      "scenario",
-      !hit,
-      hit
-        ? `found ${rule.label}, which must not appear`
-        : `${rule.label} did not appear, as required`,
-    );
-  }
+    if (haystacks === null) {
+      check(rule.checkId, "scenario", false, `no artifact to check ${rule.label} against`);
+      return;
+    }
+    if (!rule.must && !rule.mustNot) {
+      check(
+        rule.checkId,
+        "scenario",
+        false,
+        `checks.mjs declares assertion "${rule.when}" with neither must nor mustNot`,
+      );
+      return;
+    }
+    if (rule.must) {
+      const hit = haystacks.some((h) => rule.must.test(h));
+      check(
+        rule.checkId,
+        "scenario",
+        hit,
+        hit ? `found ${rule.label}` : `did not find ${rule.label}`,
+      );
+    }
+    if (rule.mustNot) {
+      const hit = haystacks.some((h) => rule.mustNot.test(h));
+      check(
+        rule.checkId,
+        "scenario",
+        !hit,
+        hit
+          ? `found ${rule.label}, which must not appear`
+          : `${rule.label} did not appear, as required`,
+      );
+    }
+  });
 }
 
 // ── scenario layer — items inside a field, and their sub-fields ─────────────
@@ -758,46 +1046,68 @@ for (const rule of checks.assertions ?? []) {
 // timebox, and one missing its threshold "isn't a shorter assumption, it's an
 // unfinished one" (SKILL.md). The skill declares how an item starts and which
 // sub-fields each must carry; a scenario says how many items it expects.
+// `{}` is a live expectation here, not a dead one: it skips only `:count`,
+// while `:subfields` still grades every item. That is why the rule enforced
+// below is "registered at least one check" rather than "is not empty" — the
+// two are not the same question, and only one of them is the one that matters.
 for (const rule of checks.fieldItems ?? []) {
-  const want = expected[rule.when];
-  if (want === undefined) continue;
-  const section = parsed?.sections?.[rule.field] ?? null;
-  if (section === null) {
-    check(rule.checkId, "scenario", false, `${rule.field} is absent from the artifact`);
-    continue;
-  }
+  asserting(rule.when, (want) => {
+    const section = parsed?.sections?.[rule.field] ?? null;
+    if (section === null) {
+      check(rule.checkId, "scenario", false, `${rule.field} is absent from the artifact`);
+      return;
+    }
 
-  const starts = [...section.matchAll(new RegExp(rule.itemPattern.source, "gm"))].map(
-    (m) => m.index,
-  );
-  const items = starts.map((s, i) => section.slice(s, starts[i + 1] ?? section.length));
-
-  if (want.count !== undefined) {
-    check(
-      `${rule.checkId}:count`,
-      "scenario",
-      items.length === want.count,
-      `${rule.field} holds ${items.length} item(s), expected ${want.count}`,
+    const starts = [...section.matchAll(new RegExp(rule.itemPattern.source, "gm"))].map(
+      (m) => m.index,
     );
-  }
+    const items = starts.map((s, i) => section.slice(s, starts[i + 1] ?? section.length));
 
-  const incomplete = items.flatMap((item, i) => {
-    const plainItem = plain(item);
-    const missing = rule.subfields
-      .filter((s) => !s.re.test(plainItem))
-      .map((s) => s.label);
-    return missing.length ? [`item ${i + 1} missing ${missing.join(", ")}`] : [];
+    if (want.count !== undefined) {
+      check(
+        `${rule.checkId}:count`,
+        "scenario",
+        items.length === want.count,
+        `${rule.field} holds ${items.length} item(s), expected ${want.count}`,
+      );
+    }
+
+    const incomplete = items.flatMap((item, i) => {
+      const plainItem = plain(item);
+      const missing = rule.subfields
+        .filter((s) => !s.re.test(plainItem))
+        .map((s) => s.label);
+      return missing.length ? [`item ${i + 1} missing ${missing.join(", ")}`] : [];
+    });
+    check(
+      `${rule.checkId}:subfields`,
+      "scenario",
+      items.length > 0 && incomplete.length === 0,
+      items.length === 0
+        ? `${rule.field} holds no recognisable items`
+        : incomplete.length
+          ? incomplete.join("; ")
+          : `all ${items.length} item(s) carry ${rule.subfields.map((s) => s.label).join(" / ")}`,
+    );
   });
-  check(
-    `${rule.checkId}:subfields`,
-    "scenario",
-    items.length > 0 && incomplete.length === 0,
-    items.length === 0
-      ? `${rule.field} holds no recognisable items`
-      : incomplete.length
-        ? incomplete.join("; ")
-        : `all ${items.length} item(s) carry ${rule.subfields.map((s) => s.label).join(" / ")}`,
+}
+
+// ── the expect.json contract ────────────────────────────────────────────────
+
+// Checked after grading, because "did this key grade anything" can only be
+// answered by grading. A violation is not a failed check: the report would be a
+// verdict computed from expectations that do not assert what they appear to,
+// which is worse than no verdict. So nothing is written and the exit code is
+// distinct.
+const contractErrors = validateExpectations({ expected, checks, registered });
+if (contractErrors.length) {
+  console.error(`\nexpect.json contract — ${scenario}\n`);
+  for (const e of contractErrors) console.error(`  ✗ ${e}\n`);
+  console.error(keyCatalogue(checks));
+  console.error(
+    `\n  ${join(scenarioDir, "expect.json")} — no verdict was written.\n`,
   );
+  process.exit(3);
 }
 
 // ── report ──────────────────────────────────────────────────────────────────

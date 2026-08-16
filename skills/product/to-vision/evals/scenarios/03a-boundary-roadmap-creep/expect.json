@@ -8,9 +8,7 @@
   "approvalMarker": "present",
   "approverName": "Priya Nair",
   "mandatoryFieldsPresent": true,
-  "flaggedFields": [],
   "groundingInsight": "present",
-  "cappedAttempts": {},
   "declines": [
     "roadmap-creep"
   ],

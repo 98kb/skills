@@ -6,8 +6,6 @@
   "diagnostic": true,
   "diagnosticQuestion": "Does to-vision have any move that helps a founder who is honestly trying and honestly unclear, or does it treat them the same as an evasive one? The correct outcome is undecided until #55 lands, so the contested expectations (outcome, artifact, approvalMarker, groundingInsight, flaggedFields) are deliberately omitted rather than guessed — check.mjs asserts only what is omitted-safe. Read the transcript; that is the deliverable.",
   "approverName": "Tomás Iyer",
-  "cappedAttempts": {},
-  "declines": [],
   "forbidPitchVocabulary": true,
   "humanSpotCheckRequired": true
 }

@@ -8,10 +8,7 @@
   "approvalMarker": "present",
   "approverName": "Dana Okafor",
   "mandatoryFieldsPresent": true,
-  "flaggedFields": [],
   "groundingInsight": "present",
-  "cappedAttempts": {},
-  "declines": [],
   "forbidPitchVocabulary": true,
   "humanSpotCheckRequired": true,
   "assertZeroFlags": true
