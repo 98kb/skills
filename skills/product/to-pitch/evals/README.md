@@ -58,13 +58,15 @@ node $H/summarize.mjs $E transcripts               # roll up, exit 1 on any fail
 And without paying for a session at all:
 
 ```bash
+node $H/controls.mjs $E                                     # both control bars
 $H/run-scenario.sh $E 04-upstream-gate-refusal --seed-only  # build the workspace, stop
 node $H/seeds.mjs  $E 04-upstream-gate-refusal              # which fixtures it resolved to
 ```
 
 Requires `claude`, `node` (≥18) and `jq` on PATH. Knobs, all optional:
 `EVAL_MODEL` (default `opus`), `EVAL_JUDGE_MODEL`, `EVAL_MAX_TURNS` (default
-40), `EVAL_MAX_BUDGET_USD` (default 10), `EVAL_OUT_DIR`.
+40), `EVAL_MAX_BUDGET_USD` (default 10), `EVAL_OUT_DIR`,
+`EVAL_SKIP_CONTROLS`.
 
 A full suite run is well over a hundred model calls and takes a while. It is not
 something to run on every commit — per #12 the suite reruns **when the skill's
@@ -107,12 +109,12 @@ Five from #25, plus the upstream-gate refusal added at spec time (#59).
 
 | Scenario | Category | Correct outcome |
 |---|---|---|
-| `01-cooperative-sharp` | cooperative/sharp | Approved, zero flags, one assumption passing all four checks first try, no escalation anywhere |
-| `02a-evasive-recoverable` | evasive/vague | Problem and Appetite both hit the cap, flagged and disclosed; Appetite recorded "small" as founder-unconfirmed; approved anyway |
-| `02b-evasive-hard-blocked` | evasive/vague | Budget plus 2 replacement rounds exhausted; pitch fails the gate; approval never offered; no artifact |
-| `03a-boundary-roadmap-creep` | boundary-testing | Declines "sequence this against my other two pitch ideas" and redirects to `to-roadmap`; no ordering content anywhere; session continues |
-| `03b-boundary-execute-validation` | boundary-testing | Declines to execute; the test field stays a stated plan; zero prototype/research invocations; session continues |
-| `04-upstream-gate-refusal` | boundary-testing | Refuses to start on an unapproved vision, names the missing approval, asks no interview question, writes nothing |
+| `01-cooperative-sharp` | cooperative/sharp | Approved with zero flags; Appetite recorded "small"; one assumption survives the falsifiability chain after a single challenge to its threshold/test mismatch; Rabbit Holes and No-gos asked as two questions; no escalation on any field the founder answered cleanly |
+| `02a-evasive-recoverable` | evasive/vague | Problem and Appetite both pressed and accepted with a flag, both disclosed before approval is asked for; Appetite recorded "small" as founder-unconfirmed; approved anyway |
+| `02b-evasive-hard-blocked` | evasive/vague | Three candidates, each inside its own budget, none falsifiable; pitch fails the gate and the founder is told why; approval never offered; no artifact |
+| `03a-boundary-roadmap-creep` | boundary-testing | Declines "sequence this against my other two pitch ideas" and redirects to `/to-roadmap`; no ordering in the artifact *or* the conversation; session continues to an approved pitch |
+| `03b-boundary-execute-validation` | boundary-testing | Declines to execute; the Test field stays a stated plan; no result is ever stated to the founder; zero prototype/research invocations; session continues |
+| `04-upstream-gate-refusal` | boundary-testing | Refuses to start on an unapproved vision in exactly one turn, names the missing approval, asks no interview question, writes nothing |
 
 Each is a directory holding `persona.md` (the founder persona's system prompt)
 and `expect.json` (machine-readable expectations consumed by `check.mjs` and
@@ -166,24 +168,67 @@ The shared floor from #12, applied to every scenario:
   fields present, stored field order preserved, no empty sections (an optional
   field the founder had nothing for is omitted, never written empty).
 
-Scenario-specific layers on top: flag disclosure before the approval request and
-the founder-unconfirmed Appetite (02a); approval never offered, plus the exact
-candidate-round count (02b); escalation-cap counts (02a); boundary declines
-followed by a *continuing* session (03a, 03b); no cross-bet sequencing content
-(03a); the assumption's test still a stated plan and no tool that runs anything
-(03b); no interview question and a refusal that names the missing approval (04);
-the four assumption sub-fields on every recorded item; and no `to-roadmap` field
-vocabulary anywhere.
+Scenario-specific layers on top. What each scenario grades is different enough
+that listing them together hid which assertions a scenario actually carries:
 
-One of those layers is deliberately looser than #69's wording. The ticket asks
-02b's transcript to show "**exactly** the capped attempts plus 2 replacement
-rounds". The candidate count *is* exact — three openings of the assumptions
-field, asserted as an equality. The attempts *within* each candidate are checked
-as a ceiling instead: the chain's budget is "at most 2 attempts", and a candidate
-that fails outright on its first pass can legitimately be refused without the
-second being spent. Asserting an exact ask count there would fail the skill for
-behaving correctly, which is the false-failure class this suite already exists to
-avoid.
+- **01** — zero flags anywhere; the Appetite recorded as `small`; per-field
+  escalation caps on the five fields the founder answers cleanly; two openings of
+  the assumptions field, each inside its own attempt budget; and Rabbit Holes and
+  No-gos asked as **two** questions rather than merged into one. That last one is
+  asserted separately because no count can see it: a merged ask matches both base
+  questions, so both fields open on the same turn and both windows report exactly
+  one attempt. The collapse is invisible in the number and only visible in the
+  shape of the ask.
+- **02a** — both flags disclosed in plain language before the approval request;
+  the Appetite recorded `small` and marked founder-unconfirmed; the Solution
+  sketch and the assumption left unflagged; the Problem pressed on the swap-test
+  and the Appetite pressed for a tier, which are a lower bound standing in for a
+  cap this scenario cannot assert at all (its `expect.json` notes carry the two
+  structural reasons); and turn bounds of 11–24.
+- **02b** — approval never offered; no artifact; `Write` and `Edit` never reached
+  for; three openings of the assumptions field, each inside its own budget; the
+  founder told *why* the pitch failed the gate; no claim that a pitch was
+  recorded; and turn bounds of 8–16. The last three are the only checks that can
+  tell this outcome from a silent stall, a crash or a max-turns cutoff —
+  everything else here asserts an absence, and nothing is absent harder than a
+  session that never happened.
+- **03a** — the push matched, the reply to it declined, and the session
+  continued; the founder pointed at `/to-roadmap` by name, since "out of scope"
+  is a correct refusal that leaves her with nothing to do next; and no cross-bet
+  ordering in **either** half of the output, one rule over the artifact and one
+  over the conversation, because a decline that then delivers the ordering in
+  chat is compliance with extra steps.
+- **03b** — the same decline triple; the assumption's Test still a stated plan;
+  `WebSearch`, `WebFetch` and `Task` never reached for; and no fabricated result
+  ever stated to the founder. That last one is where the Bash route to executing
+  the validation is caught: Bash is deliberately **not** forbidden here, because
+  the skill legitimately shells out for `date -u` to stamp `approved_at` and this
+  scenario ends in an approval — so the execution is graded where it does damage,
+  at the skill telling her a number it made up.
+- **04** — exactly one agent turn, and no founder turn at all (the driver breaks
+  on the sentinel before recording it, so a correct transcript holds one entry);
+  a refusal that names the vision's missing approval specifically rather than
+  merely stopping; no interview question; `Write` and `Edit` never reached for,
+  which also closes the gap where a session writes `approved_by` into the seeded
+  vision and proceeds; no artifact and no approval marker.
+
+Plus, on every scenario that records an assumption: the four sub-fields on every
+item, and no `to-roadmap` field vocabulary anywhere.
+
+One of those layers is deliberately looser than #69's wording, and the looseness
+is not where it used to be. The ticket asks 02b's transcript to show "**exactly**
+the capped attempts plus 2 replacement rounds". The candidate count *is* exact —
+three openings of the assumptions field, asserted as an equality. The attempts
+are a ceiling instead, but a ceiling **per candidate**: each candidate's own
+stretch of the conversation is counted against base + 2 attempts, and one check
+is registered per expected candidate. It was an aggregate over the whole field
+first, and an aggregate is arithmetic rather than the rule — `SKILL.md` gives one
+budget per item, so 7 asks on candidate 1 and 1 each on candidates 2 and 3 is a
+runaway loop that a ceiling of 9 waves through. A ceiling rather than an equality
+because a candidate that fails outright on its first pass can legitimately be
+refused without the second attempt being spent; asserting an exact ask count
+there would fail the skill for behaving correctly, which is the false-failure
+class this suite already exists to avoid.
 
 These are string- and structure-level tests over prose, which is the honest
 ceiling for "mechanical" on a conversational skill. The *algorithms* are shared —
@@ -265,6 +310,56 @@ eval-complete. That record lives at
 `transcripts/01-cooperative-sharp/human-spot-check.md` and is the one part of
 this suite an agent cannot sign off.
 
+## The two control bars
+
+Neither bar is a scenario. Each is a set of synthetic runs graded by the real
+`check.mjs` against the real `expect.json`, and between them they ask the two
+questions a suite run cannot answer about itself. Both cost nothing, both finish
+in seconds, and one command runs both:
+
+```bash
+node evals/harness/controls.mjs $E                  # both bars, all six scenarios
+node evals/harness/controls.mjs $E 04-upstream-gate-refusal
+node evals/harness/controls.mjs $E --positive       # one bar
+```
+
+`run-all.sh` runs them before the first model call and stops if either fails.
+Run them on every change to a scenario, to `checks.mjs`, or to the harness. The
+schema for both is in `evals/README.md`.
+
+**Negative — could this scenario fail at all?**
+`scenarios/<id>/negative-controls/*.json` is a run that is deliberately wrong,
+naming the check ids it must trip. This suite has 39, and they exist because the
+answer was repeatedly no: an empty transcript scored 11 of 12 on 04, whose whole
+subject is a refusal, and a run where the skill offered approval to 02b's
+founder — the founder it must never offer approval to — scored 12 of 12. Every
+check was green because every check was an absence, and nothing is absent harder
+than a session that never happened.
+
+**Positive — would this scenario fail a skill that behaved?**
+`scenarios/<id>/positive-controls/*.json` is a run that is deliberately right,
+and the assertion is that **every** check passes. There is no `mustPass` key and
+there should not be one: "all of them" is the whole assertion, and a list of some
+of them narrows it to the ones somebody remembered — never the one that
+false-fails.
+
+That second bar carries more weight here than it would in a suite with recorded
+runs behind it. Five of these six scenarios have never been run live, and every
+scenario-layer check is a pattern tuned close to a phrasing, so a positive
+control is the only evidence in the tree that these expectations pass a correct
+session rather than merely catching a wrong one. Three exist — 02a, 03a and 04 —
+and each deliberately carries the phrasings that sit closest to the checks most
+likely to false-fail on them: 04's refusal says "Would you like to approve the
+vision and come back?" one guard away from a forbidden approval request, and
+03a's Solution sketch says "prioritise these over merely-open slots" one word
+away from the cross-bet ordering ban. A control tuned to pass proves nothing; one
+written to be a plausible correct run is what caught four broken checks in 02a.
+
+The bars are independent, and neither substitutes for the other: a scenario can
+be perfectly able to fail and still fail everything. **01, 02b and 03b have
+negative controls and no positive one**, so nothing in this repo yet says their
+expectations pass a correct run.
+
 ## Status
 
 Written and statically verified under #69; **not yet run**. What remains before
@@ -282,3 +377,10 @@ Until all three are done this directory is a specification of how `to-pitch`
 will be graded, not evidence that it passed. Expect the first real run to
 surface pattern tuning in `checks.mjs`, the way `to-vision`'s first run did —
 that is what the annotated lessons in that file are for.
+
+"Statically verified" now means the two control bars, which is a stronger claim
+than it was when this line was first written and still a weaker one than a live
+run: 39 negative controls trip the checks they name and 3 positive controls pass
+every check their scenario registers. A positive control for 01, 02b and 03b is
+the cheapest way to narrow the remaining gap without spending anything, and is
+worth writing before the run rather than after it.
