@@ -740,4 +740,110 @@ export const assertions = [
     must: /\/?\bto-roadmap\b|\broadmap (?:skill|command|session|step)\b/i,
     label: "the founder pointed at /to-roadmap for the ordering",
   },
+
+  // ── 02a-evasive-recoverable ───────────────────────────────────────────────
+  //
+  // 02a's specified outcome is "both capped, flagged, disclosed, approved
+  // anyway", and the two halves of that are asserted very differently.
+  //
+  // **Flagged and disclosed** the harness can see: `flaggedFields` already
+  // grades it. **Capped** it cannot — `cappedAttempts` is unusable on this
+  // scenario in either direction, for two reasons that are both structural and
+  // both live in the shared checker rather than here (see the scenario's
+  // `notes`). So the four rules below assert the half that is assertable from
+  // a pattern: that each of the two evasive fields was actually *pressed*, and
+  // that neither of the two clean fields was flagged.
+  //
+  // These are lower and upper bounds on different things, not a replacement for
+  // the count. "Pressed at least once" is what stops a skill that accepts a
+  // category as a Problem and a calendar estimate as an Appetite from scoring
+  // green; nothing here catches a skill that presses *four* times.
+
+  // The swap-test, fired at a Problem that describes a category. SKILL.md
+  // scopes this move to Problem alone and gives it as an e.g. ("would this be
+  // equally true of a competitor's customer?"), so this matches the family: an
+  // assertion that some *other* party could truthfully say the founder's own
+  // sentence.
+  //
+  // The negation guard is the whole difficulty, because the praise form and the
+  // push form are the same words with a "not" in front. Verified against the
+  // recorded 01 run, whose turn 2 is exactly that trap — "'I book the day
+  // twice' is hers, not a category anyone else could claim" — and against the
+  // clean gate-check's "the Problem passes the swap-test". Both must stay
+  // clean, and do: a `not`/`never`/`no` within 40 characters *in the same
+  // clause* disqualifies the window, and the bare `swap-test` alternative
+  // refuses to reach past `passes`/`survives`/`holds up`.
+  {
+    when: "problemPressedOnSwapTest",
+    checkId: "scenario/problem-pressed-on-swap-test",
+    source: "transcript",
+    speaker: "agent",
+    must: /(?<!\b(?:not|isn'?t|never|nothing|no)\b[^.!?\n,;]{0,40})\b(?:equally|just as|exactly as)\s+true\b[^.!?\n]{0,60}?\b(?:competitor|rival|incumbent|vendor|anyone else|any(?:one|body) else|everyone else|any other \w+|every \w+|another \w+|competitor's)\b|(?<!\b(?:not|isn'?t|never|nothing|no)\b[^.!?\n,;]{0,40})\b(?:competitor|rival|incumbent|vendor|anyone else|any(?:one|body) else|everyone else|any other \w+|every \w+|another \w+)\b(?:(?!\b(?:not|isn'?t|wouldn'?t|couldn'?t|can'?t|never)\b)[^.!?\n]){0,70}?\b(?:could|would|can|might)\s+(?:say|claim|write|put|use)\b|(?<!\b(?:not|isn'?t|never|nothing|no)\b[^.!?\n,;]{0,40})\b(?:could|would|can|might|does|do)\s+(?:a|an|any|every|another|some|the)?\s*(?:competitor|rival|incumbent|vendor|anyone else|any(?:one|body) else|everyone else|any other \w+|every \w+|another \w+)\b(?:(?!\b(?:not|isn'?t|wouldn'?t|couldn'?t|never)\b)[^.!?\n]){0,80}?\b(?:say|claim|write|put|use|recognise|recognize)\b|(?<!\b(?:not|isn'?t|never|nothing|no)\b[^.!?\n,;]{0,40})\b(?:could|would|can|might)\s+(?:say|claim|write)\b(?:(?!\b(?:not|isn'?t)\b)[^.!?\n]){0,60}?\b(?:competitor|rival|incumbent|vendor|anyone else|any(?:one|body) else|everyone else|any other \w+|every \w+|another \w+|word for word|verbatim)\b|(?<!\b(?:not|isn'?t|never|nothing|no)\b[^.!?\n,;]{0,40})\b(?:that'?s|this is|it'?s|that|still|reads as|remains)\b[^.!?\n]{0,20}\bcategor\w+\b(?:(?!\b(?:not|isn'?t|rather than|instead of)\b)[^.!?\n]){0,60}?\b(?:not a|rather than a|instead of a)\s+\w+|\bswap[- ]tests?\b(?:(?!\b(?:pass\w*|surviv\w*|holds?\s+up|clean|clear)\b)[^.!?\n]){0,90}?\?/i,
+    label: "the swap-test fired at a Problem that reads as a category",
+  },
+
+  // Appetite's escalation, fired at a hedge. SKILL.md's own re-ask is
+  // "Appetite is fixed before we shape the solution — which tier are you
+  // committing to?", and the persona hedges three ways ("a month or so", "four
+  // to six weeks", "I can't put it in a box"), so the push is recognised by it
+  // naming the hedge *as* a hedge — a tier being demanded, or an estimate or
+  // duration being refused.
+  //
+  // What must not match is the base question, which offers the two tiers and
+  // says nothing about estimates, and the *clean* gate-check line, which is the
+  // same vocabulary inverted: "Appetite is a committed tier, not an estimate"
+  // (recorded 01, verbatim). Every "not an estimate" alternative was removed
+  // for that reason — the push is caught by what it *asks for*, not by what it
+  // denies.
+  {
+    when: "appetitePressedForTier",
+    checkId: "scenario/appetite-pressed-for-a-tier",
+    source: "transcript",
+    speaker: "agent",
+    must: /\b(?:which|what)\s+(?:of the two\s+)?tiers?\b[^.!?\n]{0,60}\?|\bwhich\s+(?:one\s+)?are you committing to\b|\bappetite\b[^.!?\n]{0,80}\b(?:is fixed|fixed before|gets fixed)\b|\b(?:a|the) budget you (?:pick|choose|set|commit to)\b|\bbudget\b[^.!?\n]{0,30}\bnot\b[^.!?\n]{0,20}\b(?:a |an )?(?:duration|estimate|guess|calendar)\b|\b(?:that'?s|this is|it'?s|a month|four to six weeks|that)\b[^.!?\n]{0,50}\b(?:calendar estimate|an estimate|a duration|not (?:one of )?(?:the two )?tiers?|isn'?t (?:one of )?(?:the two )?tiers?|neither tier)\b|\b(?:pick|choose|commit to|land on)\s+(?:one of )?(?:the two |a )?tiers?\b|\bstill (?:an|a)\s+(?:estimate|duration)\b/i,
+    label: "the Appetite re-asked as a tier commitment after a hedge",
+  },
+
+  // #59 says 02a's Solution sketch and Riskiest Assumptions come out **clean**,
+  // and nothing asserted it: `flaggedFields` only asserts *inclusion*, so a run
+  // that spuriously flags the sketch passes it — and then `judge.mjs` excuses
+  // that field's rubric criterion, because a disclosed flag is what excusal
+  // keys off. A spurious flag is therefore worth more to a bad run than no flag
+  // at all, which is the wrong way round.
+  //
+  // The right fix is a shared one — `disclosedFlags` set-equal to
+  // `flaggedFields`, computed by the one algorithm that already scans the
+  // disclosure window. These two rules are a scenario-side stand-in for it, and
+  // they are deliberately *narrower*: they fire on the skill asserting weakness
+  // about the sketch or the assumption in the same clause as naming it, not on
+  // the harness's paragraph-head heuristic — which registers both fields as
+  // "disclosed" from nothing but the `##` headings of the draft the skill
+  // pastes into chat.
+  //
+  // The negation guard is the same shape as `flags.negated` and for the same
+  // reason: a correct gate-check names these two fields right beside the word
+  // "flagged" in order to say they aren't ("Two flagged fields... The Solution
+  // sketch stayed under-specified", "Nothing flagged on the assumption"). Both
+  // directions are tempered so a match cannot cross a negation, and the
+  // lookbehind is clause-bounded — an unbounded one let the Appetite
+  // disclosure's "never confirmed" three clauses earlier excuse a real flag on
+  // the sketch.
+  {
+    when: "sketchAndAssumptionsClean",
+    checkId: "scenario/solution-sketch-not-flagged",
+    source: "transcript",
+    speaker: "agent",
+    mustNot:
+      /(?<!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b[^.!?\n,;]{0,40})\b(?:solution sketch|sketch)\b(?:(?!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b)[^.!?\n]){0,70}?\b(?:flag(?:ged|ging|s)?|weak|vague|generic|soft|over-?specified|over-?long|too long|past the cap|hit the cap|trimmed|truncat\w+|needs? your review|for your review)\b|(?<!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b[^.!?\n,;]{0,40})\b(?:flag(?:ged|ging|s)?|weak|vague|generic|soft|over-?specified|over-?long|too long|past the cap|hit the cap|trimmed|truncat\w+|needs? your review|for your review)\b(?:(?!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b)[^.!?\n]){0,70}?\b(?:solution sketch|sketch)\b/i,
+    label: "the Solution sketch disclosed as weak",
+  },
+  {
+    when: "sketchAndAssumptionsClean",
+    checkId: "scenario/assumptions-not-flagged",
+    source: "transcript",
+    speaker: "agent",
+    mustNot:
+      /(?<!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b[^.!?\n,;]{0,40})\b(?:riskiest assumptions?(?: & (?:and )?cheap validation plan)?|assumptions?|validation plan)\b(?:(?!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b)[^.!?\n]){0,70}?\b(?:flag(?:ged|ging|s)?|weak|vague|generic|soft|over-?specified|over-?long|too long|past the cap|hit the cap|trimmed|truncat\w+|needs? your review|for your review)\b|(?<!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b[^.!?\n,;]{0,40})\b(?:flag(?:ged|ging|s)?|weak|vague|generic|soft|over-?specified|over-?long|too long|past the cap|hit the cap|trimmed|truncat\w+|needs? your review|for your review)\b(?:(?!\b(?:not|isn'?t|aren'?t|wasn'?t|no|none|nothing|never|neither|clean|clear|fine|pass(?:es|ed)?|surviv\w+|holds?)\b)[^.!?\n]){0,70}?\b(?:riskiest assumptions?(?: & (?:and )?cheap validation plan)?|assumptions?|validation plan)\b/i,
+    label: "a Riskiest Assumption disclosed as weak",
+  },
 ];

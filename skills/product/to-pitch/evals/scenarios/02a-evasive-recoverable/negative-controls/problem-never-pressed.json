@@ -1,0 +1,116 @@
+{
+  "description": "the skill takes \"clinics are just bad at scheduling\" as a Problem and moves straight to Appetite — no swap-test, no push, and nothing flagged. This is the shape the old cappedAttempts key was meant to catch and, as it happens, the run is still long enough to clear minAgentTurns: the press assertion is the only thing that sees it.",
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "Vision checked — `docs/product/vision.md` is approved by Dana Okafor (2026-08-16). No pitches recorded yet, so this is a new one.\n\nI've read it once, so I've got Marisol at Riverbend and the specialty-matching thesis in hand.\n\n**Problem.** Your vision is for Marisol — the office manager at a three-to-eight-therapist clinic — and it bets that the binding constraint is specialty matching, not slot availability. What's the specific pain, for *that* customer, that this particular bet goes after — in her words? Two to four sentences: the slice of her week you're aiming at, and what it feels like."
+    },
+    {
+      "speaker": "founder",
+      "text": "Clinics are just bad at scheduling. It's a huge pain point across healthcare — everyone's fighting their calendar and losing revenue to it."
+    },
+    {
+      "speaker": "agent",
+      "text": "Good, that gives me the shape of it. Moving on.\n\n**Appetite.** How much are you willing to spend on this before you'd stop and reassess — small, up to two weeks, or big, up to six?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Probably a month or so? Something like that."
+    },
+    {
+      "speaker": "agent",
+      "text": "A month isn't one of the two tiers, and appetite is fixed before we shape the solution rather than estimated after. It's a budget you pick, not a duration you predict. Which tier are you committing to — small, up to two weeks, or big, up to six?"
+    },
+    {
+      "speaker": "founder",
+      "text": "I mean — four to six weeks, realistically. It depends how the calendar integration goes."
+    },
+    {
+      "speaker": "agent",
+      "text": "That's still a duration rather than a tier — \"depends how the integration goes\" is exactly the thing a fixed appetite is meant to bound. Last ask: small, or big?"
+    },
+    {
+      "speaker": "founder",
+      "text": "I really can't put it in a box like that. It'll take what it takes."
+    },
+    {
+      "speaker": "agent",
+      "text": "Then I'll record the Appetite as **small** — the tighter of the two — provisionally, and flag it at the gate-check as a tier you never confirmed. Defaulting tighter can't quietly hand you budget you didn't commit to, and it's non-blocking: you can still approve the pitch with that flag on it.\n\n**Solution sketch.** At a small appetite — two weeks — what are you actually building? A short paragraph or up to five bullets, prose only."
+    },
+    {
+      "speaker": "founder",
+      "text": "When a patient cancels, the slot goes to the top name on a per-therapist waitlist automatically — one text, first to reply takes it, thirty minutes to claim before it drops to the next person. The office manager sets who goes on the list; the system never adds anyone."
+    },
+    {
+      "speaker": "agent",
+      "text": "Clear, and it fits a two-week box.\n\n**Riskiest Assumptions.** What's the one thing that, if it turned out to be false, would sink this?"
+    },
+    {
+      "speaker": "founder",
+      "text": "The risky bit isn't the automation, it's whether the waitlist actually bites. A cancelled slot offered to the waitlist by text gets claimed by someone within the hour at least half the time. If fewer than half of them are claimed inside the hour, I'm wrong — the waitlist isn't the standing demand I think it is. I can check that in under an hour without building anything: Riverbend's front desk already texts its waitlist by hand when something opens up, and last quarter's message log holds about sixty of those offers with the booking timestamps beside them, so I'll count what share got claimed inside the hour. Done by Thursday."
+    },
+    {
+      "speaker": "agent",
+      "text": "That one passes straight through — it's a measurable claim, the threshold is pre-committed and can genuinely come back false, and mining sixty logged offers is a real under-an-hour test with a date on it.\n\nAnything else that would sink this if it turned out to be false?"
+    },
+    {
+      "speaker": "founder",
+      "text": "No — that's the one that matters."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Rabbit Holes.** What's likely to eat unplanned time or complexity inside this approach?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Patients who claim a slot and then no-show anyway. And text delivery through the clinic's existing phone number."
+    },
+    {
+      "speaker": "agent",
+      "text": "**No-gos.** What's explicitly not part of this, that someone might reasonably assume is included?"
+    },
+    {
+      "speaker": "founder",
+      "text": "No changes to billing. And nothing that texts a patient without the office manager having put them on a list."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Open Questions.** What's still unresolved that the roadmap stage will need to answer?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Whether thirty minutes is the right claim window."
+    },
+    {
+      "speaker": "agent",
+      "text": "All seven fields are in. **Proposed slug:** `cancellation-waitlist` — say the word if you'd rather name it something else. Here's the assembled draft.\n\n---\n\n# Pitch: The cancelled slot that refills itself\n\nBridges from the product vision.\n\n## Problem\n\nIndependent physical-therapy clinics lose revenue to scheduling. When a patient cancels, the slot usually stays empty for the rest of the day, and across outpatient care that adds up to a large operational drag on the practice.\n\n## Appetite\n\nSmall (≤2 weeks) — recorded provisionally.\n\n## Solution sketch\n\nWhen a patient cancels, the slot is offered automatically to the top name on that therapist's waitlist — one text, first to reply takes it, thirty minutes to claim before the offer drops to the next person. The office manager decides who goes on a waitlist; the system never adds anyone on its own.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** A cancelled slot offered to the waitlist by text is claimed by someone within the hour at least half the time.\n   - **Threshold:** Fewer than half of the offers claimed inside the hour — the waitlist isn't the standing demand this bet assumes.\n   - **Test:** Mine Riverbend's existing message log. The front desk already texts the waitlist by hand when a slot opens, and last quarter's log holds about sixty of those offers with booking timestamps beside them; count what share was claimed inside the hour. No build, under an hour of work.\n   - **Timebox:** By Thursday.\n\n## Rabbit Holes\n\n- Patients who claim a slot and then no-show anyway.\n- Text delivery through the clinic's existing phone number.\n\n## No-gos\n\n- No changes to billing.\n- Nothing that texts a patient without the office manager having put them on a list.\n\n## Open Questions\n\n- Is thirty minutes the right claim window?\n\n---\n\n**Gate-check — one thing I'm flagging before you decide:**\n\nNothing else needed flagging; the customer and their pain sit inside what the vision already commits to.\n\nAppetite — recorded as small, but you never confirmed that tier. You gave me a calendar estimate rather than a budget, so I took the tighter of the two provisionally.\n\nThe Solution sketch and the assumption both came through clean: the sketch stayed under-specified and well inside the word cap, and the assumption is quantified, carries a threshold that can genuinely come back false, and has a test you can run in under an hour.\n\nDo you approve this pitch?"
+    },
+    {
+      "speaker": "founder",
+      "text": "The slug works. Yes, I approve this pitch."
+    },
+    {
+      "speaker": "agent",
+      "text": "Recording this as approved.\n\nWritten to `docs/product/pitches/cancellation-waitlist/pitch.md`, approved by Dana Okafor, pointing one hop back at the vision.\n\nOne flag travels with it: the Appetite is a tier you never picked. Your next move is Thursday's count over Riverbend's message log — that's what this pitch is now on the hook for."
+    }
+  ],
+  "toolcalls": [
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "docs/product/vision.md"
+      }
+    },
+    {
+      "name": "Write",
+      "input": {
+        "file_path": "docs/product/pitches/cancellation-waitlist/pitch.md"
+      }
+    }
+  ],
+  "artifact": "---\nupstream: ../../vision.md\napproved_by: Dana Okafor\napproved_at: 2026-08-17T11:04:19Z\n---\n\n# Pitch: The cancelled slot that refills itself\n\nBridges from the [product vision](../../vision.md).\n\n## Problem\n\nIndependent physical-therapy clinics lose revenue to scheduling. When a patient cancels, the slot usually stays empty for the rest of the day, and across outpatient care that adds up to a large operational drag on the practice.\n\n## Appetite\n\nSmall (≤2 weeks) — recorded provisionally; the founder did not confirm this tier.\n\n## Solution sketch\n\nWhen a patient cancels, the slot is offered automatically to the top name on that therapist's waitlist — one text, first to reply takes it, thirty minutes to claim before the offer drops to the next person. The office manager decides who goes on a waitlist; the system never adds anyone on its own.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** A cancelled slot offered to the waitlist by text is claimed by someone within the hour at least half the time.\n   - **Threshold:** Fewer than half of the offers claimed inside the hour — the waitlist isn't the standing demand this bet assumes.\n   - **Test:** Mine Riverbend's existing message log. The front desk already texts the waitlist by hand when a slot opens, and last quarter's log holds about sixty of those offers with booking timestamps beside them; count what share was claimed inside the hour. No build, under an hour of work.\n   - **Timebox:** By Thursday.\n\n## Rabbit Holes\n\n- Patients who claim a slot and then no-show anyway.\n- Text delivery through the clinic's existing phone number.\n\n## No-gos\n\n- No changes to billing.\n- Nothing that texts a patient without the office manager having put them on a list.\n\n## Open Questions\n\n- Is thirty minutes the right claim window?\n",
+  "mustFail": [
+    "scenario/problem-pressed-on-swap-test",
+    "scenario/flag-disclosed:Problem"
+  ]
+}
