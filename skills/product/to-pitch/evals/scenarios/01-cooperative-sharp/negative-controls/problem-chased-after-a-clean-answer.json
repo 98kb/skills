@@ -1,0 +1,101 @@
+{
+  "description": "the Problem is chased twice after a first-try-sharp answer",
+  "mustFail": [
+    "scenario/escalation-cap:Problem"
+  ],
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "Vision checked — `docs/product/vision.md` is approved by Dana Okafor. **Problem.** What's the specific pain, for Marisol, that this bet goes after?"
+    },
+    {
+      "speaker": "founder",
+      "text": "A therapist calls out and Marisol re-books that day's twenty patients by whoever has an open slot. About seven land with someone not credentialed for their condition, and she reshuffles them a second time. She calls it \"I book the day twice.\""
+    },
+    {
+      "speaker": "agent",
+      "text": "Can you put a number on how often a therapist calls out?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Two or three times a week across the six of them."
+    },
+    {
+      "speaker": "agent",
+      "text": "And how many of those twenty re-bookings does Marisol redo a second time?"
+    },
+    {
+      "speaker": "founder",
+      "text": "About seven."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Appetite.** How much are you willing to spend on this before you'd stop and reassess — small, up to two weeks, or big, up to six?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Small — two weeks."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Solution sketch.** At a small appetite — two weeks — what are you actually building?"
+    },
+    {
+      "speaker": "founder",
+      "text": "The credentialing file the clinic already uploads during self-serve signup lists each therapist's specialties. We read it once, derive a condition category from the plan of care that already exists, and surface only replacement slots held by credentialed therapists. Marisol confirms every move herself."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Riskiest Assumptions.** What's the one thing that, if it turned out to be false, would sink this?"
+    },
+    {
+      "speaker": "founder",
+      "text": "That credential-filtered rescheduling actually cuts the mismatches — from roughly 7 in 20 to under 2 in 20. I'll know by Friday: I can mark Riverbend's 340 reschedules from last quarter credentialed or not against their file, in about an hour."
+    },
+    {
+      "speaker": "agent",
+      "text": "Anything else that would sink this if it turned out false?"
+    },
+    {
+      "speaker": "founder",
+      "text": "No — that's the one that matters. I'd rather bet on one assumption than three."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Rabbit Holes.** What's likely to eat unplanned time or complexity inside this approach?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Credentialing files come in three payer formats and one is a PDF. And expired certifications — the file says credentialed, the certification lapsed in March."
+    },
+    {
+      "speaker": "agent",
+      "text": "**No-gos.** What's explicitly not part of this, that someone might reasonably assume is included?"
+    },
+    {
+      "speaker": "founder",
+      "text": "No auto-booking — Marisol confirms every move. Not touching the initial-evaluation booking flow. Single-site only."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Open Questions.** What's still unresolved that the roadmap stage will need to answer?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Whether the condition category on the plan of care is reliable enough to match against as-is."
+    },
+    {
+      "speaker": "agent",
+      "text": "All seven fields are in, and the draft is assembled.\n\n**Gate-check: clean, no flags.** The Problem names Marisol's Tuesday failure mode rather than a category, the Appetite is a committed tier, and the assumption is quantified with a cheap test that produces its own threshold.\n\nDo you approve this pitch?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Yes, I approve this pitch."
+    },
+    {
+      "speaker": "agent",
+      "text": "Recorded at `docs/product/pitches/credential-filtered-rescheduling/pitch.md`, approved and pointing one hop back at the vision."
+    }
+  ],
+  "artifact": "---\nupstream: ../../vision.md\napproved_by: Dana Okafor\napproved_at: 2026-08-16T18:00:41Z\n---\n\n# Pitch: I book the day twice\n\nBridges from the [product vision](../../vision.md).\n\n## Problem\n\nMarisol, the office manager at Riverbend, re-books that day's twenty patients by whoever has an open slot when a therapist calls out. About seven of the twenty land with someone not credentialed for their condition, and she reshuffles the same patients a second time. Her phrase for it: \"I book the day twice.\"\n\n## Appetite\n\nSmall (≤2 weeks)\n\n## Solution sketch\n\nThe clinic already uploads its credentialing file during self-serve signup. We read it once, derive a condition category from each patient's existing plan of care, and surface only replacement slots held by therapists credentialed for that category. Marisol confirms every move herself; nothing books itself.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** Filtering the reschedule list by credentialed specialty takes mismatched re-bookings from roughly 7 in 20 down to under 2 in 20.\n   - **Threshold:** Fewer than half of the mismatched moves had a credentialed therapist with an open slot in that same window.\n   - **Test:** Mine Riverbend's existing reschedule export — 340 moves from last quarter — marking each move credentialed or not against the clinic's credentialing file.\n   - **Timebox:** By Friday.\n\n## Rabbit Holes\n\n- Credentialing files arrive in three different payer formats, one of them PDF.\n- Expired certifications: the file says a therapist is credentialed, but the certification lapsed in March.\n\n## No-gos\n\n- No auto-booking. Marisol confirms every move by hand.\n- Not touching the initial-evaluation booking flow.\n- Single-site only. Multi-site is not in the two weeks.\n\n## Open Questions\n\n- Whether the condition category on the plan of care is reliable enough to match against as-is, or whether the therapist has to tag it at intake.\n"
+}

@@ -470,4 +470,76 @@ export const assertions = [
     mustNot: /\S/,
     label: "a founder reply — the session must end on the agent's refusal",
   },
+
+  // 01 — Rabbit Holes and No-gos are two questions, and SKILL.md names the
+  // failure verbatim: "Ask them as two separate questions, one after the other,
+  // and **never collapse them into one** 'anything risky or out of scope?' —
+  // that question gets answered once, on whichever side of the line the founder
+  // happened to be thinking about, and the other side goes unnamed." #59 story
+  // 30 says the same from the founder's side. Nothing graded it, so a skill
+  // that asked one merged question scored a clean run.
+  //
+  // `cappedAttempts` cannot catch this and it is worth saying why, because it
+  // looks like it should: a merged turn matches *both* base questions, so Rabbit
+  // Holes opens at that turn, No-gos opens at the same turn, neither window
+  // contains a second ask, and both fields report exactly 1. The collapse is
+  // invisible to a count of asks. It is only visible in the shape of the ask.
+  //
+  // So this is a `mustNot` over the agent's turns, and the whole difficulty is
+  // that the turn which legitimately contains *both* field names is the
+  // assembled draft — `## Rabbit Holes` and `## No-gos` are two of its seven
+  // headings, and it ends in "Do you approve this pitch?". A turn-level "both
+  // nouns appear" test fails every correct run of every scenario that writes an
+  // artifact. Three things keep this off it:
+  //
+  //   - **one sentence, one line.** The inter-token window is `[^.?!\n]`, so
+  //     nothing reaches across the draft's headings, its bullets, or the full
+  //     stop after a field label ("Rabbit Holes." then the question).
+  //   - **it has to ask.** A trailing `?` inside that same window. "I've got
+  //     your rabbit holes and no-gos in the draft" is a recap, not a question,
+  //     and 04's correct refusal listing what a pitch session covers is prose.
+  //   - **the solicitation leads.** A wh-word *before* the field term, never
+  //     after. That is what separates "what are the rabbit holes and no-gos?"
+  //     from "I'll come to the no-gos next — anything else?", which is a
+  //     perfectly ordinary follow-up on a different field.
+  //
+  // Matching the concepts rather than the two nouns is the point — SKILL.md's
+  // own example of the collapse ("anything risky or out of scope?") names
+  // neither field. So each side is a small vocabulary: what could go wrong
+  // *inside* the lines, and where the lines *are*. The two halves never appear
+  // together in a correct single-field question, which is the property being
+  // relied on; a correct Rabbit Holes ask says "eat unplanned time or
+  // complexity" and stops, a correct No-gos ask says "explicitly not part of
+  // this ... assume is included" and stops.
+  //
+  // The second and third alternatives catch the same collapse spread over two
+  // question marks on one line ("What might eat unplanned time? And anything
+  // explicitly out of scope?"). SKILL.md asks for them "one after the other",
+  // and both fired into a single founder reply is the same answered-once
+  // failure — the founder picks a side. Built rather than written out because
+  // the two vocabularies would otherwise each appear four times in one 2.4kB
+  // literal; the pattern is the same shape either way.
+  {
+    when: "forbidCollapsedRabbitHolesNoGos",
+    checkId: "scenario/no-collapsed-rabbit-holes-no-gos",
+    source: "transcript",
+    speaker: "agent",
+    mustNot: ((wh, rabbitHole, noGo) => {
+      const s = "[^.?!\\n]"; // stays inside one sentence, on one line
+      const solicits = (term) => `${wh}${s}{0,80}?${term}${s}{0,90}?\\?`;
+      return new RegExp(
+        // one question asking for both
+        `${wh}${s}{0,80}?(?:${rabbitHole}${s}{0,90}?${noGo}|${noGo}${s}{0,90}?${rabbitHole})${s}{0,90}?\\?` +
+          // or both questions fired in one breath, either order
+          `|${solicits(rabbitHole)}[^\\n]{0,120}?${solicits(noGo)}` +
+          `|${solicits(noGo)}[^\\n]{0,120}?${solicits(rabbitHole)}`,
+        "i",
+      );
+    })(
+      "(?:what|which|any|anything|something|is there|are there|do you have|got any|tell me|name)",
+      "(?:rabbit[- ]?holes?|eat(?:s|ing)?\\s+(?:up\\s+)?(?:unplanned\\s+|unexpected\\s+|extra\\s+|hidden\\s+)?time|eat(?:s|ing)?\\s+into|unplanned\\s+time|time\\s+sinks?|blow\\s+(?:up|out)|balloons?|spirals?|gotchas?|land\\s?mines?|hairy|risky|complexity)",
+      "(?:no[- ]?gos?|out\\s+of\\s+scope|off\\s+the\\s+table|explicitly\\s+(?:not|out|excluded|off)|(?:not|isn'?t|aren'?t)\\s+part\\s+of\\s+(?:this|it|the\\s+bet)|deliberately\\s+(?:not|excluded|leaving|left|out)|ruled\\s+out|leav\\w*\\s+out|left\\s+out|not\\s+(?:building|doing|touching|including|shipping)|won'?t\\s+(?:build|do|touch|include|ship)|assumes?\\s+(?:is\\s+)?included)",
+    ),
+    label: "Rabbit Holes and No-gos collapsed into one question",
+  },
 ];
