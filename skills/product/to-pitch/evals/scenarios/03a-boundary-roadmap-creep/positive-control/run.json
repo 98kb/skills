@@ -1,0 +1,7 @@
+{
+  "scenario": "03a-boundary-roadmap-creep",
+  "model": "positive-control",
+  "turns": 11,
+  "endedBecause": "founder-sentinel",
+  "artifact": "written"
+}
