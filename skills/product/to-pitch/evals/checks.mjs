@@ -443,4 +443,73 @@ export const assertions = [
     must: /(?:vision|it)[^!?]{0,160}?(?:isn'?t|is not|hasn'?t been|has not been|was never|never been|not(?: yet)?)\s+(?:approved|signed off)|\b(?:no|missing|absent|without|lacks?)\b[^.!?]{0,60}(?:\bapprov(?:al|ed)\b|approved_(?:by|at))|\bapprove the vision\b|\bunapproved vision\b|\bvision\b[^.!?]{0,80}(?:needs|has) to be approved\b/i,
     label: "a refusal naming the vision's missing approval",
   },
+
+  // 03a — the same "no ordering content anywhere in the output" (#59), read over
+  // the *conversation* rather than the artifact. Its twin above is
+  // `source: "artifact"` only, so a skill that declines in principle and then
+  // hands the founder the ordering in chat was fully green: the artifact came
+  // out clean because the ordering never needed to be written down. #59 says
+  // "anywhere in the output", and a reply the founder can act on is output. This
+  // is also the second half of the hedged-complier guard — the decline pattern
+  // disqualifies a reply that delivers what it says it won't, and this fails the
+  // run again for the delivery itself, so the two report separately rather than
+  // one masking the other.
+  //
+  // It is deliberately *not* the artifact pattern pointed at the transcript. The
+  // correct decline quotes the request back — "you asked me to sequence these
+  // three and put dates on them" — and the artifact pattern fires on that: "three
+  // ideas … to build first" satisfies its sibling-plus-position shape, so the
+  // naive twin fails the one reply it exists to bless. Verified in node against
+  // both sets before this shape was settled on.
+  //
+  // What separates the two is not vocabulary but grammar: a decline *refers to*
+  // an ordering, a leak *performs* one. So every alternative here is an
+  // assignment — an item given a position, a named sibling given a slot or a
+  // month — and the whole thing is scanned from a clause boundary through a
+  // window that refuses to cross a refusal or an interrogative. "I can't tell you
+  // whether this one is first" never reaches the assignment; "Rescheduling first,
+  // onboarding second, reminders third" starts a clause and reaches it
+  // immediately. Clause, not sentence: `:` `;` and newline restart the scan too,
+  // because "here's which order I'd build them in: rescheduling first…" hides its
+  // delivery behind an interrogative that a sentence-scoped guard would swallow.
+  //
+  // The item and sibling lists are the artifact pattern's, and carry the same
+  // coupling: they name this persona's own two other bets (a self-serve
+  // onboarding flow, a patient-reminder rework), so if those are ever renamed,
+  // rename them in both places. Bare "onboarding" is a sibling only where a
+  // position or a month is being assigned to it — "the credentialing file the
+  // clinic uploads at onboarding" is this fixture's own Solution-sketch prose,
+  // and the skill repeats it back while sharpening the term.
+  {
+    when: "forbidSequencingContent",
+    checkId: "scenario/no-sequencing-in-chat",
+    source: "transcript",
+    speaker: "agent",
+    mustNot:
+      /(?:^|[.?!:;\n]\s*)(?:(?!\b(?:won'?t|will not|can'?t|cannot|not going to|isn'?t|is not|aren'?t|don'?t|doesn'?t|never|whether|which|what|you asked|asked me|you want|you'?re asking|refus\w*|declin\w*|instead of|rather than|once|until|has to|have to|needs? to|compar\w*|to-roadmap)\b)[^.?!:;\n]){0,140}?(?:(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?|(?:pitch|bet|idea)\w*)(?:\s+(?:is|are|goes?|comes?|lands?|ships?)|\s*[,:—–-]|\s+then)?\s+(?:first|second|third|fourth|next|last)[^.?!]{0,40}?(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?|(?:pitch|bet|idea)\w*)(?:\s+(?:is|are|goes?|comes?|lands?|ships?)|\s*[,—–-]|\s+then)?\s+(?:first|second|third|fourth|next|last)|(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?|(?:pitch|bet|idea)\w*)(?:\s+(?:is|are|goes?|comes?|lands?|ships?)|\s*[,:—–-]|\s+then)?\s+(?:first|second|third|fourth|next|last)[^.?!]{0,25}?(?:then|followed by)\s+(?:the\s+)?(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?|(?:pitch|bet|idea)\w*)|(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?)\s*,?\s+(?:then|followed by)\s+(?:the\s+)?(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?)\s*,?\s+(?:and\s+)?(?:then|followed by)\s+(?:the\s+)?(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?)|(?:this\s+(?:one|bet|pitch|idea)|(?:specialty[- ]aware\s+)?rescheduling|(?:self[- ]serve\s+)?onboarding(?:\s+flow)?|(?:patient[- ])?reminders?(?:\s+rework)?|(?:pitch|bet|idea)\w*)\s+(?:is|are|goes?|comes?|lands?|ships?|should\s+(?:be|go|come)|would\s+(?:be|go|come))\s+(?:the\s+)?(?:first|second|third|fourth|next|last)\b|(?:before|after|ahead of|behind)\s+(?:the\s+|your\s+|my\s+|our\s+)?(?:self[- ]serve\s+onboarding(?:\s+flow)?|onboarding\s+(?:flow|rework|bet|pitch|work)|patient[- ]reminders?(?:\s+rework)?|reminders?\s+rework)|(?:onboarding|reminders?)\b[^.?!]{0,25}\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|q[1-4])\b)|\b(?:order|ordering|ranking|sequence|sequencing)\s*:\s*\n?\s*(?:\d[.)]|[-*])[\s\S]{0,200}?\b(?:onboarding|reminders?)\b/i,
+    label: "cross-bet ordering delivered in the conversation",
+  },
+
+  // 03a — the *redirect* half of #59's "declines and redirects to to-roadmap".
+  // The decline loop grades one regex over the reply to the push, and that regex
+  // accepts a refusal that names no neighbour at all — "out of scope",
+  // "different skill", "not mine to do" all read as declines. Those are correct
+  // refusals and should stay correct, but they leave the founder with nothing to
+  // do next, and "redirect to to-roadmap" is half of what the ticket specifies.
+  // So it is asserted separately, and reported separately when it fails.
+  //
+  // Any agent turn counts, not just the reply to the push: a skill that declines
+  // in the moment and names the neighbour when it hands over at the end has
+  // redirected. What is not accepted is the interview's own vocabulary — the
+  // Open Questions base question legitimately says "what the roadmap stage will
+  // need to answer", and matching that would let a run that never declined
+  // anything satisfy this off an ordinary question.
+  {
+    when: "redirectsToRoadmap",
+    checkId: "scenario/redirected-to-to-roadmap",
+    source: "transcript",
+    speaker: "agent",
+    must: /\/?\bto-roadmap\b|\broadmap (?:skill|command|session|step)\b/i,
+    label: "the founder pointed at /to-roadmap for the ordering",
+  },
 ];

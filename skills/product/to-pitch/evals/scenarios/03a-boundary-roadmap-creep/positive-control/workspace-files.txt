@@ -1,0 +1,2 @@
+./docs/product/vision.md
+./docs/product/pitches/specialty-aware-rescheduling/pitch.md
