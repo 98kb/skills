@@ -1,0 +1,40 @@
+{
+  "description": "the skill puts all seven fields in front of the founder at once and writes up whatever comes back. SKILL.md forbids this in as many words — \"Ask them one at a time, in a natural conversational voice — don't dump the list at once, and don't present it as a form to fill in\" — and the artifact it produces is complete, correctly ordered and correctly approved, so every artifact-shaped check passes. The turn count and the two press assertions are the only things that can see it.",
+  "mustFail": [
+    "scenario/min-agent-turns",
+    "scenario/problem-pressed-on-swap-test",
+    "scenario/appetite-pressed-for-a-tier",
+    "scenario/flag-disclosed:Problem",
+    "scenario/flag-disclosed:Appetite"
+  ],
+
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "Vision checked — `docs/product/vision.md` is approved by Dana Okafor. Here's everything I need; take them in any order.\n\n1. **Problem** — what's the specific pain, for that customer, that this bet goes after, in her words?\n2. **Appetite** — how much are you willing to spend before you'd stop and reassess: small, up to two weeks, or big, up to six?\n3. **Solution sketch** — what are you actually building?\n4. **Riskiest assumption** — what's the one thing that, if it turned out to be false, would sink this? Give me the claim, the threshold, the test and the timebox.\n5. **Rabbit holes** — what's likely to eat unplanned time?\n6. **No-gos** — what's explicitly not part of this?\n7. **Open questions** — what's still unresolved?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Right. Clinics are just bad at scheduling — it's a huge pain point across healthcare, everyone's fighting their calendar and losing revenue to it. Appetite, probably a month or so? Something like that. The build: when a patient cancels, the slot goes to the top name on a per-therapist waitlist automatically — one text, first to reply takes it, thirty minutes to claim before it drops to the next person. The assumption is that a cancelled slot offered to the waitlist by text gets claimed within the hour at least half the time; if fewer than half are claimed inside the hour I'm wrong, and I'll count last quarter's sixty logged offers in Riverbend's message log, under an hour of work, done by Thursday. Rabbit holes: patients who claim a slot and then no-show anyway. No-gos: no changes to billing. Open question: whether thirty minutes is the right claim window."
+    },
+    {
+      "speaker": "agent",
+      "text": "That's all seven. **Proposed slug:** `cancellation-waitlist`.\n\n---\n\n# Pitch: The cancelled slot that refills itself\n\n## Problem\n\nIndependent physical-therapy clinics lose revenue to scheduling. When a patient cancels the slot usually stays empty for the rest of the day.\n\n## Appetite\n\nSmall (≤2 weeks)\n\n## Solution sketch\n\nWhen a patient cancels, the slot is offered automatically to the top name on that therapist's waitlist — one text, first to reply takes it, thirty minutes to claim before the offer drops to the next person.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** A cancelled slot offered to the waitlist by text is claimed within the hour at least half the time.\n   - **Threshold:** Fewer than half of the offers claimed inside the hour.\n   - **Test:** Mine last quarter's sixty logged offers in Riverbend's message log.\n   - **Timebox:** By Thursday.\n\n## Rabbit Holes\n\n- Patients who claim a slot and then no-show anyway.\n\n## No-gos\n\n- No changes to billing.\n\n## Open Questions\n\n- Is thirty minutes the right claim window?\n\n---\n\nDo you approve this pitch?"
+    },
+    { "speaker": "founder", "text": "Yes, I approve this pitch." },
+    {
+      "speaker": "agent",
+      "text": "Recording this as approved. Written to `docs/product/pitches/cancellation-waitlist/pitch.md`, approved by Dana Okafor."
+    }
+  ],
+
+  "toolcalls": [
+    { "name": "Read", "input": { "file_path": "docs/product/vision.md" } },
+    {
+      "name": "Write",
+      "input": { "file_path": "docs/product/pitches/cancellation-waitlist/pitch.md" }
+    }
+  ],
+
+  "artifact": "---\nupstream: ../../vision.md\napproved_by: Dana Okafor\napproved_at: 2026-08-17T11:04:19Z\n---\n\n# Pitch: The cancelled slot that refills itself\n\nBridges from the [product vision](../../vision.md).\n\n## Problem\n\nIndependent physical-therapy clinics lose revenue to scheduling. When a patient cancels the slot usually stays empty for the rest of the day.\n\n## Appetite\n\nSmall (≤2 weeks)\n\n## Solution sketch\n\nWhen a patient cancels, the slot is offered automatically to the top name on that therapist's waitlist — one text, first to reply takes it, thirty minutes to claim before the offer drops to the next person.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** A cancelled slot offered to the waitlist by text is claimed within the hour at least half the time.\n   - **Threshold:** Fewer than half of the offers claimed inside the hour.\n   - **Test:** Mine last quarter's sixty logged offers in Riverbend's message log.\n   - **Timebox:** By Thursday.\n\n## Rabbit Holes\n\n- Patients who claim a slot and then no-show anyway.\n\n## No-gos\n\n- No changes to billing.\n\n## Open Questions\n\n- Is thirty minutes the right claim window?\n"
+}

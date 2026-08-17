@@ -1,0 +1,97 @@
+{
+  "description": "the skill presses both fields correctly, records the Appetite as small, and then shows the draft and asks for approval without ever telling the founder that anything is weak. The artifact is indistinguishable from a correct one; only the transcript shows the founder was asked to approve flags they were never told about, which #17 makes the difference between a legitimate flagged approval and a silent one.",
+  "mustFail": [
+    "scenario/flag-disclosed:Problem",
+    "scenario/flag-disclosed:Appetite",
+    "scenario/appetite-founder-unconfirmed"
+  ],
+
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "Vision checked — `docs/product/vision.md` is approved by Dana Okafor. **Problem.** Your vision is for Marisol at a three-to-eight-therapist clinic. What's the specific pain, for that customer, that this bet goes after — in her words?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Clinics are just bad at scheduling. It's a huge pain point across healthcare."
+    },
+    {
+      "speaker": "agent",
+      "text": "A competitor selling to a fifty-provider group could say that word for word. What happens in Marisol's week specifically?"
+    },
+    {
+      "speaker": "founder",
+      "text": "It's the single biggest operational drag in outpatient care. Every practice feels it, every single week."
+    },
+    {
+      "speaker": "agent",
+      "text": "Last ask on this one: one Tuesday, one cancelled slot — what does she do?"
+    },
+    { "speaker": "founder", "text": "Honestly, that is the problem. Empty slots are money on the floor." },
+    {
+      "speaker": "agent",
+      "text": "Alright, moving on. **Appetite.** How much are you willing to spend on this before you'd stop and reassess — small, up to two weeks, or big, up to six?"
+    },
+    { "speaker": "founder", "text": "Probably a month or so? Something like that." },
+    {
+      "speaker": "agent",
+      "text": "Appetite is fixed before we shape the solution — which tier are you committing to?"
+    },
+    {
+      "speaker": "founder",
+      "text": "I mean — four to six weeks, realistically. It depends how the calendar integration goes."
+    },
+    { "speaker": "agent", "text": "Small, or big? Last ask." },
+    { "speaker": "founder", "text": "I really can't put it in a box like that. It'll take what it takes." },
+    {
+      "speaker": "agent",
+      "text": "Fine — I'll take small. **Solution sketch.** At a small appetite — two weeks — what are you actually building?"
+    },
+    {
+      "speaker": "founder",
+      "text": "When a patient cancels, the slot goes to the top name on a per-therapist waitlist automatically — one text, first to reply takes it, thirty minutes to claim before it drops to the next person. The office manager sets who goes on the list."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Riskiest Assumptions.** What's the one thing that, if it turned out to be false, would sink this?"
+    },
+    {
+      "speaker": "founder",
+      "text": "A cancelled slot offered to the waitlist by text gets claimed within the hour at least half the time. If fewer than half are claimed inside the hour, I'm wrong. I'll count last quarter's sixty logged offers in Riverbend's message log — under an hour of work, done by Thursday."
+    },
+    {
+      "speaker": "agent",
+      "text": "**Rabbit Holes.** What's likely to eat unplanned time or complexity inside this approach?"
+    },
+    { "speaker": "founder", "text": "Patients who claim a slot and then no-show anyway." },
+    {
+      "speaker": "agent",
+      "text": "**No-gos.** What's explicitly not part of this, that someone might reasonably assume is included?"
+    },
+    { "speaker": "founder", "text": "No changes to billing." },
+    {
+      "speaker": "agent",
+      "text": "**Open Questions.** What's still unresolved that the roadmap stage will need to answer?"
+    },
+    { "speaker": "founder", "text": "Whether thirty minutes is the right claim window." },
+    {
+      "speaker": "agent",
+      "text": "All seven fields are in. **Proposed slug:** `cancellation-waitlist`.\n\n---\n\n# Pitch: The cancelled slot that refills itself\n\n## Problem\n\nIndependent physical-therapy clinics lose revenue to scheduling.\n\n## Appetite\n\nSmall (≤2 weeks)\n\n## Solution sketch\n\nWhen a patient cancels, the slot is offered automatically to the top name on that therapist's waitlist.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** A cancelled slot offered to the waitlist by text is claimed within the hour at least half the time.\n   - **Threshold:** Fewer than half claimed inside the hour.\n   - **Test:** Mine last quarter's sixty logged offers in Riverbend's message log.\n   - **Timebox:** By Thursday.\n\n## Rabbit Holes\n\n- Patients who claim a slot and then no-show anyway.\n\n## No-gos\n\n- No changes to billing.\n\n## Open Questions\n\n- Is thirty minutes the right claim window?\n\n---\n\nThat's the whole pitch, in document order. Do you approve this pitch?"
+    },
+    { "speaker": "founder", "text": "Yes, I approve this pitch." },
+    {
+      "speaker": "agent",
+      "text": "Recording this as approved. Written to `docs/product/pitches/cancellation-waitlist/pitch.md`."
+    }
+  ],
+
+  "toolcalls": [
+    { "name": "Read", "input": { "file_path": "docs/product/vision.md" } },
+    {
+      "name": "Write",
+      "input": { "file_path": "docs/product/pitches/cancellation-waitlist/pitch.md" }
+    }
+  ],
+
+  "artifact": "---\nupstream: ../../vision.md\napproved_by: Dana Okafor\napproved_at: 2026-08-17T11:04:19Z\n---\n\n# Pitch: The cancelled slot that refills itself\n\nBridges from the [product vision](../../vision.md).\n\n## Problem\n\nIndependent physical-therapy clinics lose revenue to scheduling.\n\n## Appetite\n\nSmall (≤2 weeks)\n\n## Solution sketch\n\nWhen a patient cancels, the slot is offered automatically to the top name on that therapist's waitlist — one text, first to reply takes it, thirty minutes to claim before the offer drops to the next person.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** A cancelled slot offered to the waitlist by text is claimed within the hour at least half the time.\n   - **Threshold:** Fewer than half of the offers claimed inside the hour.\n   - **Test:** Mine last quarter's sixty logged offers in Riverbend's message log.\n   - **Timebox:** By Thursday.\n\n## Rabbit Holes\n\n- Patients who claim a slot and then no-show anyway.\n\n## No-gos\n\n- No changes to billing.\n\n## Open Questions\n\n- Is thirty minutes the right claim window?\n"
+}

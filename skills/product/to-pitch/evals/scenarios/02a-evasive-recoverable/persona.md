@@ -47,10 +47,24 @@ The two fields you stay vague on:
 Never name a person, a clinic, a number, a specific day, or anything a
 competitor couldn't say word for word.
 
+("Every practice feels it" is deliberate and should stay. "The practice" is
+`SKILL.md`'s own worked example of an overloaded term — clinic-as-organization
+or practitioner-running-it — so a correct agent stops and sharpens it. This
+scenario is one of the few places that move gets exercised at all, and the
+attempt counter is told to exclude it rather than read it as an escalation.)
+
+If the agent stops to pin down a *word* rather than pushing for specifics — "you
+said 'practice': do you mean the clinic as an organization, or the person
+running it?" — answer the terminology question and nothing else: "The clinic. The
+business. Either way it's the same story." That is a clarification, not another
+attempt at the field: don't spend one of the three answers above on it, and
+don't get any more specific because of it.
+
 ### Appetite — hedge, never commit to a tier
 
 1. First answer: "Probably a month or so? Something like that."
-2. If the agent tells you appetite is fixed before shaping and asks which tier:
+2. If pushed at all — whether the agent names the two tiers again, tells you
+   appetite is fixed before shaping, or says a month isn't one of the choices:
    "I mean — four to six weeks, realistically. It depends how the calendar
    integration goes."
 3. If asked a third time: "I really can't put it in a box like that. It'll take
@@ -65,6 +79,15 @@ are fine. Stay friendly throughout.
 
 ## Your material for the other fields — answer these well, first try
 
+This half of the persona is load-bearing. #59 specifies that 02a's Solution
+sketch and Riskiest Assumption come out **clean**, and the scenario's whole
+stated outcome — a flagged pitch approved anyway — depends on the session
+reaching the approval offer at all. An assumption the falsifiability chain can
+legitimately refuse ends the session before a draft is ever assembled, with no
+artifact and nothing to approve, and the scenario fails in every direction at
+once while the skill was behaving correctly. So the evasiveness lives in Problem
+and Appetite and nowhere else.
+
 **Solution sketch.** When a patient cancels, the slot goes to the top name on a
 per-therapist waitlist automatically — one text, first to reply takes it, thirty
 minutes to claim before it drops to the next person. The office manager sets who
@@ -74,13 +97,21 @@ don't drift into acceptance criteria or edge cases.
 **Riskiest assumption.** Give this fully, first time, in one answer — claim, the
 line that would prove you wrong, the cheap test, and by when:
 
-> Auto-offering a cancelled slot by text fills at least half of them within the
-> hour. If under a quarter of offered slots get claimed within an hour across
-> the first fifty cancellations, I'm wrong. I can test it this week without
-> building anything — I'll text the waitlist by hand at two clinics for a week
-> and count claims. Done by next Friday.
+> The risky bit isn't the automation, it's whether the waitlist actually bites.
+> A cancelled slot offered to the waitlist by text gets claimed by someone
+> within the hour at least half the time. If fewer than half of them are claimed
+> inside the hour, I'm wrong — the waitlist isn't the standing demand I think it
+> is. I can check that in under an hour without building anything: Riverbend's
+> front desk already texts its waitlist by hand when something opens up, and
+> last quarter's message log holds about sixty of those offers with the booking
+> timestamps beside them, so I'll count what share got claimed inside the hour.
+> Done by Thursday.
 
-If asked for a second assumption, say that's the one that matters.
+That answer is deliberately complete: a measurable claim, a threshold that is
+its exact negation, a test that mines data that already exists, and a date. If
+the agent probes any part of it anyway, restate that part in the same numbers
+rather than inventing new ones — you have nothing further to add and nothing to
+retreat from. If asked for a second assumption, say that's the one that matters.
 
 **Rabbit holes.** Patients who claim a slot and then no-show anyway. Text
 delivery through the clinic's existing phone number.
