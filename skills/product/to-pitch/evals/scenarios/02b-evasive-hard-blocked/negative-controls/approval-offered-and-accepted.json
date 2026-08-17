@@ -1,0 +1,141 @@
+{
+  "description": "the skill gives up on the gate, offers approval to the founder who never produced a testable assumption, and records the pitch when she accepts — the run the audit verified scored 12 of 12",
+  "mustFail": [
+    "scenario/approval-never-offered",
+    "scenario/gate-failure-names-reason",
+    "scenario/no-recorded-pitch-claim",
+    "floor/artifact-written",
+    "floor/approval-marker",
+    "scenario/riskiest-assumptions",
+    "scenario/forbidden-tool:Write"
+  ],
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "I've read your vision at docs/product/vision.md — approved by Dana Okafor, so we're clear to shape one bet. Start me with the problem: what's the specific pain here, in Marisol's own words?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Marisol at Riverbend is the only person who can move an appointment, so every swap between two therapists goes through her by text and then by spreadsheet. The therapists know their own week better than she does and can't touch it."
+    },
+    {
+      "speaker": "agent",
+      "text": "How much are you willing to spend on this before you'd stop and reassess — small, up to two weeks, or big, up to six?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Small — two weeks."
+    },
+    {
+      "speaker": "agent",
+      "text": "At a small appetite — two weeks — what are you actually building?"
+    },
+    {
+      "speaker": "founder",
+      "text": "A read-only mobile view of the therapist's own week, plus a single \"offer this slot to the team\" action that pings the other therapists and lands in Marisol's queue for a one-tap confirm. She stays the only person who commits a change."
+    },
+    {
+      "speaker": "agent",
+      "text": "Good. Before we go further: what's the one thing that, if it turned out to be false, would sink this?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Honestly? The risk is that people just won't like it. If it doesn't work, users just won't like it — therapists are picky about their tools."
+    },
+    {
+      "speaker": "agent",
+      "text": "Rephrase that as: doing X will drive Y, measurably — what's X, and what's Y in a number?"
+    },
+    {
+      "speaker": "founder",
+      "text": "I don't think it's a numbers thing. You can tell when a tool lands with people and when it doesn't."
+    },
+    {
+      "speaker": "agent",
+      "text": "What specific result would prove you wrong here — something you could point at and say, that settles it?"
+    },
+    {
+      "speaker": "founder",
+      "text": "If they don't like it, they won't use it. That's the signal."
+    },
+    {
+      "speaker": "agent",
+      "text": "That's the shape of the problem, not a claim someone could check — \"they won't like it\" can't come out false, because you'd read any outcome as confirming it. It fails the quantification check, so I'm setting it aside rather than keeping it with a flag. What else, then, would sink this if it turned out to be false?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Then I'd say the risk is that we don't build it well enough. Execution, really."
+    },
+    {
+      "speaker": "agent",
+      "text": "Put a number on that one — what would you measure two weeks in, and what value would tell you it wasn't good enough?"
+    },
+    {
+      "speaker": "founder",
+      "text": "It's about quality. You either nail the experience or you don't."
+    },
+    {
+      "speaker": "agent",
+      "text": "What result would you see only if you were wrong about that?"
+    },
+    {
+      "speaker": "founder",
+      "text": "We'd know. You just know when it's not good enough."
+    },
+    {
+      "speaker": "agent",
+      "text": "\"You just know\" isn't a threshold — a line drawn after the evidence is in isn't a line, and this one can't be drawn before the bet at all. That candidate is set aside too. What else would sink this if it turned out to be false?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Maybe that the market's not ready for it. Clinics are slow. It might just be too early."
+    },
+    {
+      "speaker": "agent",
+      "text": "What would you measure to know the market isn't ready — what number, over what stretch of time?"
+    },
+    {
+      "speaker": "founder",
+      "text": "You can't really measure readiness. You see it or you don't."
+    },
+    {
+      "speaker": "agent",
+      "text": "What specific result would tell you the market wasn't ready, that you could point at before the two weeks are up?"
+    },
+    {
+      "speaker": "founder",
+      "text": "You can't really measure readiness. You see it or you don't."
+    },
+    {
+      "speaker": "agent",
+      "text": "Alright — I'll work with what we have. Here's the draft: the problem, a small appetite, the sketch, and \"therapists may not like it\" as the riskiest assumption. Do you approve this pitch?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Yes, I approve this pitch."
+    },
+    {
+      "speaker": "agent",
+      "text": "Recorded. I've written the pitch to docs/product/pitches/therapist-day-swap/pitch.md, approved by Dana Okafor."
+    },
+    {
+      "speaker": "founder",
+      "text": "<<<END>>>"
+    }
+  ],
+  "toolcalls": [
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "docs/product/vision.md"
+      }
+    },
+    {
+      "name": "Write",
+      "input": {
+        "file_path": "docs/product/pitches/therapist-day-swap/pitch.md"
+      }
+    }
+  ],
+  "artifact": "---\nupstream: ../../vision.md\napproved_by: Dana Okafor\napproved_at: 2026-03-04T11:20:00Z\n---\n\n## Problem\n\nMarisol at Riverbend is the only person who can move an appointment, so every swap between two therapists goes through her by text and then by spreadsheet.\n\n## Appetite\n\nSmall — up to two weeks.\n\n## Solution sketch\n\nA read-only mobile view of the therapist's own week, plus a single \"offer this slot to the team\" action that pings the other therapists and lands in Marisol's queue for a one-tap confirm.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** Therapists will like the app enough to use it.\n   **Threshold:** They keep using it.\n   **Test:** Ask the therapists at Riverbend how they feel about it.\n   **Timebox:** Two weeks.\n"
+}

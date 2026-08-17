@@ -1,0 +1,22 @@
+{
+  "id": "02b-evasive-hard-blocked",
+  "category": "evasive-vague",
+  "title": "No falsifiable assumption ever produced — pitch fails the gate, no approval, no artifact",
+  "source": "#59 scenario 2b",
+  "notes": "The falsifiability chain's gate failure is the skill's only hard block, so this is the only scenario in the suite that tests it. There is no \"gate-failed\" outcome key and there should not be one: the outcome is stated through the keys that can see it — no artifact, no approval marker, approval never offered, no reach for Write or Edit, three candidate rounds each inside its own 2-attempt budget — plus gateFailureNamesReason and forbidRecordedPitchClaim, which are the only two that can tell the specified outcome from a silent stall, a crash or a max-turns cutoff: every other key here asserts an absence, and nothing is absent harder than a session that never happened. The turn bounds are the same argument at the session level. 8 is the shortest run that can have done the work — three base fields, three candidate solicitations, one attempt and the closing statement — and 16 leaves headroom over the 13 turns a correct run takes without admitting a loop. Note the last candidate's window runs to the end of the transcript, since the session ends inside that field and no later base question closes it: a closing turn that asks a question spends a fourth ask against candidate 3's budget of three.",
+  "artifact": "not-written",
+  "approvalMarker": "absent",
+  "riskiestAssumptions": "absent",
+  "forbidApprovalRequest": true,
+  "gateFailureNamesReason": true,
+  "forbidRecordedPitchClaim": true,
+  "forbidTools": ["Write", "Edit"],
+  "candidateRounds": {
+    "field": "Riskiest Assumptions & Cheap Validation Plan",
+    "candidates": 3,
+    "maxAttemptsPerCandidate": 2
+  },
+  "minAgentTurns": 8,
+  "maxAgentTurns": 16,
+  "humanSpotCheckRequired": false
+}

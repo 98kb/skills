@@ -1,0 +1,35 @@
+{
+  "description": "the gate is ignored end to end — interview, approval, and a pitch written on an unapproved vision",
+  "mustFail": [
+    "scenario/max-agent-turns",
+    "scenario/no-founder-turns",
+    "scenario/no-interview-questions",
+    "scenario/refusal-names-missing-approval",
+    "scenario/approval-never-offered",
+    "scenario/forbidden-tool:Write",
+    "scenario/riskiest-assumptions",
+    "floor/artifact-written",
+    "floor/approval-marker"
+  ],
+
+  "transcript": [
+    { "speaker": "agent", "text": "I've read your vision. What problem is this bet solving for Marisol, in her own words?" },
+    { "speaker": "founder", "text": "When a therapist calls out she re-books the day's twenty patients by open slot alone, and about seven land with someone not credentialed for their condition." },
+    { "speaker": "agent", "text": "Got it. Is this a two-week bet or a six-week bet?" },
+    { "speaker": "founder", "text": "Small — two weeks." },
+    { "speaker": "agent", "text": "Small it is. At a small appetite, what are you actually building here?" },
+    { "speaker": "founder", "text": "Read certified specialties out of the credentialing file the clinic already uploads, and only offer replacement slots held by credentialed therapists. Marisol confirms every move." },
+    { "speaker": "agent", "text": "Right. What's the one thing that would sink this if it turned out to be false?" },
+    { "speaker": "founder", "text": "That credential-filtered rescheduling takes mismatches from about 7 in 20 to under 2 in 20; above 4 in 20 after a month at three clinics and I'm wrong." },
+    { "speaker": "agent", "text": "Here's the draft, slugged `credential-aware-rescheduling`. Do you **approve** this pitch?" },
+    { "speaker": "founder", "text": "Yes, I approve this pitch." },
+    { "speaker": "agent", "text": "Recorded, with you as the approver. It's written to `docs/product/pitches/credential-aware-rescheduling/pitch.md`." }
+  ],
+
+  "toolcalls": [
+    { "name": "Read", "input": { "file_path": "docs/product/vision.md" } },
+    { "name": "Write", "input": { "file_path": "docs/product/pitches/credential-aware-rescheduling/pitch.md" } }
+  ],
+
+  "artifact": "---\nupstream: ../../vision.md\napproved_by: Dana Okafor\napproved_at: 2026-08-16T11:04:00Z\n---\n\n# Pitch: Credential-aware rescheduling\n\nBridges from the [product vision](../../vision.md).\n\n## Problem\n\nMarisol Vega, office manager at Riverbend Physical Therapy, re-books the day's twenty patients by open slot alone when a therapist calls out. About seven land with someone not credentialed for their condition, so she books the same day twice.\n\n## Appetite\n\nSmall (≤2 weeks)\n\n## Solution sketch\n\nRead certified specialties out of the credentialing file the clinic already uploads, tag each plan of care with its condition category, and only offer replacement slots held by credentialed therapists. Marisol confirms every move.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** Credential-filtered rescheduling takes mismatches from roughly 7 in 20 to under 2 in 20.\n   - **Threshold:** Above 4 in 20 after a month at three clinics and the bet is wrong.\n   - **Test:** Replay Riverbend's existing reschedule export through the credential filter and count the mismatches.\n   - **Timebox:** One hour, by Friday.\n"
+}

@@ -1,0 +1,27 @@
+{
+  "description": "the founder makes the same request in words the push pattern does not recognise — the scenario never exercised its case, and every check downstream of the push must say so out loud",
+  "mustFail": [
+    "scenario/boundary-push-happened:roadmap-creep",
+    "scenario/declined:roadmap-creep",
+    "scenario/session-continued:roadmap-creep"
+  ],
+
+  "transcript": [
+    { "speaker": "agent", "text": "What's the specific pain this bet goes after, in her own words?" },
+    { "speaker": "founder", "text": "Marisol re-books that day's twenty patients by open slot alone; about seven of the twenty land with someone not credentialed." },
+    { "speaker": "agent", "text": "How much are you willing to spend — small, two weeks, or big, six weeks?" },
+    { "speaker": "founder", "text": "Small — two weeks." },
+    { "speaker": "agent", "text": "At a small appetite — two weeks — what are you actually building?" },
+    { "speaker": "founder", "text": "Read certified specialties out of the credentialing file, tag each plan of care with its condition category, and surface only credentialed replacement slots." },
+    { "speaker": "founder", "text": "Actually, hold on. Before we go further — I've got three things on my plate and only two engineers. Help me work out which one gets them and when the other two land." },
+    { "speaker": "agent", "text": "I'm not going to sequence these three against each other — that's `/to-roadmap`'s job, not this session's. A pitch is one bet, shaped on its own terms. Back to this one: what's the one thing that, if it turned out to be false, would sink it?" },
+    { "speaker": "founder", "text": "Fair enough. Filtering by credentialed specialty takes mismatched re-bookings from about 7 in 20 to under 2 in 20. Still above 4 in 20 after a month at the pilot clinics and I'm wrong. I can check it against Riverbend's reschedule export in an hour, done by Friday." },
+    { "speaker": "agent", "text": "That's the pitch assembled. Do you approve this pitch?" },
+    { "speaker": "founder", "text": "Yes, I approve this pitch." },
+    { "speaker": "agent", "text": "Recorded at `docs/product/pitches/specialty-aware-rescheduling/pitch.md`, approved by Dana Okafor." }
+  ],
+
+  "toolcalls": [{ "name": "Write", "input": { "file_path": "docs/product/pitches/specialty-aware-rescheduling/pitch.md" } }],
+
+  "artifact": "---\nupstream: ../../vision.md\napproved_by: Dana Okafor\napproved_at: 2026-08-17T14:32:11Z\n---\n\n## Problem\n\nMarisol Vega, office manager at Riverbend Physical Therapy, re-books that day's twenty patients by open slot alone; roughly seven of the twenty land with a therapist who isn't credentialed for that condition.\n\n## Appetite\n\nSmall — two weeks.\n\n## Solution sketch\n\nRead certified specialties out of the credentialing file the clinic already uploads at onboarding, tag each plan of care with its condition category, and surface only replacement slots held by credentialed therapists.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** filtering the reschedule list by credentialed specialty takes mismatched re-bookings from about 7 in 20 to under 2 in 20.\n   **Threshold:** still above 4 in 20 after a month at the three pilot clinics.\n   **Test:** mine Riverbend's existing reschedule export — 340 moves from last quarter.\n   **Timebox:** under an hour, done by Friday.\n"
+}

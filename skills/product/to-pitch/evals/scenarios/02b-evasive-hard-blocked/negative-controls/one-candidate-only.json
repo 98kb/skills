@@ -1,0 +1,91 @@
+{
+  "description": "the skill never asks for a replacement candidate — it grinds the first one past its budget and then gate-fails, so the 2 replacement rounds SKILL.md mandates never happen",
+  "mustFail": [
+    "scenario/candidate-rounds",
+    "scenario/candidate-attempt-budget:1",
+    "scenario/candidate-attempt-budget:2",
+    "scenario/candidate-attempt-budget:3"
+  ],
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "I've read your vision at docs/product/vision.md — approved by Dana Okafor, so we're clear to shape one bet. Start me with the problem: what's the specific pain here, in Marisol's own words?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Marisol at Riverbend is the only person who can move an appointment, so every swap between two therapists goes through her by text and then by spreadsheet. The therapists know their own week better than she does and can't touch it."
+    },
+    {
+      "speaker": "agent",
+      "text": "How much are you willing to spend on this before you'd stop and reassess — small, up to two weeks, or big, up to six?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Small — two weeks."
+    },
+    {
+      "speaker": "agent",
+      "text": "At a small appetite — two weeks — what are you actually building?"
+    },
+    {
+      "speaker": "founder",
+      "text": "A read-only mobile view of the therapist's own week, plus a single \"offer this slot to the team\" action that pings the other therapists and lands in Marisol's queue for a one-tap confirm. She stays the only person who commits a change."
+    },
+    {
+      "speaker": "agent",
+      "text": "Good. Before we go further: what's the one thing that, if it turned out to be false, would sink this?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Honestly? The risk is that people just won't like it. If it doesn't work, users just won't like it — therapists are picky about their tools."
+    },
+    {
+      "speaker": "agent",
+      "text": "Rephrase that as: doing X will drive Y, measurably — what's X, and what's Y in a number?"
+    },
+    {
+      "speaker": "founder",
+      "text": "I don't think it's a numbers thing."
+    },
+    {
+      "speaker": "agent",
+      "text": "What specific result would prove you wrong here?"
+    },
+    {
+      "speaker": "founder",
+      "text": "If they don't like it, they won't use it."
+    },
+    {
+      "speaker": "agent",
+      "text": "Try it from the other end — what would you have to see to keep going?"
+    },
+    {
+      "speaker": "founder",
+      "text": "You can tell when a tool lands with people."
+    },
+    {
+      "speaker": "agent",
+      "text": "Is there any number at all you'd watch in the first two weeks?"
+    },
+    {
+      "speaker": "founder",
+      "text": "It doesn't really work like that."
+    },
+    {
+      "speaker": "agent",
+      "text": "I can't record a pitch without one assumption someone could test, and that one can't come out false. We're done here."
+    },
+    {
+      "speaker": "founder",
+      "text": "<<<END>>>"
+    }
+  ],
+  "toolcalls": [
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "docs/product/vision.md"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "description": "a hand-built run of 04 doing everything #63 asks — one agent turn, no founder turn, a refusal naming the vision's missing approval, no interview question, nothing written. Every check this scenario registers must PASS against it.",
+  "notes": [
+    "04 has never been run against a model, and every check it registers is tuned",
+    "close to a phrasing, so this is the only evidence they pass a correct refusal",
+    "rather than merely catching a wrong one.",
+    "",
+    "The refusal therefore carries, deliberately, the three shapes that would",
+    "false-fail a correct session:",
+    "",
+    "  - \"Would you like to approve the vision and come back?\" against",
+    "    `forbidApprovalRequest`. A correct refusal sends the founder off to",
+    "    approve the *vision*; that names approval without offering it, which is",
+    "    what the vision guard in `flags.approvalRequest` exists for.",
+    "  - a closing list naming rabbit holes, no-gos and open questions against",
+    "    `forbidInterviewQuestions`. Telling the founder what the session would",
+    "    have asked is not asking it.",
+    "  - a reason that crosses a full stop before it names the missing approval,",
+    "    against `refusalNamesMissingApproval`.",
+    "",
+    "`workspaceFiles` is left to the default, which resolves to this scenario's",
+    "own seed — the unapproved vision at docs/product/vision.md — and nothing",
+    "else, because the graded outcome is that the session wrote nothing."
+  ],
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "I can't start a pitch session from this vision. I read `docs/product/vision.md` — it's there, and it's your clinic-scheduling vision — but it hasn't been approved: there's no `approved_by`/`approved_at` pair on it. A pitch is a bet placed against an approved vision, so I haven't asked you anything and I haven't written anything.\n\nOne thing to do: run `/to-vision` on it and approve it there. Would you like to approve the vision and come back? When you do, we'll shape your first bet from it — the problem in her own words, the appetite, the solution sketch, the riskiest assumption and its cheap test, plus rabbit holes, no-gos and open questions."
+    }
+  ],
+  "toolcalls": [
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "docs/product/vision.md"
+      }
+    }
+  ]
+}

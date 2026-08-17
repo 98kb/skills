@@ -1,0 +1,32 @@
+{
+  "id": "01-cooperative-sharp",
+  "category": "cooperative-sharp",
+  "title": "Approved with zero flags; one assumption surviving the falsifiability chain, reached in one challenge; no escalation on any field the founder answered cleanly",
+  "source": "#59 scenario 1",
+  "notes": "The stated outcome used to read 'one assumption passing all four checks on the first try, no escalation anywhere', and nothing graded it. It was also wrong. This fixture hands the skill two things it is *told* to react to, and a run that sails past either one is misbehaving: the Solution sketch says the credentialing file arrives 'at onboarding', which is SKILL.md's own worked example of an overloaded term, so the /domain-modeling sharpening move is mandated; and the riskiest assumption pairs a live-pilot threshold with a retrospective cheap test, which the falsifiability chain has to catch. Both fired in the recorded run and both are kept — the threshold/test mismatch is the only place in the suite where chain discipline is exercised at all. So the outcome is now 'no escalation on anything the founder answered cleanly', which is what cappedAttempts asserts, and the two mandated detours are graded where they belong: the sharpening move is excluded from attempt counts by checks.mjs's sharpeningQuestion, and the chain challenge is graded as one ask inside candidate 1's budget. Open Questions is deliberately absent from cappedAttempts: it is the last field the skill asks, so nothing later closes its window, the window runs to the end of the conversation, and the approval request lands inside it — the count would be measuring the close of the session, not an escalation. candidateRounds asserts two openings of the assumptions field because SKILL.md takes 'up to three surviving items', which cannot be known without asking once whether there is another; the persona answers no, so the second opening closes immediately. Confirm-back-before-write ('Recording this as approved.') is NOT asserted: the skill did it in the recorded run, but it emitted the sentence as a text block before the Write tool call, and transcript.json for that run kept only the last text block per turn. The harness now captures all of them, so a future recorded run will show it — but check.mjs reads no raw/ stream, and asserting it today would fail a run that was correct. forbidCollapsedRabbitHolesNoGos is asserted here rather than left to cappedAttempts, which cannot see it: a merged question matches both base questions, so both fields open on that one turn, neither window holds a second ask, and both report exactly 1. The collapse is invisible to a count of asks and only visible in the shape of the ask — negative-controls/rabbit-holes-and-no-gos-collapsed.json is that run, and it passes 32 of 33 checks with only the new one failing.",
+  "outcome": "approved",
+  "artifact": "written",
+  "approvalMarker": "present",
+  "approverName": "Dana Okafor",
+  "upstreamResolvesTo": "docs/product/vision.md",
+  "mandatoryFieldsPresent": true,
+  "riskiestAssumptions": "present",
+  "assumptionItems": { "count": 1 },
+  "assertZeroFlags": true,
+  "appetiteRecordedSmall": true,
+  "forbidCollapsedRabbitHolesNoGos": true,
+  "cappedAttempts": {
+    "Problem": 0,
+    "Appetite": 0,
+    "Solution sketch": 0,
+    "Rabbit Holes": 0,
+    "No-gos": 0
+  },
+  "candidateRounds": {
+    "field": "Riskiest Assumptions & Cheap Validation Plan",
+    "candidates": 2,
+    "maxAttemptsPerCandidate": 2
+  },
+  "forbidRoadmapVocabulary": true,
+  "humanSpotCheckRequired": true
+}

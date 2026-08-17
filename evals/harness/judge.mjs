@@ -1,50 +1,39 @@
 #!/usr/bin/env node
 //
-// LLM-judge grading for one to-vision eval run.
+// LLM-judge grading for one eval run, for any skill wired to this harness.
 //
-//   node judge.mjs <scenario-id>
+//   node judge.mjs <evals-dir|eval.config.json> <scenario-id>
 //
-// Grades the produced artifact against rubric.md — #16's composite sharpness
-// test plus its three swap-tests, reused verbatim. The judge never sees the
-// scenario's expectations, the persona, or the deterministic results; it only
-// reads the rubric and the artifact, so it cannot grade to the answer.
+// Grades the produced artifact against the skill's rubric.md. The judge never
+// sees the scenario's expectations, the persona, or the deterministic results;
+// it only reads the rubric and the artifact, so it cannot grade to the answer.
 //
-// Reads  evals/rubric.md, evals/runs/<scenario-id>/artifact.md
-// Writes evals/runs/<scenario-id>/judge.json
+// Reads  <evals>/rubric.md, <run-dir>/artifact.md
+// Writes <run-dir>/judge.json
 // Exits  0 if the verdict matches the scenario's expectation, 1 otherwise.
 
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { loadConfig, requireArgs, runDirFor } from "./config.mjs";
 
-const HARNESS = dirname(fileURLToPath(import.meta.url));
-const EVALS = dirname(HARNESS);
+const [, , configArg, scenario] = process.argv;
+requireArgs("judge.mjs", configArg, scenario);
 
-const scenario = process.argv[2];
-if (!scenario) {
-  console.error("usage: judge.mjs <scenario-id>");
-  process.exit(2);
-}
-
-const runDir = process.env.EVAL_OUT_DIR ?? join(EVALS, "runs", scenario);
+const config = loadConfig(configArg);
+const runDir = runDirFor(config, scenario);
 const expected = JSON.parse(
-  readFileSync(join(EVALS, "scenarios", scenario, "expect.json"), "utf8"),
+  readFileSync(join(config.scenariosDir, scenario, "expect.json"), "utf8"),
 );
 const artifactPath = join(runDir, "artifact.md");
 
-// Which vision fields each rubric criterion grades. A criterion that fails is
-// excused when one of its fields was disclosed to the founder as flagged before
-// approval was requested — #17: approving with visible flags is legitimate, so
-// a known-and-declared weakness is not a suite failure. An *undisclosed* one is.
-const CRITERION_FIELDS = {
-  1: ["Customer & Problem", "Future State"],
-  2: ["Grounding Insight"],
-  3: ["Vision Pivot Trigger"],
-  4: ["Vision Statement"],
-  5: ["Future State"],
-  6: ["Why Us / Why Now"],
-};
+// Which artifact fields each rubric criterion grades, from the skill's config.
+// A criterion that fails is excused when one of its fields was disclosed to the
+// founder as flagged before approval was requested — #17: approving with
+// visible flags is legitimate, so a known-and-declared weakness is not a suite
+// failure. An *undisclosed* one is.
+const CRITERION_FIELDS = config.judge.criterionFields;
+const CRITERIA_COUNT = Object.keys(CRITERION_FIELDS).length;
 
 // As in check.mjs: an expectation omitted from expect.json is not asserted. A
 // diagnostic scenario omits `artifact` because which way it goes is the open
@@ -88,20 +77,23 @@ if (!existsSync(artifactPath)) {
   process.exit(1);
 }
 
-const rubric = readFileSync(join(EVALS, "rubric.md"), "utf8");
+const rubric = readFileSync(config.rubricPath, "utf8");
 const artifact = readFileSync(artifactPath, "utf8");
 
+// The criterion count comes from the config's criterion→fields map rather than
+// being hardcoded, so a skill whose rubric has a different number of criteria
+// still gets a schema that rejects a partial or padded verdict.
 const schema = {
   type: "object",
   properties: {
     criteria: {
       type: "array",
-      minItems: 6,
-      maxItems: 6,
+      minItems: CRITERIA_COUNT,
+      maxItems: CRITERIA_COUNT,
       items: {
         type: "object",
         properties: {
-          id: { type: "integer", minimum: 1, maximum: 6 },
+          id: { type: "integer", minimum: 1, maximum: CRITERIA_COUNT },
           name: { type: "string" },
           verdict: { type: "string", enum: ["pass", "fail"] },
           rationale: { type: "string" },
@@ -116,11 +108,11 @@ const schema = {
   additionalProperties: false,
 };
 
-const prompt = `You are grading a product vision artifact against a fixed rubric.
+const prompt = `You are grading a ${config.judge.artifactLabel} against a fixed rubric.
 
 Apply the rubric exactly as written. Do not add criteria, do not soften a
 criterion because the artifact is otherwise good, and do not reward effort. If a
-criterion's text would be satisfied by a competitor's vision equally well, that
+criterion's text would be satisfied by a competitor's ${config.judge.swapTestSubject} equally well, that
 criterion fails.
 
 Set confidence to "low" if the artifact is genuinely borderline on two or more

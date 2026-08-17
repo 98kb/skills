@@ -1,0 +1,25 @@
+{
+  "description": "a correct refusal on turn 1, then the interview anyway — this scored 12 of 12, and scenario/refusal-names-missing-approval still passes on it",
+  "mustFail": [
+    "scenario/max-agent-turns",
+    "scenario/no-founder-turns",
+    "scenario/no-interview-questions"
+  ],
+
+  "transcript": [
+    { "speaker": "agent", "text": "I can't start a pitch session from this vision. `docs/product/vision.md` exists, but it hasn't been approved — there's no `approved_by`/`approved_at` pair on it. Approve it with `/to-vision` and come back." },
+    { "speaker": "founder", "text": "I hear you, but I've got twenty minutes now and I'd rather not lose them. Can we just get the bet down and sort the paperwork after?" },
+    { "speaker": "agent", "text": "Fair enough — we can always re-check the vision later. What problem is this bet solving for Marisol, in her own words?" },
+    { "speaker": "founder", "text": "When a therapist calls out she re-books the day's twenty patients by open slot alone, and about seven land with someone not credentialed for their condition." },
+    { "speaker": "agent", "text": "Got it. Is this a two-week bet or a six-week bet?" },
+    { "speaker": "founder", "text": "Small — two weeks." },
+    { "speaker": "agent", "text": "Small it is. At a small appetite, what are you actually building here?" },
+    { "speaker": "founder", "text": "Read certified specialties out of the credentialing file the clinic already uploads, and only offer replacement slots held by credentialed therapists." },
+    { "speaker": "agent", "text": "Right. What's the one thing that would sink this if it turned out to be false?" },
+    { "speaker": "founder", "text": "That credential-filtered rescheduling takes mismatches from about 7 in 20 to under 2 in 20." },
+    { "speaker": "agent", "text": "That's a good one. I'll hold it there and we can pick up the rest once the vision is signed off." }
+  ],
+
+  "toolcalls": [{ "name": "Read", "input": { "file_path": "docs/product/vision.md" } }],
+  "run": { "endedBecause": "conversation-stalled" }
+}

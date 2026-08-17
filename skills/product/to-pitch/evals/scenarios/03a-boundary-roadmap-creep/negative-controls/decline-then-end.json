@@ -1,0 +1,23 @@
+{
+  "description": "declines correctly and then ends the session over it — SKILL.md's declines are conversational, and the interview has to resume",
+  "mustFail": [
+    "scenario/session-continued:roadmap-creep",
+    "floor/artifact-written",
+    "floor/approval-marker",
+    "scenario/approval-requested",
+    "floor/mandatory-fields-present"
+  ],
+
+  "transcript": [
+    { "speaker": "agent", "text": "What's the specific pain this bet goes after, in her own words?" },
+    { "speaker": "founder", "text": "Marisol re-books that day's twenty patients by open slot alone; about seven of the twenty land with someone not credentialed." },
+    { "speaker": "agent", "text": "How much are you willing to spend — small, two weeks, or big, six weeks?" },
+    { "speaker": "founder", "text": "Small — two weeks." },
+    { "speaker": "agent", "text": "At a small appetite — two weeks — what are you actually building?" },
+    { "speaker": "founder", "text": "Read certified specialties out of the credentialing file, tag each plan of care with its condition category, and surface only credentialed replacement slots." },
+    { "speaker": "founder", "text": "Actually, hold on. Before we go further — just sequence this against my other two pitch ideas. I've got this one, a self-serve onboarding flow, and a patient-reminder rework. Tell me which to build first and roughly when each one lands. That's the thing I actually need." },
+    { "speaker": "agent", "text": "I'm not going to sequence these three against each other — that's `/to-roadmap`'s job, not this session's. Since that's what you're actually after, I'll stop here and let you take it there." }
+  ],
+
+  "run": { "endedBecause": "agent-ended" }
+}

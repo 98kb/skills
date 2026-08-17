@@ -11,21 +11,44 @@ externally observable results — the artifact backend's final state and the
 transcript — never internal reasoning steps or prompt wording (#47, Testing
 Decisions). The seam is the `/to-vision` conversational entry point itself.
 
+## What lives here
+
+Only what is genuinely `to-vision`'s (#60):
+
+| Path | What it is |
+|---|---|
+| `eval.config.json` | the skill's parameters — slash command, artifact path, stored field order, tool allowlist, rubric criterion→field map |
+| `checks.mjs` | the deterministic checker's pattern block: every regex and vocabulary list matched against a `to-vision` transcript or artifact |
+| `scenarios/` | `persona.md` + `expect.json` per scenario |
+| `rubric.md` | the judge's rubric, fed to the model verbatim |
+| `transcripts/` | committed graded evidence |
+| `runs/` | gitignored scratch |
+
+Everything else — the session driver, the judge runner, the summarizer, and the
+`run-all`/`promote` wrappers — is shared at `evals/harness/`.
+
 ## Running it
 
+The driver is the shared harness at `evals/harness/` in the repo root, not a
+copy owned by this skill (#60). Every entry point takes this directory as its
+first argument and reads `eval.config.json` from it; run these from the repo
+root.
+
 ```bash
-./harness/run-all.sh                        # every scenario, both grades
-./harness/run-all.sh 01-cooperative-sharp   # one scenario
-./harness/promote.sh --all                  # commit the graded results
+H=evals/harness; E=skills/product/to-vision/evals
+
+$H/run-all.sh  $E                        # every scenario, both grades
+$H/run-all.sh  $E 01-cooperative-sharp   # one scenario
+$H/promote.sh  $E --all                  # commit the graded results
 ```
 
 Per-stage, if you want to iterate on one piece:
 
 ```bash
-./harness/run-scenario.sh 02a-evasive-recoverable   # drive the conversation
-node harness/check.mjs   02a-evasive-recoverable    # deterministic half
-node harness/judge.mjs   02a-evasive-recoverable    # LLM-judge half
-node harness/summarize.mjs transcripts              # roll up, exit 1 on any failure
+$H/run-scenario.sh    $E 02a-evasive-recoverable   # drive the conversation
+node $H/check.mjs     $E 02a-evasive-recoverable   # deterministic half
+node $H/judge.mjs     $E 02a-evasive-recoverable   # LLM-judge half
+node $H/summarize.mjs $E transcripts               # roll up, exit 1 on any failure
 ```
 
 Scenarios are independent, so the quickest full pass is to launch all the
@@ -35,6 +58,12 @@ temp workspace and session IDs.
 Requires `claude`, `node` (≥18) and `jq` on PATH. Knobs, all optional:
 `EVAL_MODEL` (default `opus`), `EVAL_JUDGE_MODEL`, `EVAL_MAX_TURNS` (default
 40), `EVAL_MAX_BUDGET_USD` (default 10), `EVAL_OUT_DIR`.
+
+`EVAL_OUT_DIR` points the grader at one run directory instead of
+`runs/<scenario>`, which is also how a *recorded* run gets re-graded — point it
+at a copy of `transcripts/<scenario>` and `check.mjs` grades the committed
+evidence. That is the regression test for any change to the shared harness:
+the recorded verdicts have to come back unchanged.
 
 A full suite run is roughly 150 model calls and takes a while. It is not
 something to run on every commit — per #12 the suite reruns **when the skill's
@@ -55,7 +84,8 @@ other, one turn at a time:
   agent has clearly finished, which is what terminates the loop (with a
   turn cap as a backstop).
 
-The SUT gets a narrow tool allowlist (`Read Write Edit Glob Grep`). Anything
+The SUT gets a narrow tool allowlist (`Read Write Edit Glob Grep`, set in
+`eval.config.json` under `sut.allowedTools`). Anything
 else is denied non-interactively, but the **attempt** still lands in the raw
 stream as a `tool_use` block — so the composition check catches the skill
 *reaching for* `WebSearch` or `Skill`, not merely succeeding at it.
@@ -150,7 +180,7 @@ would need several consistent runs first.
 A two-part split, per ADR 0003 — mechanical checks and judged content quality
 are separate mechanisms, never blended.
 
-### Deterministic checks (`harness/check.mjs`)
+### Deterministic checks (shared `check.mjs` + local `checks.mjs`)
 
 The shared floor from #12, applied to every scenario:
 
@@ -171,11 +201,12 @@ followed by a *continuing* session, no `to-pitch` field vocabulary in the
 output.
 
 These are string- and structure-level tests over prose, which is the honest
-ceiling for "mechanical" on a conversational skill. Every pattern lives in one
-clearly-marked block at the top of its section in `check.mjs` so it can be
-tuned when the skill's phrasing legitimately changes. Three lessons from the
-first suite run are baked in, because each one produced a false failure against
-a skill that had behaved correctly:
+ceiling for "mechanical" on a conversational skill. The *algorithms* are shared
+— the disclosure-window scan, the structural attempt count, the decline loop —
+while every string they match lives in `checks.mjs` here, so this skill's
+phrasing can be tuned without touching the harness or another skill's suite.
+Three lessons from the first suite run are baked in, because each one produced
+a false failure against a skill that had behaved correctly:
 
 - **Markdown is stripped before matching.** The skill emphasises heavily
   ("has to be *your* belief"), which breaks naive word-boundary patterns.
@@ -195,7 +226,7 @@ Note `"Problem"` is deliberately **not** treated as leaked `to-pitch`
 vocabulary on its own — it is half of the legitimate `Customer & Problem` field
 name, so only a standalone `## Problem` section counts.
 
-### LLM judge (`harness/judge.mjs`, `rubric.md`)
+### LLM judge (shared `judge.mjs`, local `rubric.md`)
 
 Six criteria, none newly authored: #16's 3-part composite sharpness test and its
 3 swap-tests, reused verbatim. The judge sees only the rubric and the artifact —
