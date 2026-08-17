@@ -25,9 +25,10 @@
 // <run-dir> is <evals>/runs/<scenario-id> unless EVAL_OUT_DIR overrides it.
 // Pointing EVAL_OUT_DIR at a committed transcripts/<scenario-id> re-grades a
 // recorded run, which is how this harness is regression-tested without paying
-// for a fresh suite. negative-control.mjs points it at a synthetic run built
-// from a scenario's negative-controls/*.json, for the same reason: this file is
-// the only thing that turns a run into a verdict, so both bars go through it.
+// for a fresh suite. controls.mjs points it at a synthetic run built from a
+// scenario's negative-controls/*.json or positive-controls/*.json, for the same
+// reason: this file is the only thing that turns a run into a verdict, so every
+// bar goes through it.
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, posix } from "node:path";

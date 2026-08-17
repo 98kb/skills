@@ -199,34 +199,66 @@ this way is the last one the skill asks, so nothing later closes the window, it
 ran to the end of the transcript, and one closing question tipped a
 fully-correct run over.
 
-## Negative controls
+## Controls
 
-A scenario says what correct behaviour looks like. Nothing here ever asked the
-other question — *would this scenario fail if the skill misbehaved?* — and when
-it was finally asked the answer was no, repeatedly: an empty transcript scored
-11 of 12 against a scenario whose whole subject is a refusal, and a run where
-the skill offered approval to a founder it must never offer approval to scored
-12 of 12.
-
-A negative control is a synthetic run that is **deliberately wrong**, together
-with the check ids it must trip. The runner builds each one into a temp run
-directory, grades it with the real `check.mjs` against the scenario's real
-`expect.json`, and asserts every named check actually reported failure.
+A scenario says what correct behaviour looks like. Two questions sit either side
+of that, and running the scenario answers neither. Both are asked here, for
+free, by one command:
 
 ```bash
-node evals/harness/negative-control.mjs $E                        # whole suite
-node evals/harness/negative-control.mjs $E 04-upstream-gate-refusal
+node evals/harness/controls.mjs $E                        # both bars, whole suite
+node evals/harness/controls.mjs $E 04-upstream-gate-refusal
+node evals/harness/controls.mjs $E --negative             # one bar only
 ```
 
-Zero model calls, whole suite in seconds. `run-all.sh` runs it **before** the
-first model call and stops if it fails, because a suite whose controls do not
-trip is not a suite that passed, it is a suite that cannot fail.
-`EVAL_SKIP_NEGATIVE_CONTROLS=1` forces past it.
+Zero model calls, whole suite in seconds. `run-all.sh` runs both **before** the
+first model call and stops if either fails. `EVAL_SKIP_CONTROLS=1` forces past
+it.
+
+One command, both bars, deliberately. Three positive controls existed in this
+tree before the runner could express one — in three different shapes, each
+hand-run by whoever wrote it, none of them wired to anything. A suite where only
+half the bar is wired is how this whole class of bug started.
+
+### Negative — *would this scenario fail if the skill misbehaved?*
+
+Nothing here ever asked that, and when it was finally asked the answer was no,
+repeatedly: an empty transcript scored 11 of 12 against a scenario whose whole
+subject is a refusal, and a run where the skill offered approval to a founder it
+must never offer approval to scored 12 of 12.
+
+A negative control is a synthetic run that is **deliberately wrong**, together
+with the check ids it must trip. The runner builds it into a temp run directory,
+grades it with the real `check.mjs` against the scenario's real `expect.json`,
+and asserts every named check actually reported failure. A suite whose controls
+do not trip is not a suite that passed, it is a suite that cannot fail.
+
+### Positive — *would this scenario fail a skill that behaved?*
+
+Every scenario-layer check is a pattern tuned close to a phrasing, and a
+phrasing check false-fails the first correct run that words it differently. That
+is not the same risk as the one above and it is not covered by it: a scenario
+can be perfectly able to fail and still fail everything.
+
+A positive control is a synthetic run that is **deliberately right**, and the
+assertion is that **every check the scenario registers passes**. Naming any of
+them is unnecessary and there is deliberately no `mustPass` key — a list of some
+of the checks would quietly narrow "all of them" to the ones somebody
+remembered, and the one that gets left out is the one that false-fails. A
+declared `mustPass`, or a `mustFail` in a positive control, is rejected rather
+than ignored.
+
+For a scenario that has never been run live, this is the *only* false-fail
+evidence in the tree, which is why it is a committed fixture rather than
+something checked once by hand.
 
 ### The file
 
-`scenarios/<scenario-id>/negative-controls/<name>.json`. One control per file;
-the file name is the control's name in the report.
+`scenarios/<scenario-id>/negative-controls/<name>.json`, or
+`positive-controls/<name>.json` for the other bar. One control per file, both
+directories plural because a scenario may have several of each; the file name is
+the control's name in the report. The two share one schema, differing only in
+`mustFail`, so a control can be moved between bars by editing one key.
 
 ```json
 {
@@ -252,7 +284,7 @@ the file name is the control's name in the report.
 
 | key | type | meaning |
 | --- | --- | --- |
-| `mustFail` | string[] | **required, non-empty.** Check ids that must report `pass: false`. A control naming no check asserts nothing and is rejected. |
+| `mustFail` | string[] | **negative controls only, required, non-empty.** Check ids that must report `pass: false`. A control naming no check asserts nothing and is rejected; a positive control declaring the key at all is rejected. |
 | `description` | string | optional; printed beside the control in the report |
 | `transcript` | `{speaker,text}[]` | becomes `transcript.json`. `speaker` is `"agent"` or `"founder"`. Default `[]`. |
 | `toolcalls` | `{name,input}[]` | becomes `toolcalls.json`. Default `[]`. |
@@ -267,22 +299,36 @@ by `x` — a glob path has no literal spelling until a session picks its slug, a
 a control has no session. Spell the list out when a control is *about* the file
 tree: a stray write, two artifacts, a missing seed.
 
-`run.json` is generated with `turns` = the number of agent turns and
-`endedBecause` = `"founder-sentinel"`, so a control only names `run` when it is
-about how the session ended.
+`run.json` is generated with `turns` = the number of agent turns, `model` =
+`"negative-control"` or `"positive-control"`, and `endedBecause` =
+`"founder-sentinel"`, so a control only names `run` when it is about how the
+session ended. It is generated rather than committed on purpose: a run
+directory's `deterministic.json` and `run.json` are *outputs* of grading, and a
+fixture that ships them is committing a verdict beside the thing it grades and
+inviting the two to disagree. One of them already had — a committed `turns: 11`
+against a transcript holding twelve agent turns.
 
-**Two ways a control is rejected**, both non-zero exits:
+**How a control is rejected**, all non-zero exits:
 
-- a check under `mustFail` **passed** — the run was built to break it and did not
-- a check under `mustFail` was **never registered** — the id is wrong, or the
-  `expect.json` key that would register it is missing. An unregistered check
-  cannot fail, so the control proves nothing. This is the failure mode that
-  matters most: it is the same one the scenarios themselves had.
+- **negative** — a check under `mustFail` **passed**: the run was built to break
+  it and did not
+- **negative** — a check under `mustFail` was **never registered**: the id is
+  wrong, or the `expect.json` key that would register it is missing. An
+  unregistered check cannot fail, so the control proves nothing. This is the
+  failure mode that matters most: it is the same one the scenarios themselves
+  had.
+- **positive** — **any** check failed. The report names each one and its detail,
+  because "the positive control broke" without saying which check is a bisect
+  the runner could have done for you.
+- **positive** — the run graded **zero** checks. All-of-nothing passes
+  trivially, which is the same silent no-op the expect.json contract exists to
+  remove.
 
-Controls are graded through `check.mjs`'s CLI, not by importing it, so there is
-no second grading path to drift from the one that produces real verdicts. They
-grade against the scenario's **real** `expect.json` — a control cannot override
-expectations, because "these expectations catch this" is the whole claim.
+Controls of both kinds are graded through `check.mjs`'s CLI, not by importing it,
+so there is no second grading path to drift from the one that produces real
+verdicts. They grade against the scenario's **real** `expect.json` — a control
+cannot override expectations, because "these expectations catch this" and "these
+expectations pass this" are the whole claim in either direction.
 
 ## Finding the artifact when the skill picks the path
 
@@ -403,16 +449,17 @@ node $H/judge.mjs     $E 01-cooperative-sharp # LLM-judge half
 node $H/summarize.mjs $E transcripts          # roll up, exit 1 on any failure
 $H/promote.sh         $E --all                # scratch run → committed evidence
 
-node $H/negative-control.mjs $E               # can these scenarios fail? (free)
+node $H/controls.mjs  $E                      # can these scenarios fail, and
+                                              # do they pass a correct run? (free)
 
 $H/run-scenario.sh    $E 01-cooperative-sharp --seed-only
 node $H/seeds.mjs     $E 01-cooperative-sharp
 node $H/artifact.mjs  $E /path/to/a/workspace  # which files are the artifact
 ```
 
-`negative-control.mjs` is the only one of these that costs nothing and the only
-one that answers "would this suite notice". Run it on every change to a
-scenario, a pattern, or this harness.
+`controls.mjs` is the only one of these that costs nothing and the only one that
+answers "would this suite notice" and "would it cry wolf". Run it on every
+change to a scenario, a pattern, or this harness.
 
 `--seed-only` builds the SUT workspace — the skill plus this scenario's seeded
 fixtures — prints where it is, and stops before the first model call, leaving the
@@ -424,7 +471,7 @@ workspace the grader would treat as the artifact.
 
 Requires `claude`, `node` (≥18) and `jq`. Knobs: `EVAL_MODEL` (default `opus`),
 `EVAL_JUDGE_MODEL`, `EVAL_MAX_TURNS` (40), `EVAL_MAX_BUDGET_USD` (10),
-`EVAL_OUT_DIR`, `EVAL_SKIP_NEGATIVE_CONTROLS`.
+`EVAL_OUT_DIR`, `EVAL_SKIP_CONTROLS`.
 
 ## What the SUT can and cannot do
 
@@ -451,13 +498,14 @@ sees on the next turn, and what `check.mjs` reads.
 
 ## Regression-testing the harness itself
 
-Two cheap bars, and they answer different questions. **Negative controls** ask
-whether the checks can fail; run `node evals/harness/negative-control.mjs $E`
-first, because it is free and it is the one a green suite cannot substitute for.
-**Re-grading the committed transcripts** asks whether the checks still agree
-with themselves: they are recorded real runs, and re-grading them must reproduce
-their recorded verdicts exactly. A full suite run costs real money and hours of
-model calls, so neither of these is optional before asking for one.
+Three cheap bars, and they answer different questions. **Controls** ask whether
+the checks can fail and whether they pass a correct run; run `node
+evals/harness/controls.mjs $E` first, because it is free and it is the pair a
+green suite cannot substitute for. **Re-grading the committed transcripts** asks
+whether the checks still agree with themselves: they are recorded real runs, and
+re-grading them must reproduce their recorded verdicts exactly. A full suite run
+costs real money and hours of model calls, so none of these is optional before
+asking for one.
 
 ```bash
 E=$PWD/skills/product/to-vision/evals
