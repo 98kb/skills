@@ -1,0 +1,10 @@
+{
+  "description": "one turn, nothing written, nothing asked — but it stops because it thinks there is no vision, not because the vision it read is unapproved (#63)",
+  "mustFail": ["scenario/refusal-names-missing-approval"],
+
+  "transcript": [
+    { "speaker": "agent", "text": "I can't start a pitch session here. I looked for `docs/product/vision.md` and there's no vision artifact in this workspace at all, so there's nothing upstream to shape a bet from. Run `/to-vision` first to write one, then come back and we'll shape the first bet from it. I haven't asked you anything and I haven't written anything." }
+  ],
+
+  "toolcalls": [{ "name": "Read", "input": { "file_path": "docs/product/vision.md" } }]
+}

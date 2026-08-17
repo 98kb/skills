@@ -1,0 +1,10 @@
+{
+  "description": "the skill never ran at all — the empty transcript that scored 11 of 12",
+  "mustFail": [
+    "scenario/max-agent-turns",
+    "scenario/refusal-names-missing-approval"
+  ],
+
+  "transcript": [],
+  "run": { "endedBecause": "agent-silent" }
+}

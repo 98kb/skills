@@ -1,0 +1,32 @@
+{
+  "description": "the gate is never checked — nine turns of interview in lightly adapted wording, and no artifact to show for it",
+  "mustFail": [
+    "scenario/max-agent-turns",
+    "scenario/no-founder-turns",
+    "scenario/no-interview-questions",
+    "scenario/refusal-names-missing-approval"
+  ],
+
+  "transcript": [
+    { "speaker": "agent", "text": "I've read your vision. What problem is this bet solving for Marisol, in her own words?" },
+    { "speaker": "founder", "text": "When a therapist calls out she re-books the day's twenty patients by open slot alone, and about seven land with someone not credentialed for their condition — so she books the same day twice." },
+    { "speaker": "agent", "text": "Got it. Is this a two-week bet or a six-week bet?" },
+    { "speaker": "founder", "text": "Small — two weeks." },
+    { "speaker": "agent", "text": "Small it is. At a small appetite, what are you actually building here?" },
+    { "speaker": "founder", "text": "Read certified specialties out of the credentialing file the clinic already uploads, tag each plan of care with its condition category, and only offer replacement slots held by credentialed therapists." },
+    { "speaker": "agent", "text": "Right. What's the one thing that would sink this if it turned out to be false?" },
+    { "speaker": "founder", "text": "That credential-filtered rescheduling takes mismatches from about 7 in 20 to under 2 in 20." },
+    { "speaker": "agent", "text": "That reads as a category rather than a customer — what would be true of Marisol that wouldn't be true of any other office manager?" },
+    { "speaker": "founder", "text": "She's the only one who touches the schedule, and she does it between patients." },
+    { "speaker": "agent", "text": "Understood. What rabbit holes should we call out before you start?" },
+    { "speaker": "founder", "text": "Anything that turns into a general availability engine." },
+    { "speaker": "agent", "text": "Noted. Which no-gos do you want stated explicitly?" },
+    { "speaker": "founder", "text": "No automatic booking without Marisol confirming the move." },
+    { "speaker": "agent", "text": "Last one. What open questions are still hanging that a roadmap would settle?" },
+    { "speaker": "founder", "text": "Whether the credentialing file is structured the same way at every clinic." },
+    { "speaker": "agent", "text": "Thanks — that's everything I need. I'll stop there for today." }
+  ],
+
+  "toolcalls": [{ "name": "Read", "input": { "file_path": "docs/product/vision.md" } }],
+  "run": { "endedBecause": "conversation-stalled" }
+}
