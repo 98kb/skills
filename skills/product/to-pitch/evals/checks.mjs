@@ -443,4 +443,31 @@ export const assertions = [
     must: /(?:vision|it)[^!?]{0,160}?(?:isn'?t|is not|hasn'?t been|has not been|was never|never been|not(?: yet)?)\s+(?:approved|signed off)|\b(?:no|missing|absent|without|lacks?)\b[^.!?]{0,60}(?:\bapprov(?:al|ed)\b|approved_(?:by|at))|\bapprove the vision\b|\bunapproved vision\b|\bvision\b[^.!?]{0,80}(?:needs|has) to be approved\b/i,
     label: "a refusal naming the vision's missing approval",
   },
+
+  // 04 — the founder never speaks. `maxAgentTurns: 1` says the agent refused on
+  // its first turn; this says the session ended there, which is not the same
+  // claim. run-scenario.sh breaks on the `<<<END>>>` sentinel *before* recording
+  // it, so a correct run's transcript.json holds exactly one entry — the
+  // refusal — and any founder turn in it means the persona was drawn into a
+  // session that should already have stopped.
+  //
+  // One shape of that escapes the turn cap entirely: the agent opens with an
+  // interview question, the founder answers, and the run then dies on a budget
+  // cutoff, a silent agent or the winding-down backstop. That is one agent turn,
+  // which `maxAgentTurns: 1` waves through, and it is not a refusal — the
+  // founder was interviewed and the session merely ran out. The persona is
+  // deliberately no help here: #69 requires her to answer normally if she is
+  // interviewed anyway, precisely so the failure lands in the transcript instead
+  // of being prevented by the fixture. So it has to be asserted.
+  //
+  // `mustNot: /\S/` rather than a phrasing, because there is no such thing as a
+  // founder turn this scenario tolerates.
+  {
+    when: "forbidFounderTurns",
+    checkId: "scenario/no-founder-turns",
+    source: "transcript",
+    speaker: "founder",
+    mustNot: /\S/,
+    label: "a founder reply — the session must end on the agent's refusal",
+  },
 ];
