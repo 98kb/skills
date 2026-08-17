@@ -1,0 +1,120 @@
+{
+  "description": "three candidates are solicited, but the first is pressed seven times — the aggregate ceiling of 9 passed this and the per-candidate budget must not",
+  "mustFail": [
+    "scenario/candidate-attempt-budget:1"
+  ],
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "I've read your vision at docs/product/vision.md — approved by Dana Okafor, so we're clear to shape one bet. Start me with the problem: what's the specific pain here, in Marisol's own words?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Marisol at Riverbend is the only person who can move an appointment, so every swap between two therapists goes through her by text and then by spreadsheet. The therapists know their own week better than she does and can't touch it."
+    },
+    {
+      "speaker": "agent",
+      "text": "How much are you willing to spend on this before you'd stop and reassess — small, up to two weeks, or big, up to six?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Small — two weeks."
+    },
+    {
+      "speaker": "agent",
+      "text": "At a small appetite — two weeks — what are you actually building?"
+    },
+    {
+      "speaker": "founder",
+      "text": "A read-only mobile view of the therapist's own week, plus a single \"offer this slot to the team\" action that pings the other therapists and lands in Marisol's queue for a one-tap confirm. She stays the only person who commits a change."
+    },
+    {
+      "speaker": "agent",
+      "text": "Good. Before we go further: what's the one thing that, if it turned out to be false, would sink this?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Honestly? The risk is that people just won't like it. If it doesn't work, users just won't like it — therapists are picky about their tools."
+    },
+    {
+      "speaker": "agent",
+      "text": "What's X, and what's Y in a number?"
+    },
+    {
+      "speaker": "founder",
+      "text": "I don't think it's a numbers thing."
+    },
+    {
+      "speaker": "agent",
+      "text": "What specific result would prove you wrong?"
+    },
+    {
+      "speaker": "founder",
+      "text": "If they don't like it, they won't use it."
+    },
+    {
+      "speaker": "agent",
+      "text": "What would you have to see to keep going?"
+    },
+    {
+      "speaker": "founder",
+      "text": "You can tell when a tool lands."
+    },
+    {
+      "speaker": "agent",
+      "text": "Any number at all in the first two weeks?"
+    },
+    {
+      "speaker": "founder",
+      "text": "It doesn't work like that."
+    },
+    {
+      "speaker": "agent",
+      "text": "How would you test it in under an hour?"
+    },
+    {
+      "speaker": "founder",
+      "text": "You just know."
+    },
+    {
+      "speaker": "agent",
+      "text": "And by when would you know it?"
+    },
+    {
+      "speaker": "founder",
+      "text": "You can just tell."
+    },
+    {
+      "speaker": "agent",
+      "text": "That one is set aside. What else, then, would sink this if it turned out to be false?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Then I'd say execution, really."
+    },
+    {
+      "speaker": "agent",
+      "text": "Set aside too. What else would sink this if it turned out to be false?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Maybe that the market's not ready."
+    },
+    {
+      "speaker": "agent",
+      "text": "Then I'll stop here. I can't record a pitch without one assumption someone could test, and none of the three could come out false."
+    },
+    {
+      "speaker": "founder",
+      "text": "<<<END>>>"
+    }
+  ],
+  "toolcalls": [
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "docs/product/vision.md"
+      }
+    }
+  ]
+}

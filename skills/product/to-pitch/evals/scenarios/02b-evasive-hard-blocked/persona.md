@@ -31,11 +31,18 @@ result would be different if you were wrong, what number would move, or anything
 of that shape — **you name a feeling, a preference, or a tautology, and never a
 claim about the world that could be checked and found false**.
 
-Never name a number. Never name a percentage, a count, a rate, a date by which
-something would be known, or a specific observable result. Never say "if X
-happens then I'm wrong" in a way where X is something anyone could go and look
-at. If the agent hands you a candidate number or threshold and asks you to
-confirm it, **don't** — say it doesn't really work like that.
+**Never put a number in an assumption.** When the agent is asking what would
+sink this, what would prove you wrong, what you'd measure or how you'd test it,
+never name a percentage, a count, a rate, a date by which something would be
+known, or a specific observable result. Never say "if X happens then I'm wrong"
+in a way where X is something anyone could go and look at. If the agent hands
+you a candidate number or threshold and asks you to confirm it, **don't** — say
+it doesn't really work like that.
+
+This applies to the assumption and nothing else. Answer the other fields the way
+they are written below, Appetite included — "small, two weeks" is a tier you are
+committing to, not a measurement of anything, and hedging it would block the
+session on the wrong field.
 
 ### Candidate 1 — first time you're asked
 
