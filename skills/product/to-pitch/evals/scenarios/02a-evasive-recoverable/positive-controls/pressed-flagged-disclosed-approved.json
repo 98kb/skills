@@ -2,11 +2,11 @@
   "description": "a hand-built run of 02a doing everything SKILL.md asks — both evasive fields pressed to the cap and accepted with a flag, both flags disclosed in plain language before the approval request, the clean fields left unflagged, and the pitch approved anyway. Every check this scenario registers must PASS against it.",
 
   "notes": [
-    "This is a POSITIVE control and nothing reads it yet. `negative-control.mjs`",
-    "only knows how to assert that a run fails; there is no runner for the other",
-    "direction, so this file is graded by hand — see the scenario's expect.json",
-    "`notes` for the command. 02a has never been run live, so this is the only",
-    "false-fail evidence the scenario has.",
+    "02a has never been run live, so this is the only evidence its expectations",
+    "pass a correct session rather than merely catching a wrong one. It is also",
+    "what established that `cappedAttempts` is unassertable here: declare the key",
+    "and both cap checks fail against this run, and it is the run that is right.",
+    "See the scenario's expect.json notes for why.",
     "",
     "It is written to be a *plausible* correct run rather than one tuned to pass:",
     "the wording is adapted from the recorded 01-cooperative-sharp run, the",

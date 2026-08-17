@@ -1,7 +1,0 @@
-{
-  "scenario": "04-upstream-gate-refusal",
-  "model": "positive-control",
-  "turns": 1,
-  "endedBecause": "founder-sentinel",
-  "artifact": "none"
-}

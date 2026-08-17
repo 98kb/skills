@@ -1,6 +1,0 @@
-[
-  {
-    "speaker": "agent",
-    "text": "I can't start a pitch session from this vision. I read `docs/product/vision.md` — it's there, and it's your clinic-scheduling vision — but it hasn't been approved: there's no `approved_by`/`approved_at` pair on it. A pitch is a bet placed against an approved vision, so I haven't asked you anything and I haven't written anything.\n\nOne thing to do: run `/to-vision` on it and approve it there. Would you like to approve the vision and come back? When you do, we'll shape your first bet from it — the problem in her own words, the appetite, the solution sketch, the riskiest assumption and its cheap test, plus rabbit holes, no-gos and open questions."
-  }
-]

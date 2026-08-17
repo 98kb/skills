@@ -1,9 +1,0 @@
-[
-  { "name": "Read", "input": { "file_path": "docs/product/vision.md" } },
-  {
-    "name": "Write",
-    "input": {
-      "file_path": "docs/product/pitches/specialty-aware-rescheduling/pitch.md"
-    }
-  }
-]
