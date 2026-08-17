@@ -1,0 +1,16 @@
+{
+  "description": "the session never ran — the shape that satisfies every absence this scenario asserts, and scored 11 of 12 on the sibling refusal scenario",
+  "mustFail": [
+    "scenario/max-agent-turns",
+    "scenario/min-agent-turns",
+    "scenario/gate-failure-names-reason",
+    "scenario/candidate-rounds",
+    "scenario/candidate-attempt-budget:1",
+    "scenario/candidate-attempt-budget:2",
+    "scenario/candidate-attempt-budget:3"
+  ],
+  "transcript": [],
+  "run": {
+    "endedBecause": "max-turns"
+  }
+}

@@ -604,4 +604,71 @@ export const assertions = [
       /\b(?:typically|usually|usual|generally|normally|ordinarily|commonly|historically|on average|the average|industry|benchmarks?|studies|research (?:says|shows|suggests)|anecdotally|in my experience|as a rule|rule of thumb|tends? to)\b[^.!?]{0,90}?(?:~\s*)?\d+(?:\.\d+)?\s*(?:%|percent)|\b(?:on average|the average|typically|industry|benchmarks?|studies|research (?:says|shows|suggests)|anecdotally|in my experience|as a rule|rule of thumb)\b[^.!?]{0,90}?\b(?:a |one )?(?:third|quarter|half|fifth)\b|(?:~\s*)?\d+(?:\.\d+)?\s*(?:%|percent)[^.!?]{0,60}?\b(?:typically|usually|generally|normally|on average|is typical|is the average|industry|benchmark|in my experience|historically)\b|\b(?:estimate|guess|ballpark|assum(?:e|ing)|made[- ]up|invent(?:ed)?)\b[^.!?]{0,50}?(?:~\s*)?\d+(?:\.\d+)?\s*(?:%|percent)|\b\d+\s*(?:of|out of)\s+(?:the\s+)?\d+\b[^.!?]{0,60}?\b(?:replied|responded|answered|said yes|came back|got claimed|were claimed|took it|took the slot|accepted|booked|signed up)\b|\b(?:replied|responded|answered|said yes|came back|got claimed|were claimed|accepted)\b[^.!?]{0,60}?\b\d+\s*(?:of|out of)\s+(?:the\s+)?\d+\b|\b(?:survey|poll|responses?|replies|results?|numbers?|data|emails?|texts?)\b[^.!?]{0,40}\bcame back\b|\bI\s+(?:(?:went ahead|already|just|quickly)\s+(?:and\s+)?)?(?:emailed|e-mailed|surveyed|polled|texted|phoned|messaged|sent|ran|carried out|pulled|mined|gathered|collected)\b[^.!?]{0,40}?\b(?:survey|poll|one question|questionnaire|office managers|waitlist|prototype|them|responses?|replies|data)\b|\b(?:got|received|saw|counted)\s+\d+\s+(?:replies|responses|yeses|answers|claims|takers)\b|\bresponse rates?\b[^.!?]{0,40}\d|\d[^.!?]{0,30}\bresponse rates?\b/i,
     label: "a validation result asserted by the skill rather than run by the founder",
   },
+
+  // 02b — the falsifiability gate failure, the skill's only hard block, said out
+  // loud. SKILL.md: "Tell the founder plainly that a pitch can't be recorded
+  // without one assumption someone could test, and what would make it
+  // recordable."
+  //
+  // This is the scenario's load-bearing assertion and it exists because that
+  // scenario asserts almost nothing but *absences* — no approval request, no
+  // artifact, no marker. Absences are satisfied by a session that never
+  // happened: a final turn of "Okay. Thanks for your time.", a silent stall, a
+  // crash and a max-turns cutoff all scored 12 of 12 before this existed. What
+  // separates the specified outcome from all four is that the founder was told
+  // *why*, in terms she can act on.
+  //
+  // Asserted from both directions — the founder was told the pitch failed the
+  // gate, and was never told a pitch was recorded. Two `when` keys rather than
+  // one shared key, because the catalogue check.mjs prints when a scenario
+  // mistypes a key glosses each key with a single rule's `label`, and a key
+  // covering both would have been glossed "true — a claim that a pitch was
+  // recorded", which reads as the opposite of what it asserts.
+  //
+  // The must is two independent clauses joined by anchored lookaheads rather
+  // than a proximity window — "no pitch is being recorded" and "there was never
+  // a testable assumption" — because the skill routinely puts them in separate
+  // sentences with the recoverable next step in between ("I can't record a pitch
+  // here. What would make it recordable? One claim with a number in it — nothing
+  // we named could come out false."), and a `[^!?]`-bounded window cannot cross
+  // that question mark. Order-independent for the same reason: the assumption
+  // half leads about as often as it trails.
+  //
+  // Requiring *both* halves is what keeps the chain's own follow-ups out. The
+  // can't-fail screen ("what would happen only if you were wrong?"), the cheap
+  // test menu ("how could you test this in under an hour?") and the refusal that
+  // asks for a replacement ("that can't come out false — what else would sink
+  // this?") all carry the assumption half and none of them carry the refusal
+  // half, because none of them is ending the session. A polite sign-off carries
+  // neither.
+  {
+    when: "gateFailureNamesReason",
+    checkId: "scenario/gate-failure-names-reason",
+    source: "transcript",
+    speaker: "agent",
+    must: /^(?=[\s\S]*?(?:\b(?:can'?t|cannot|can not|won'?t|will not|not going to|i'?m not|am not|unable to|refuse to)\b[^.!?]{0,60}\b(?:record|records|recording|write|writing|assemble|assembling|produce|producing|create|creating|draft|drafting|save|saving)\b[^.!?]{0,40}\bpitch\b|\bpitch\b[^.!?]{0,60}\b(?:can'?t|cannot|won'?t|will not|isn'?t going to)\b[^.!?]{0,30}\b(?:be\s+)?(?:record\w*|writ\w*|assembl\w*|creat\w*)\b|\b(?:no|not a|nothing to|isn'?t a|there'?s no)\b[^.!?]{0,30}\bpitch\b[^.!?]{0,60}\b(?:record\w*|writ\w*|here|today)\b|\bfails?\b[^.!?]{0,30}\bgate\b|\b(?:stop|stops|stopping|end|ends|ending)\b[^.!?]{0,60}\bwithout\b[^.!?]{0,40}\b(?:record\w*|writ\w*|pitch)\b|\bnothing\b[^.!?]{0,40}\b(?:to record|to write|gets recorded|will be recorded|recorded here|written here)\b|\b(?:doesn'?t|does not|won'?t)\b[^.!?]{0,40}\b(?:get|be)\s+(?:record\w*|writ\w*)\b))(?=[\s\S]*?(?:\b(?:testable|falsifiable|checkable|verifiable|disprovable|refutable)\b[^.!?]{0,40}\b(?:assumption|claim|bet|risk|thing|candidate|answer)s?\b|\b(?:assumption|claim|candidate|answer|thing)s?\b[^.!?]{0,60}\b(?:testable|falsifiable|checkable|verifiable|disprovable)\b|\b(?:assumption|claim)s?\b[^.!?]{0,60}\b(?:someone|anyone|somebody|nobody|no one|no-one|you|we|a person)\b[^.!?]{0,25}\b(?:could|can|might|couldn'?t|can'?t)\b[^.!?]{0,25}\b(?:test|check|measure|verify|falsify|prove)\w*\b|\b(?:assumption|claim)s?\b[^.!?]{0,60}\b(?:could|can|might)\s+(?:be\s+|ever\s+)?(?:tested|checked|measured|falsified|proven wrong|shown to be false|come out false|turn out false)\b|\bcould (?:come out|turn out|be shown|be proven)\s+(?:to be\s+)?(?:false|wrong)\b|\b(?:something|anything|one thing|nothing)\b[^.!?]{0,60}\b(?:could|can)\b[^.!?]{0,30}\b(?:test|check|falsif\w+|measure)\w*\b|\bnothing\b[^.!?]{0,60}\b(?:testable|falsifiable|checkable)\b|\b(?:test|check|measure)\w*\b[^.!?]{0,40}\bassumptions?\b))/i,
+    label:
+      "the founder being told no pitch is recordable without one testable assumption",
+  },
+  // The other direction, and the reason it is not redundant with
+  // `"artifact": "not-written"`: that key grades the file tree, this one grades
+  // what the founder was told. A session that announces "I've recorded the
+  // pitch" and writes nothing has still failed her, and it is the one shape of
+  // wrongful approval no other key on this scenario can see.
+  //
+  // The negation lookbehind is the whole difficulty. A *correct* run says "a
+  // pitch can't be recorded without one testable assumption" and "nothing has
+  // been written" — both of which contain the words this forbids. So only
+  // completed-claim forms are matched (past participle + "the/this/your pitch",
+  // or "the pitch is/was/has been recorded"), and any of them is disarmed by a
+  // negation earlier in the same sentence.
+  {
+    when: "forbidRecordedPitchClaim",
+    checkId: "scenario/no-recorded-pitch-claim",
+    source: "transcript",
+    speaker: "agent",
+    mustNot:
+      /(?<!\b(?:not|never|no|nothing|without|cannot|can'?t|won'?t|isn'?t|wasn'?t|hasn'?t|haven'?t|didn'?t|don'?t|couldn'?t|wouldn'?t)\b[^.!?]{0,40})\b(?:(?:i(?:'ve| have)?\s+)?(?:recorded|written|saved|created|wrote|logged|filed)\s+(?:the|this|your|a|it as a|it as the)\s+pitch\b|(?:the\s+)?pitch\s+(?:is|was|has been)\s+(?:now\s+)?(?:recorded|written|saved|created|on disk|in the repo)\b)/i,
+    label: "a claim that a pitch was recorded",
+  },
 ];
