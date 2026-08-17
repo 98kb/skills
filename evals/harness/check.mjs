@@ -404,7 +404,16 @@ if (parsed) {
 // Markdown emphasis is stripped before every prose match below. These skills
 // bold and italicise heavily ("has to be *your* belief"), which silently broke
 // naive word-boundary patterns the first time this suite ran.
-const plain = (s) => s.replace(/[*_`]+/g, "");
+// Strip the markdown a skill emphasises with, and fold the typographic
+// apostrophes and quotes a model reaches for onto their ASCII forms. Every
+// pattern in every skill's checks module spells contractions `can'?t`, which
+// matches "can't" and misses "can’t" — and the difference between those two is
+// invisible in a diff. The recorded to-pitch run happens to use ASCII
+// throughout, so this is insurance rather than a fix for something observed;
+// the cost of being wrong about that is a canonical decline silently grading as
+// no decline at all.
+const plain = (s) =>
+  s.replace(/[*_`]+/g, "").replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
 
 // The patterns themselves are the skill's, not the harness's: `flags.positive`
 // names a field and asserts it is weak, `flags.negated` guards against a clean
