@@ -1,0 +1,2 @@
+./docs/product/pitches/credential-filtered-reschedule/pitch.md
+./docs/product/vision.md

@@ -1,0 +1,132 @@
+{
+  "scenario": "02b-evasive-hard-blocked",
+  "passed": true,
+  "counts": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  },
+  "disclosedFlags": [],
+  "results": [
+    {
+      "id": "floor/approval-marker",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected approval marker absent, found absent"
+    },
+    {
+      "id": "floor/artifact-written",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected artifact not-written, found none"
+    },
+    {
+      "id": "floor/artifact-unique",
+      "layer": "floor",
+      "pass": true,
+      "detail": "0 file matches docs/product/pitches/*/pitch.md"
+    },
+    {
+      "id": "floor/no-skill-invocations",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no Skill tool calls"
+    },
+    {
+      "id": "floor/no-subagents",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no subagents"
+    },
+    {
+      "id": "floor/no-research-tools",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no research tools used"
+    },
+    {
+      "id": "floor/never-touches-context-md",
+      "layer": "floor",
+      "pass": true,
+      "detail": "CONTEXT.md untouched"
+    },
+    {
+      "id": "floor/no-stray-artifacts",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no stray files written"
+    },
+    {
+      "id": "scenario/approval-never-offered",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "approval was never offered, as required"
+    },
+    {
+      "id": "scenario/candidate-rounds",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "\"Riskiest Assumptions & Cheap Validation Plan\" opened 3× (want exactly 3 — the first candidate plus 2 replacement round(s))"
+    },
+    {
+      "id": "scenario/candidate-attempt-budget:1",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "candidate 1 (turns 5–7) asked 2 question(s) — ceiling 3, the base question plus 2 attempts"
+    },
+    {
+      "id": "scenario/candidate-attempt-budget:2",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "candidate 2 (turns 8–10) asked 3 question(s) — ceiling 3, the base question plus 2 attempts"
+    },
+    {
+      "id": "scenario/candidate-attempt-budget:3",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "candidate 3 (turns 11–14) asked 1 question(s) — ceiling 3, the base question plus 2 attempts"
+    },
+    {
+      "id": "scenario/max-agent-turns",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "15 agent turn(s), at most 16 allowed (ended: founder-sentinel)"
+    },
+    {
+      "id": "scenario/min-agent-turns",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "15 agent turn(s), at least 8 required (ended: founder-sentinel)"
+    },
+    {
+      "id": "scenario/forbidden-tool:Write",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "no Write calls"
+    },
+    {
+      "id": "scenario/forbidden-tool:Edit",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "no Edit calls"
+    },
+    {
+      "id": "scenario/riskiest-assumptions",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "expected Riskiest Assumptions & Cheap Validation Plan absent, found absent"
+    },
+    {
+      "id": "scenario/gate-failure-names-reason",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "found the founder being told no pitch is recordable without one testable assumption"
+    },
+    {
+      "id": "scenario/no-recorded-pitch-claim",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "a claim that a pitch was recorded did not appear, as required"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "scenario": "04-upstream-gate-refusal",
+  "judged": false,
+  "passed": true,
+  "reason": "no artifact produced, as expected — the judge does not run for this scenario"
+}

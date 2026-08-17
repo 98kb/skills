@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Read",
+    "input": {
+      "file_path": "/tmp/to-pitch-eval-fCuPcf/docs/product/vision.md"
+    }
+  },
+  {
+    "name": "Glob",
+    "input": {
+      "pattern": "docs/product/pitches/**/*"
+    }
+  }
+]

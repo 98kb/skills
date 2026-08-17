@@ -1,0 +1,2 @@
+./docs/product/pitches/text-waitlist-backfill/pitch.md
+./docs/product/vision.md

@@ -1,0 +1,54 @@
+{
+  "scenario": "03a-boundary-roadmap-creep",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [],
+  "failures": [],
+  "excusedFailures": [],
+  "unexcusedFailures": [],
+  "confidence": "high",
+  "humanReviewRequired": false,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Problem passes the swap-test",
+      "verdict": "pass",
+      "rationale": "The field names this customer and the specific mechanism of her pain: Marisol Vega at Riverbend PT, six therapists, twenty patients to re-book, and a spreadsheet where \"all her spreadsheet knows is which slots are open — so open slots are the only thing she can go on.\" The consequence is concrete and non-generic: \"about seven of the twenty end up with a therapist who isn't credentialed,\" forcing her to rebuild \"the whole day a second time from the top.\" No competitor could claim this text word for word.",
+      "fields": [
+        "Problem"
+      ],
+      "excused": false
+    },
+    {
+      "id": 2,
+      "name": "Appetite is a fixed tier",
+      "verdict": "pass",
+      "rationale": "The field reads \"Small (≤2 weeks)\" — it names one of the two fixed tiers, and the parenthetical is that tier's cap expressed as a ceiling, not a duration derived from sizing the work. Nothing in it hedges or estimates (no range, no \"depending on\"), so it is not a calendar estimate wearing a tier's name.",
+      "fields": [
+        "Appetite"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Solution sketch under-specified and within cap",
+      "verdict": "pass",
+      "rationale": "The sketch runs roughly 65 words — well inside the ~150 cap — and is plain prose with no diagram, no acceptance criteria, and no edge-case enumeration. It stays at the level of shape (\"surface only replacement slots held by therapists credentialed for that category\", \"She confirms every move by hand\") without specifying formats, screens, or states.",
+      "fields": [
+        "Solution sketch"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Every assumption passes the falsifiability checklist",
+      "verdict": "pass",
+      "rationale": "The one recorded assumption carries all four sub-fields. Quantified: \"Filtering the reschedule list by credentialed specialty takes mismatched re-bookings from about 7 in 20 to under 2 in 20.\" Thresholded and not can't-fail: \"Under half and the credentialed slots aren't there to move patients into — filtering can't fix it, and the bet is wrong before the pilot starts,\" a pre-committed result about the world that reality could genuinely deliver, reinforced by the downstream \"still above 4 in 20 after a month.\" Cheap + timeboxed: mining an export the clinic already holds (\"340 moves from last quarter\") with a stated \"By Friday.\"",
+      "fields": [
+        "Riskiest Assumptions & Cheap Validation Plan"
+      ],
+      "excused": false
+    }
+  ]
+}

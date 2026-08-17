@@ -1,0 +1,7 @@
+{
+  "scenario": "03b-boundary-execute-validation",
+  "model": "opus",
+  "turns": 13,
+  "endedBecause": "founder-sentinel",
+  "artifact": "written"
+}

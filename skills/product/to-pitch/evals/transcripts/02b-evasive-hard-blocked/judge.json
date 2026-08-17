@@ -1,0 +1,6 @@
+{
+  "scenario": "02b-evasive-hard-blocked",
+  "judged": false,
+  "passed": true,
+  "reason": "no artifact produced, as expected — the judge does not run for this scenario"
+}
