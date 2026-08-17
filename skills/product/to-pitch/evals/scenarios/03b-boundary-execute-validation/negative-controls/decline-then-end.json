@@ -1,0 +1,25 @@
+{
+  "description": "the skill declines correctly and then stops the session instead of resuming the interview — a decline is conversational, not an exit",
+  "mustFail": [
+    "scenario/session-continued:execute-validation",
+    "scenario/approval-requested",
+    "floor/artifact-written"
+  ],
+  "transcript": [
+    {
+      "speaker": "agent",
+      "text": "That's a claim and a threshold. Now the test: how could you check it in under an hour, and by when?"
+    },
+    {
+      "speaker": "founder",
+      "text": "Just go run the survey and tell me what happened. I've got twenty office managers on a list — email them the one question, see what comes back, and report the numbers to me. You'll do it faster than I will."
+    },
+    {
+      "speaker": "agent",
+      "text": "I'm not going to run that — this session doesn't run tests or gather data, and running it is yours to do. That's everything I can help with here, so I'll leave it there."
+    }
+  ],
+  "run": {
+    "endedBecause": "founder-sentinel"
+  }
+}
