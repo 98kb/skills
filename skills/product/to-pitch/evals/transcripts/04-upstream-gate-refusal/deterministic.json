@@ -1,0 +1,108 @@
+{
+  "scenario": "04-upstream-gate-refusal",
+  "passed": true,
+  "counts": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "disclosedFlags": [],
+  "results": [
+    {
+      "id": "floor/approval-marker",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected approval marker absent, found absent"
+    },
+    {
+      "id": "floor/artifact-written",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected artifact not-written, found none"
+    },
+    {
+      "id": "floor/artifact-unique",
+      "layer": "floor",
+      "pass": true,
+      "detail": "0 file matches docs/product/pitches/*/pitch.md"
+    },
+    {
+      "id": "floor/no-skill-invocations",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no Skill tool calls"
+    },
+    {
+      "id": "floor/no-subagents",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no subagents"
+    },
+    {
+      "id": "floor/no-research-tools",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no research tools used"
+    },
+    {
+      "id": "floor/never-touches-context-md",
+      "layer": "floor",
+      "pass": true,
+      "detail": "CONTEXT.md untouched"
+    },
+    {
+      "id": "floor/no-stray-artifacts",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no stray files written"
+    },
+    {
+      "id": "scenario/approval-never-offered",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "approval was never offered, as required"
+    },
+    {
+      "id": "scenario/no-interview-questions",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "no interview question was asked, as required"
+    },
+    {
+      "id": "scenario/max-agent-turns",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "1 agent turn(s), at most 1 allowed (ended: founder-sentinel)"
+    },
+    {
+      "id": "scenario/forbidden-tool:Write",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "no Write calls"
+    },
+    {
+      "id": "scenario/forbidden-tool:Edit",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "no Edit calls"
+    },
+    {
+      "id": "scenario/riskiest-assumptions",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "expected Riskiest Assumptions & Cheap Validation Plan absent, found absent"
+    },
+    {
+      "id": "scenario/refusal-names-missing-approval",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "found a refusal naming the vision's missing approval"
+    },
+    {
+      "id": "scenario/no-founder-turns",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "a founder reply — the session must end on the agent's refusal did not appear, as required"
+    }
+  ]
+}

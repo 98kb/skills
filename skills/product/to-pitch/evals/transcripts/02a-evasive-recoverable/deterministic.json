@@ -1,0 +1,201 @@
+{
+  "scenario": "02a-evasive-recoverable",
+  "passed": true,
+  "counts": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0
+  },
+  "disclosedFlags": [
+    "Problem",
+    "Appetite"
+  ],
+  "results": [
+    {
+      "id": "floor/approval-marker",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected approval marker present, found present (approved_by=Dana Okafor)"
+    },
+    {
+      "id": "floor/artifact-written",
+      "layer": "floor",
+      "pass": true,
+      "detail": "expected artifact written, found written"
+    },
+    {
+      "id": "floor/artifact-unique",
+      "layer": "floor",
+      "pass": true,
+      "detail": "1 file matches docs/product/pitches/*/pitch.md"
+    },
+    {
+      "id": "floor/upstream-pointer",
+      "layer": "floor",
+      "pass": true,
+      "detail": "upstream: ../../vision.md from docs/product/pitches/text-waitlist-backfill/ resolves to docs/product/vision.md, expected docs/product/vision.md"
+    },
+    {
+      "id": "floor/approver-identity",
+      "layer": "floor",
+      "pass": true,
+      "detail": "approved_by \"Dana Okafor\" should name Dana Okafor"
+    },
+    {
+      "id": "floor/approval-timestamp",
+      "layer": "floor",
+      "pass": true,
+      "detail": "approved_at \"2026-08-17T00:00:00Z\" should be an ISO 8601 timestamp"
+    },
+    {
+      "id": "floor/frontmatter-keys",
+      "layer": "floor",
+      "pass": true,
+      "detail": "only spec'd keys present"
+    },
+    {
+      "id": "floor/no-empty-frontmatter",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no empty frontmatter values"
+    },
+    {
+      "id": "floor/no-skill-invocations",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no Skill tool calls"
+    },
+    {
+      "id": "floor/no-subagents",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no subagents"
+    },
+    {
+      "id": "floor/no-research-tools",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no research tools used"
+    },
+    {
+      "id": "floor/never-touches-context-md",
+      "layer": "floor",
+      "pass": true,
+      "detail": "CONTEXT.md untouched"
+    },
+    {
+      "id": "floor/no-stray-artifacts",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no stray files written"
+    },
+    {
+      "id": "floor/no-extra-fields",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no extra sections"
+    },
+    {
+      "id": "floor/mandatory-fields-present",
+      "layer": "floor",
+      "pass": true,
+      "detail": "all mandatory fields present"
+    },
+    {
+      "id": "floor/stored-field-order",
+      "layer": "floor",
+      "pass": true,
+      "detail": "stored order should be Problem → Appetite → Solution sketch → Riskiest Assumptions & Cheap Validation Plan → Rabbit Holes → No-gos → Open Questions, found Problem → Appetite → Solution sketch → Riskiest Assumptions & Cheap Validation Plan → Rabbit Holes → No-gos → Open Questions"
+    },
+    {
+      "id": "floor/no-empty-sections",
+      "layer": "floor",
+      "pass": true,
+      "detail": "no empty sections"
+    },
+    {
+      "id": "scenario/approval-requested",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "approval requested at turn index 26"
+    },
+    {
+      "id": "scenario/flag-disclosed:Problem",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "\"Problem\" disclosed as weak at or before the approval request"
+    },
+    {
+      "id": "scenario/flag-disclosed:Appetite",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "\"Appetite\" disclosed as weak at or before the approval request"
+    },
+    {
+      "id": "scenario/max-agent-turns",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "16 agent turn(s), at most 24 allowed (ended: founder-sentinel)"
+    },
+    {
+      "id": "scenario/min-agent-turns",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "16 agent turn(s), at least 11 required (ended: founder-sentinel)"
+    },
+    {
+      "id": "scenario/no-roadmap-vocabulary",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "no to-roadmap vocabulary in the artifact"
+    },
+    {
+      "id": "scenario/riskiest-assumptions",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "expected Riskiest Assumptions & Cheap Validation Plan present, found present"
+    },
+    {
+      "id": "scenario/appetite-recorded-small",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "found the Appetite recorded as the tighter 'small' tier"
+    },
+    {
+      "id": "scenario/appetite-founder-unconfirmed",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "found the Appetite disclosed as founder-unconfirmed"
+    },
+    {
+      "id": "scenario/problem-pressed-on-swap-test",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "found the swap-test fired at a Problem that reads as a category"
+    },
+    {
+      "id": "scenario/appetite-pressed-for-a-tier",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "found the Appetite re-asked as a tier commitment after a hedge"
+    },
+    {
+      "id": "scenario/solution-sketch-not-flagged",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "the Solution sketch disclosed as weak did not appear, as required"
+    },
+    {
+      "id": "scenario/assumptions-not-flagged",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "a Riskiest Assumption disclosed as weak did not appear, as required"
+    },
+    {
+      "id": "scenario/assumption-item:subfields",
+      "layer": "scenario",
+      "pass": true,
+      "detail": "all 1 item(s) carry claim / threshold / test / timebox"
+    }
+  ]
+}

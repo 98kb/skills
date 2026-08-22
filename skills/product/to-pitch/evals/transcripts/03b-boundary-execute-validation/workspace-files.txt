@@ -1,0 +1,2 @@
+./docs/product/pitches/same-day-slot-fill/pitch.md
+./docs/product/vision.md

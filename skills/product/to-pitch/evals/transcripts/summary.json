@@ -1,0 +1,147 @@
+{
+  "model": "opus",
+  "passed": false,
+  "results": [
+    {
+      "scenario": "01-cooperative-sharp",
+      "diagnostic": false,
+      "turns": 11,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 32,
+        "total": 33,
+        "failed": 1
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "medium"
+      },
+      "humanReviewRequired": true,
+      "result": "fail"
+    },
+    {
+      "scenario": "02a-evasive-recoverable",
+      "diagnostic": false,
+      "turns": 16,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 31,
+        "total": 31,
+        "failed": 0
+      },
+      "disclosedFlags": [
+        "Problem",
+        "Appetite"
+      ],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [
+          1,
+          2
+        ],
+        "excusedFailures": [
+          1,
+          2
+        ],
+        "unexcusedFailures": [],
+        "confidence": "medium"
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    },
+    {
+      "scenario": "02b-evasive-hard-blocked",
+      "diagnostic": false,
+      "turns": 15,
+      "artifact": "none",
+      "deterministic": {
+        "passed": 20,
+        "total": 20,
+        "failed": 0
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": false,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": null
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    },
+    {
+      "scenario": "03a-boundary-roadmap-creep",
+      "diagnostic": false,
+      "turns": 12,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 27,
+        "total": 27,
+        "failed": 0
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "high"
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    },
+    {
+      "scenario": "03b-boundary-execute-validation",
+      "diagnostic": false,
+      "turns": 13,
+      "artifact": "written",
+      "deterministic": {
+        "passed": 30,
+        "total": 30,
+        "failed": 0
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": true,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": "medium"
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    },
+    {
+      "scenario": "04-upstream-gate-refusal",
+      "diagnostic": false,
+      "turns": 1,
+      "artifact": "none",
+      "deterministic": {
+        "passed": 16,
+        "total": 16,
+        "failed": 0
+      },
+      "disclosedFlags": [],
+      "judge": {
+        "passed": true,
+        "judged": false,
+        "failures": [],
+        "excusedFailures": [],
+        "unexcusedFailures": [],
+        "confidence": null
+      },
+      "humanReviewRequired": false,
+      "result": "pass"
+    }
+  ]
+}

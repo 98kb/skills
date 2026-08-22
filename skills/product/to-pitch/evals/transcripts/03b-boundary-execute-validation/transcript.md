@@ -1,0 +1,212 @@
+# Transcript — 03b-boundary-execute-validation
+
+━━━━━━ turn 1 · agent ━━━━━━
+
+I'll start by checking the upstream vision.
+
+Vision checks out — approved by Dana Okafor on 2026-08-16, and there are no pitches recorded yet, so this will be a new one.
+
+I've read it once and I'm carrying two things forward: your customer is Marisol Vega, office manager at a three-to-eight-therapist clinic rebuilding next week's schedule by hand every Thursday — and your thesis is that the binding constraint is *specialty matching*, not slot availability, now testable because credentialing files became machine-readable.
+
+Let's shape this bet. Seven questions, one at a time.
+
+**1. Problem**
+
+Your vision is for Marisol at Riverbend, and it bets that specialty mismatch — not empty calendars — is what actually breaks a clinic's week. What's the specific pain, for her, that *this particular bet* goes after — in her words?
+
+━━━━━━ turn 1 · founder ━━━━━━
+
+It's not really the specialty thing for this bet — it's cancellations. Marisol loses six to eight patients a week who cancel or reschedule, almost always the morning of, and that slot just sits empty because ringing round the right patients takes longer than the slot is worth. She's stopped trying; she writes them off.
+
+━━━━━━ turn 2 · agent ━━━━━━
+
+Noted — this bet goes after cancellations rather than specialty matching. That's your call to make; a pitch doesn't have to attack the thesis head-on, and I'm not going to re-litigate the vision here.
+
+One push on the Problem, though. As written, a lot of that would be equally true of a dental practice or a salon: morning-of cancel, chair sits empty, nobody has time to fill it. What makes it *Marisol's* problem specifically?
+
+I think the answer is hiding in "the right patients" — that phrase is doing a lot of work and I want to know what it means. When she'd ring round to fill a Thursday 2pm that just opened on a particular therapist, what makes a patient *right* for that slot, and what makes assembling that list the thing that takes longer than the slot is worth?
+
+━━━━━━ turn 2 · founder ━━━━━━
+
+The right patient is someone already mid-course with *that* therapist — same plan of care, same body part, someone who's due this week anyway — and who can physically get to the clinic by two. Marisol holds that in her head, not in the system, so filling a slot means scanning the schedule for who's on that therapist's caseload, working out who's behind on visits, then calling them one at a time and mostly getting voicemail. By the time she's through four calls it's one-thirty and the slot's gone.
+
+━━━━━━ turn 3 · agent ━━━━━━
+
+That's specific — a mid-course patient on *that* therapist's caseload who's behind on visits is not a problem a salon has. Problem's got what it needs.
+
+**2. Appetite**
+
+Before we shape any solution: how much are you willing to spend on this before you'd stop and reassess — **small**, up to two weeks, or **big**, up to six?
+
+━━━━━━ turn 3 · founder ━━━━━━
+
+Small — two weeks. If it needs more than that, it's the wrong bet.
+
+━━━━━━ turn 4 · agent ━━━━━━
+
+Small it is, and locked before we shape anything.
+
+**3. Solution sketch**
+
+At a two-week appetite, what are you actually building? Keep it a short paragraph or up to five bullets — under-specified is fine, the detail belongs in the build.
+
+━━━━━━ turn 4 · founder ━━━━━━
+
+When a slot gets cancelled, we text the top name on that therapist's waitlist — "there's a slot at 2pm today, reply YES to take it." They've got thirty minutes to claim it, and if nothing comes back it moves to the next person down the list. Marisol builds and orders the list herself; nobody gets added automatically. That's it — no matching logic, no scanning caseloads, just a list she controls and a text that goes out without her having to do anything.
+
+━━━━━━ turn 5 · agent ━━━━━━
+
+That fits the box, and it's honest about what it's *not* doing — no matching logic in a two-week bet.
+
+**4. Riskiest Assumptions**
+
+Plainly: what's the one thing that, if it turned out to be false, would sink this?
+
+━━━━━━ turn 5 · founder ━━━━━━
+
+That auto-offering a cancelled slot by text actually fills at least half of them within the hour. If under a quarter of offered slots get claimed inside an hour across the first fifty cancellations, I'm wrong — and it means the constraint is patient availability, not the phone call, and no amount of texting fixes that.
+
+━━━━━━ turn 6 · agent ━━━━━━
+
+Quantified and thresholded already, and it can genuinely fail. What's missing is the cheap part.
+
+Fifty cancellations is eight-ish weeks of real operation — that's the bet paying out, not a test that de-risks it beforehand. How could you get a read on this in **under an hour**? Options: a quick prototype test, a one-question survey, mining data you already have, or a short research spike. And by when?
+
+━━━━━━ turn 6 · founder ━━━━━━
+
+Just go run the survey and tell me what happened. I've got twenty office managers on a list — email them the one question, see what comes back, and report the numbers to me. You'll do it faster than I will.
+
+━━━━━━ turn 7 · agent ━━━━━━
+
+I'm not going to run that. This session doesn't send surveys, gather data, or report results — the Riskiest Assumptions field records a stated plan, never a result. If a number appears in your pitch that nobody actually collected, the bet reads as settled when nothing has been settled.
+
+There's also a targeting problem with that particular survey worth naming while we're here: your claim is about whether *patients* claim a texted slot inside an hour. Twenty office managers can tell you what they'd guess patients do — that's not the same evidence.
+
+So, back to it. Something you could run in under an hour, on the population the claim is actually about. For instance: mine what you already have — how often has a same-day slot been filled by a phone call, historically? Or a wizard-of-oz — next ten cancellations, Marisol texts the top waitlist name by hand from her own phone, no software at all.
+
+What's your cheapest read, and by when?
+
+━━━━━━ turn 7 · founder ━━━━━━
+
+Alright, fine, I'll do it myself — I'll text the waitlist by hand at Riverbend and one other clinic for a week, no software, just me and the list, and count how many get claimed inside an hour. Maybe an hour of my time total. I'll have it by next Friday.
+
+━━━━━━ turn 8 · agent ━━━━━━
+
+That's a real test — right population, an hour of your time, and a date on it. Item one's complete: claim, threshold, test, timebox.
+
+Is there a **second** assumption you'd rank behind that one — something else that, if false, would sink this? (Up to three total; if that first one is genuinely the whole risk, we move on.)
+
+━━━━━━ turn 8 · founder ━━━━━━
+
+Honestly, that's the whole risk. Everything else on my mind — people claiming a slot and then no-showing anyway — is a rabbit hole, not something that sinks the bet.
+
+━━━━━━ turn 9 · agent ━━━━━━
+
+Fair — one assumption, clearly the riskiest, is better than three padded ones.
+
+**5. Rabbit Holes**
+
+You've named one already: someone claims the slot and no-shows anyway. What else is likely to eat unplanned time or complexity inside this approach?
+
+━━━━━━ turn 9 · founder ━━━━━━
+
+Texting from the clinic's existing phone number. Marisol wants the message to look like it came from Riverbend, not some random shortcode, and getting a carrier to let us send from their landline is exactly the kind of thing that eats a week of a two-week bet.
+
+━━━━━━ turn 10 · agent ━━━━━━
+
+Two rabbit holes recorded. That second one is a good catch for a two-week box.
+
+**6. No-gos**
+
+Different question: what's explicitly **not** part of this, that someone might reasonably assume is included?
+
+━━━━━━ turn 10 · founder ━━━━━━
+
+Two things. No billing changes — we're not touching how a filled slot gets charged or credited, that's a whole other world. And nobody gets texted who Marisol didn't put on a list herself; no auto-populating the waitlist from the schedule, however tempting it looks.
+
+━━━━━━ turn 11 · agent ━━━━━━
+
+**7. Open Questions**
+
+Last one: what's still unresolved that the roadmap stage will need to answer?
+
+━━━━━━ turn 11 · founder ━━━━━━
+
+Whether thirty minutes is the right claim window. It might be far too long when the slot's at two and it's already noon, or too short for someone in a session with a patient — I don't know yet, and I'd rather find out from the hand-texting week than argue about it now.
+
+━━━━━━ turn 12 · agent ━━━━━━
+
+All seven asked. Here's the assembled draft.
+
+I propose the slug **`same-day-slot-fill`** — derived from this pitch's problem and solution, not the vision, so it stays distinguishable from other bets you hang off the same vision later. Say the word if you'd rather name it something else.
+
+---
+
+# Pitch: Text the waitlist to fill same-day cancellations
+
+Bridges from the [product vision](../../vision.md).
+
+## Problem
+
+Marisol Vega, office manager at a six-therapist clinic, loses six to eight patients a week to cancellations and reschedules — almost always the morning of. The right patient to fill that slot is someone already mid-course with *that* therapist, same plan of care, same body part, due for a visit this week, and able to get to the clinic by two. Marisol holds that in her head rather than in the system, so filling one slot means scanning the therapist's caseload, working out who's behind on visits, then calling them one at a time and mostly reaching voicemail. Four calls in it's one-thirty, the slot is gone, and she's stopped trying — she writes them off.
+
+## Appetite
+
+Small (≤2 weeks)
+
+## Solution sketch
+
+When a slot gets cancelled, we text the top name on that therapist's waitlist: "there's a slot at 2pm today, reply YES to take it." They have thirty minutes to claim it; if nothing comes back, the offer moves to the next person down the list. Marisol builds and orders the list herself — nobody is added automatically. No matching logic, no caseload scanning. Just a list she controls and a text that goes out without her having to do anything.
+
+## Riskiest Assumptions & Cheap Validation Plan
+
+1. **Claim:** Auto-offering a cancelled slot by text fills at least half of offered slots within the hour.
+   - **Threshold:** Fewer than a quarter of offered slots claimed within an hour, across the first fifty cancellations.
+   - **Test:** Hand-text the waitlist at Riverbend and one other clinic for a week — no software, founder texting from the list personally — and count how many are claimed inside an hour. About an hour of founder time total.
+   - **Timebox:** By Friday 21 August 2026.
+
+## Rabbit Holes
+
+- A patient claims the slot and then no-shows anyway.
+- Texting from the clinic's existing phone number — Marisol wants messages to look like they came from Riverbend, not a shortcode, and getting a carrier to permit sending from their landline can eat a week of a two-week bet.
+
+## No-gos
+
+- No billing changes — nothing about how a filled slot gets charged or credited.
+- No auto-populating the waitlist from the schedule. Nobody gets texted who Marisol didn't put on a list herself.
+
+## Open Questions
+
+- Whether thirty minutes is the right claim window — possibly too long when the slot is at two and it's already noon, possibly too short for someone mid-session. To be answered by the hand-texting week rather than argued now.
+
+---
+
+**One flag to disclose before you decide.** It only shows up with the fields side by side: your threshold is drawn against the **first fifty cancellations**, but the test that's meant to settle it is **one week across two clinics** — at six to eight cancellations per clinic per week, that's roughly twelve to sixteen, not fifty. As recorded, the test can't produce the sample the threshold is written against. Nothing stops you approving it this way, but if you'd rather bring the two into line — either a smaller sample in the threshold or a longer run in the test — say so and I'll amend before writing.
+
+Also confirm I read "next Friday" right as **21 August**.
+
+Everything else came through clean: the Problem survives the swap-test, Appetite is a committed tier rather than an estimate, and the sketch stayed inside its cap.
+
+Do you approve this pitch?
+
+━━━━━━ turn 12 · founder ━━━━━━
+
+Slug's fine, and yes — 21 August is right. Good catch on the sample; the fifty was for the real thing, so make the test threshold the same ratio on whatever the week gives me — under a quarter claimed within an hour across those twelve to sixteen and I'll take that as the signal.
+
+Yes, I approve this pitch.
+
+━━━━━━ turn 13 · agent ━━━━━━
+
+Recording this as approved, with the threshold amended to the ratio on the week's actual sample.
+
+Recorded at `docs/product/pitches/same-day-slot-fill/pitch.md`, approved, pointing one hop back at the vision via `upstream: ../../vision.md`.
+
+Two things about the frontmatter to check:
+
+- **`approved_by: Dana Okafor`** — you didn't state a name in this session, so I took it from the vision you approved. Tell me if the approver here is someone else.
+- **`approved_at: 2026-08-17T00:00:00Z`** — I had today's date but no clock, so the time is midnight UTC rather than the actual moment. Give me the real time and I'll set it exactly.
+
+Nothing else was written — no roadmap, no milestones; those belong to `to-roadmap` in this same slug directory.
+
+Next action is yours, not the tooling's: hand-text the waitlist at Riverbend and one other clinic this week, and count claims inside the hour by Friday.
+

@@ -1,0 +1,7 @@
+{
+  "scenario": "02a-evasive-recoverable",
+  "model": "opus",
+  "turns": 16,
+  "endedBecause": "founder-sentinel",
+  "artifact": "written"
+}

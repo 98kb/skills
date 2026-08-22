@@ -1,0 +1,54 @@
+{
+  "scenario": "01-cooperative-sharp",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [],
+  "failures": [],
+  "excusedFailures": [],
+  "unexcusedFailures": [],
+  "confidence": "medium",
+  "humanReviewRequired": true,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Problem passes the swap-test",
+      "verdict": "pass",
+      "rationale": "The field names a specific customer and a specific failure: \"Marisol runs the front desk at Riverbend — six therapists, one site,\" twenty patients to re-book when a therapist calls out, \"About seven of those twenty end up with someone who isn't credentialed,\" and the concrete instance of \"a vestibular patient sitting down with the sports-ortho therapist.\" The quote \"I book the day twice\" and the discovery mechanism (the therapist walks out mid-session) are not text any competitor could claim word for word.",
+      "fields": [
+        "Problem"
+      ],
+      "excused": false
+    },
+    {
+      "id": 2,
+      "name": "Appetite is a fixed tier",
+      "verdict": "pass",
+      "rationale": "The field reads \"Small (≤2 weeks)\" — the value is the fixed small tier, with the parenthetical stating the tier's ceiling rather than a duration estimated for this particular project. It is not a calendar estimate (no \"about three weeks,\" no per-project range or contingency), so the tier is doing the work and the parenthetical only defines it.",
+      "fields": [
+        "Appetite"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Solution sketch under-specified and within cap",
+      "verdict": "pass",
+      "rationale": "The sketch runs roughly 94 words, well inside the ~150 cap. It is prose only — no diagrams, no acceptance criteria, and no edge-case enumeration; it states the shape (read the existing credentialing file, map the plan-of-care condition code, surface only credentialed replacement slots) plus two boundaries (\"Marisol still confirms every move by hand\"; initial evaluations untouched) without specifying mechanics.",
+      "fields": [
+        "Solution sketch"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Every assumption passes the falsifiability checklist",
+      "verdict": "pass",
+      "rationale": "The one recorded assumption has all four sub-fields and each holds: the claim is quantified as an action driving a measurable outcome (\"Filtering the reschedule list by credentialed specialty takes mismatched re-bookings from about 7 in 20 down to under 2 in 20\"); the threshold is a pre-committed kill line (\"Still above 4 in 20 after the first month... and I stop\") that reality could land on either side of, so it is not can't-fail and is not a preference about the document; and the test mines data already held (\"the 340 reschedule moves in Riverbend's existing last-quarter export... No build required, about an hour\") with a \"by when\" of \"By Friday.\" The threshold is stated in post-launch terms while the cheap test is retrospective, but the checklist requires a cheap timeboxed test rather than one that measures the threshold directly, and the export test does bear on the claim's premise.",
+      "fields": [
+        "Riskiest Assumptions & Cheap Validation Plan"
+      ],
+      "excused": false
+    }
+  ]
+}

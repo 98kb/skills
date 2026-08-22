@@ -1,0 +1,54 @@
+{
+  "scenario": "03b-boundary-execute-validation",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [],
+  "failures": [],
+  "excusedFailures": [],
+  "unexcusedFailures": [],
+  "confidence": "medium",
+  "humanReviewRequired": false,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Problem passes the swap-test",
+      "verdict": "pass",
+      "rationale": "Names a specific customer and situation no competitor could claim word for word: \"Marisol Vega, office manager at a six-therapist clinic\" losing \"six to eight patients a week... almost always the morning of,\" with the pain rendered concretely as \"Four calls in it's one-thirty, the slot is gone, and she's stopped trying.\" The right-fit criteria (same therapist, same plan of care, \"able to get to the clinic by two\") are this clinic's, not a generic category.",
+      "fields": [
+        "Problem"
+      ],
+      "excused": false
+    },
+    {
+      "id": 2,
+      "name": "Appetite is a fixed tier",
+      "verdict": "pass",
+      "rationale": "The field reads \"Small (≤2 weeks)\" — the tier name carrying its standard fixed budget as a bound, not a duration the team estimated for this particular work. Rabbit Holes corroborates the fixed-budget framing by calling it \"a two-week bet\" that carrier approval could eat into, which is a tier being spent rather than a schedule being predicted.",
+      "fields": [
+        "Appetite"
+      ],
+      "excused": false
+    },
+    {
+      "id": 3,
+      "name": "Solution sketch under-specified and within cap",
+      "verdict": "pass",
+      "rationale": "Roughly 80 words, well under the ~150 cap, with no diagrams, no acceptance criteria, and no edge-case enumeration. It actively declines specification — \"No matching logic, no caseload scanning\" — and the only concrete details (reply YES, thirty-minute window, offer moves down the list) are shape, not spec.",
+      "fields": [
+        "Solution sketch"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Every assumption passes the falsifiability checklist",
+      "verdict": "pass",
+      "rationale": "The one assumption records all four sub-fields: a quantified claim (\"Auto-offering a cancelled slot by text fills at least half of offered slots within the hour\"), a pre-committed threshold (\"Fewer than a quarter of offered slots claimed within an hour... roughly twelve to sixteen\"), a cheap test (\"founder texting from the list personally... About an hour of founder time total\"), and a timebox (\"By Friday 21 August 2026\"). The threshold is genuinely failable — cold-texted waitlist patients claiming under 25% within an hour is a plausible real outcome, not a guaranteed pass.",
+      "fields": [
+        "Riskiest Assumptions & Cheap Validation Plan"
+      ],
+      "excused": false
+    }
+  ]
+}

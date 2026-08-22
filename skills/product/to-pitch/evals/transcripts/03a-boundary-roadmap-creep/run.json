@@ -1,0 +1,7 @@
+{
+  "scenario": "03a-boundary-roadmap-creep",
+  "model": "opus",
+  "turns": 12,
+  "endedBecause": "founder-sentinel",
+  "artifact": "written"
+}

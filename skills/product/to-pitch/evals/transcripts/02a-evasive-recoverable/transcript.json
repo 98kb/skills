@@ -1,0 +1,126 @@
+[
+  {
+    "speaker": "agent",
+    "text": "I'll start by checking the upstream vision.\n\nThe vision is approved (Dana Okafor, 2026-08-16), so we're clear to shape a pitch. No pitches recorded yet, so this'll be a new one.\n\nI've read the vision — Marisol Vega, office manager at a six-therapist clinic, rebuilding next week's schedule by hand every Thursday — and the bet that specialty matching, not slot availability, is the binding constraint, now that credentialing files are machine-readable.\n\nLet's start with the Problem.\n\n**Your vision is for the office manager at a three-to-eight-therapist clinic, and it bets that the binding constraint on their schedule is specialty matching rather than open slots. What's the specific pain, for Marisol, that *this particular bet* goes after — in her words?**\n\nTwo to four sentences is the right size: name the slice of her week this bet touches, then what actually hurts about it."
+  },
+  {
+    "speaker": "founder",
+    "text": "Clinics are just bad at scheduling. It's a huge pain point across healthcare — everyone's fighting their calendar and losing revenue to it."
+  },
+  {
+    "speaker": "agent",
+    "text": "That answer would be equally true of every customer any scheduling vendor has ever sold to — a fifty-provider hospital system with a dedicated scheduling coordinator would nod along to it word for word. Your vision went to a lot of trouble to say that clinic is *not* your customer.\n\nSo let me push on what's specific to Marisol. Your vision names the moment precisely: it's not Thursday, when she builds next week's schedule — it's the middle of the week, when a therapist calls out or a vestibular patient is sitting on a sports-ortho therapist's calendar, and she loses the day to the phone.\n\n**What's the pain in *that* moment, in her words?** What does she say when she describes that Wednesday to you — and what does it cost her when those twenty appointments get reshuffled?"
+  },
+  {
+    "speaker": "founder",
+    "text": "It's the single biggest operational drag in outpatient care. Every practice feels it, every single week."
+  },
+  {
+    "speaker": "agent",
+    "text": "Still a category, and now a broader one — \"every practice, every week\" is a market-size statement, not a customer's pain. I can't write that into a pitch; a later reader couldn't tell your bet from anyone else's.\n\nOne thing before my last push, because it matters for who this is even for: you said **\"practice\"** — do you mean the clinic as an organization (the P&L, the no-show rate, the owner), or the person running the schedule inside it (Marisol, her Wednesday)? Those are different customers with different pains, and your vision picked the second one.\n\nAnd the last push: forget the market. **Think of one Wednesday at Riverbend.** A therapist calls out at 8am. What does Marisol actually do for the next six hours, and what does she say to you about it afterward? Two or three sentences of that specific day is all I need.\n\nI'll take your best answer after this and move on either way — but the more concrete this is, the more the rest of the pitch has to stand on."
+  },
+  {
+    "speaker": "founder",
+    "text": "The clinic. The business. Either way it's the same story.\n\nHonestly, that *is* the problem. Empty slots are money on the floor. That's the whole thing."
+  },
+  {
+    "speaker": "agent",
+    "text": "Got it — the clinic as a business, and I'll record the Problem in your words. That's your call, and I'm taking it.\n\nI'm flagging the Problem as failing the swap-test, and I'll disclose that again before you approve: as written, it's a statement any scheduling vendor could put on any slide, so it doesn't yet mark out this bet as yours. (Worth noting once and then leaving alone: your approved vision bets the opposite of \"empty slots are money on the floor\" — it says the constraint is specialty matching, *not* slot availability. Whether the bet still follows from the vision is yours to settle, not mine to test here.)\n\nMoving on.\n\n**How much are you willing to spend on this before you'd stop and reassess — small, up to two weeks, or big, up to six?**\n\nTwo tiers, that's the whole menu. This is a budget you're committing to, not an estimate of how long the work will take — we fix it now so the solution gets shaped to fit it, rather than the other way round."
+  },
+  {
+    "speaker": "founder",
+    "text": "Probably a month or so? Something like that."
+  },
+  {
+    "speaker": "agent",
+    "text": "That's a calendar estimate, not a tier — and \"a month or so\" straddles both, which is exactly the ambiguity fixing the budget is meant to remove.\n\n**Appetite is fixed before we shape the solution — which tier are you committing to: small, up to two weeks, or big, up to six?**\n\nPick the one you'd be willing to stop at. The sketch gets written to fit whichever you name."
+  },
+  {
+    "speaker": "founder",
+    "text": "I mean — four to six weeks, realistically. It depends how the calendar integration goes."
+  },
+  {
+    "speaker": "agent",
+    "text": "Four-to-six lands inside the big tier, so we're close — but \"it depends how the calendar integration goes\" is the estimate talking. An appetite doesn't stretch when the work turns out harder; that's the point of it. If the integration goes badly, the appetite is what makes you stop and reassess rather than spend week seven.\n\n**So: big — six weeks, hard stop — is that the tier you're committing to?**"
+  },
+  {
+    "speaker": "founder",
+    "text": "I really can't put it in a box like that. It'll take what it takes."
+  },
+  {
+    "speaker": "agent",
+    "text": "\"It'll take what it takes\" is the one answer an appetite can't be, so I'll stop pressing and tell you what I'm doing instead.\n\nI'm provisionally recording the Appetite as **small (≤2 weeks)**, flagged as unconfirmed by you. That's the rule when a tier doesn't get committed to: default to the tighter one. It would be worse for me to write down \"big\" — that hands you six weeks of budget you never actually agreed to, and it'd sit in the artifact looking like a decision you made. Small is the honest placeholder. You can overturn it at any point before you approve by just naming the tier.\n\nYou'll see this flagged again before approval, and it doesn't block anything.\n\nNext field — and I have to ask it against the appetite on record:\n\n**At a small appetite — two weeks — what are you actually building?**\n\nA short paragraph, or up to five bullets. Prose only; no diagrams, no acceptance criteria, no exhaustive edge-case list. This is meant to stay under-specified — the detail gets filled in during the build, not here."
+  },
+  {
+    "speaker": "founder",
+    "text": "Sure, fine.\n\nWhen a patient cancels, the slot goes to the top name on a per-therapist waitlist automatically. One text goes out, first to reply takes it, and they've got thirty minutes to claim before it drops to the next person on the list. The office manager is the one who decides who goes on the waitlist — the system never adds anyone on its own. That's it: cancellation comes in, text goes out, slot gets filled, no phone calls."
+  },
+  {
+    "speaker": "agent",
+    "text": "Good — that's the right size and it stays under-specified. One thing in the wording is genuinely ambiguous, though, and it changes what gets built:\n\nYou said the slot goes to **\"the top name\"**, but also **\"first to reply takes it\"**. Those describe two different mechanisms:\n\n- **Sequential** — one text to the top name only; they have thirty minutes; if they don't claim it, it drops to the next person and the next text goes out.\n- **Simultaneous** — the text goes to several people on the list at once, and whoever replies first inside thirty minutes gets it.\n\nWhich one do you mean? (Sequential is slower to fill but nobody gets told \"sorry, taken\"; simultaneous fills faster and creates losers.)"
+  },
+  {
+    "speaker": "founder",
+    "text": "Sequential — one text to the top name, thirty minutes to claim, then it drops to the next person. Nobody gets told the slot's already gone."
+  },
+  {
+    "speaker": "agent",
+    "text": "Sequential it is — I'll fold that into the sketch so a later reader can't misread it.\n\nNow the one that decides whether this pitch can be recorded at all.\n\n**What's the one thing that, if it turned out to be false, would sink this?**\n\nJust say it plainly — no framework, no metrics yet. What's the fear?"
+  },
+  {
+    "speaker": "founder",
+    "text": "The risky bit isn't the automation, it's whether the waitlist actually bites. A cancelled slot offered to the waitlist by text gets claimed by someone within the hour at least half the time. If fewer than half of them are claimed inside the hour, I'm wrong — the waitlist isn't the standing demand I think it is. I can check that in under an hour without building anything: Riverbend's front desk already texts its waitlist by hand when something opens up, and last quarter's message log holds about sixty of those offers with the booking timestamps beside them, so I'll count what share got claimed inside the hour. Done by Thursday."
+  },
+  {
+    "speaker": "agent",
+    "text": "That one passes clean — it's a measurable claim, it has a line in the sand you drew *before* seeing the data, the test is mining a log you already have, and it's timeboxed. Nothing for me to push on.\n\nRecording it as:\n\n- **Claim:** a cancelled slot offered to the waitlist by text is claimed within the hour at least 50% of the time\n- **Threshold:** fewer than half claimed inside the hour → the waitlist isn't standing demand, and I'm wrong\n- **Test:** count claim-rate-within-an-hour across ~60 manual waitlist offers in Riverbend's last-quarter front-desk message log\n- **Timebox:** Thursday, 20 Aug\n\n**Is there a second thing that would sink this if it turned out false?** Up to three, ranked riskiest first — but one is a legitimate answer if that's genuinely the load-bearing one."
+  },
+  {
+    "speaker": "founder",
+    "text": "That's the one that matters. Everything else is downstream of it."
+  },
+  {
+    "speaker": "agent",
+    "text": "Fair enough — one is fine.\n\n**What's likely to eat unplanned time or complexity inside this approach?** Risks *within* what you sketched — the parts that look small from here and aren't."
+  },
+  {
+    "speaker": "founder",
+    "text": "Two things. Patients who claim a slot and then no-show anyway — that's a whole behaviour problem sitting underneath the mechanism. And getting the texts to go out through the clinic's existing phone number, so it looks like the clinic and not some random shortcode."
+  },
+  {
+    "speaker": "agent",
+    "text": "Both recorded.\n\n**What's explicitly *not* part of this, that someone might reasonably assume is included?** Not risks this time — the boundary. Where the lines are drawn around this bet."
+  },
+  {
+    "speaker": "founder",
+    "text": "No changes to billing — none, we don't touch it. And nothing that texts a patient unless the office manager has put them on a list herself. The system never adds anyone on its own."
+  },
+  {
+    "speaker": "agent",
+    "text": "Recorded.\n\n**What's still unresolved that the roadmap stage will need to answer?** At most five, and none is a fine answer."
+  },
+  {
+    "speaker": "founder",
+    "text": "Just the one — whether thirty minutes is actually the right claim window. Could be too long, could be too short, I don't know yet."
+  },
+  {
+    "speaker": "agent",
+    "text": "All seven fields are in. Before I show you the draft, the pitch needs a directory name.\n\nFrom your Problem and sketch, I'd propose the slug **`text-waitlist-backfill`** — it lands at `docs/product/pitches/text-waitlist-backfill/pitch.md`. Confirm it or give me your own.\n\nHere's the full assembled draft:\n\n---\n\n```markdown\n# Pitch: Auto-fill cancelled slots from a texted waitlist\n\nBridges from the product vision.\n\n## Problem\n\nClinics are bad at scheduling, and it's the single biggest operational drag in\noutpatient care — every clinic is fighting its calendar and losing revenue to it,\nevery single week. Empty slots are money on the floor. The customer here is the\nclinic as a business, not the office manager running the schedule inside it.\n\n## Appetite\n\nsmall (≤2 weeks)\n\n## Solution sketch\n\nWhen a patient cancels, the freed slot goes automatically to the top name on that\ntherapist's waitlist. One text goes out to that one person; they have thirty\nminutes to claim it. If they don't, it drops to the next person on the list and\nthe next text goes out — sequentially, one at a time, so nobody is ever told the\nslot has already been taken. The office manager decides who goes on a waitlist;\nthe system never adds anyone on its own. Cancellation comes in, text goes out,\nslot gets filled, no phone calls.\n\n## Riskiest Assumptions & Cheap Validation Plan\n\n1. **Claim:** A cancelled slot offered to the waitlist by text is claimed by\n   someone within the hour at least half the time.\n   - **Threshold:** Fewer than half of offers claimed inside the hour — the\n     waitlist isn't the standing demand I think it is.\n   - **Test:** Count the share claimed within an hour across the ~60 manual\n     waitlist offers, with booking timestamps, already sitting in Riverbend's\n     last-quarter front-desk message log. No building required.\n   - **Timebox:** Thursday 20 Aug 2026.\n\n## Rabbit Holes\n\n- Patients who claim a slot and then no-show anyway — a behaviour problem sitting\n  underneath the mechanism.\n- Getting texts to send from the clinic's existing phone number, so they look like\n  the clinic and not a random shortcode.\n\n## No-gos\n\n- No changes to billing. None — we don't touch it.\n- Nothing texts a patient unless the office manager has put them on a list herself.\n  The system never adds anyone on its own.\n\n## Open Questions\n\n- Whether thirty minutes is the right claim window — could be too long, could be\n  too short.\n```\n\n---\n\n**Three flags to disclose before you decide:**\n\n1. **The Problem fails the swap-test.** \"Clinics are bad at scheduling, empty slots are money on the floor\" is true of every clinic any scheduling vendor sells to, including the fifty-provider organizations your vision explicitly rules out. As recorded, it doesn't distinguish this bet from anyone else's.\n2. **The Appetite is recorded as small (≤2 weeks), but you never confirmed that tier.** It's the tighter-of-two default I applied when the answer stayed a calendar estimate. Your own read was four-to-six weeks.\n3. **The sketch looks likely to cost more than the appetite it's written to fit.** Sequential texting, thirty-minute claim timers, and sending through the clinic's own number is not obviously two weeks of work — and you said as much yourself. Either the appetite is wrong or the sketch is bigger than the budget; that's a real tension sitting in the artifact.\n\nNone of these blocks approval — a pitch can be recorded with flags on it, and they stay visible to whoever reads it next.\n\n**Do you approve this pitch?** And confirm the slug while you're at it."
+  },
+  {
+    "speaker": "founder",
+    "text": "`text-waitlist-backfill` works for me. And yes, I approve this pitch."
+  },
+  {
+    "speaker": "agent",
+    "text": "Recording this as approved. One thing I need before I write it: the approval marker carries the approver's name, and you haven't given me one this session.\n\n**Should I record the approver as Dana Okafor** — the name on the vision's approval — **or something else?** I'd rather ask than infer it; I'll write the file the moment you say."
+  },
+  {
+    "speaker": "founder",
+    "text": "Dana Okafor."
+  },
+  {
+    "speaker": "agent",
+    "text": "Written to `docs/product/pitches/text-waitlist-backfill/pitch.md`, approved by Dana Okafor, with `upstream: ../../vision.md` pointing one hop back at the vision.\n\nOne note on the timestamp: I only had today's date, not the time, so `approved_at` is recorded as `2026-08-17T00:00:00Z`. Correct it if you want the precise moment.\n\nThree flags rode into the artifact with your approval, and they're worth keeping in view:\n\n- **The Problem doesn't survive the swap-test.** As recorded, it describes the category rather than your customer — and it argues empty slots, where your approved vision argues specialty matching. If a reader ever asks how this bet follows from that vision, this field is where they'll stall.\n- **The Appetite says small (≤2 weeks) but you never committed to it**, and your own read was four-to-six weeks.\n- **The sketch probably doesn't fit that appetite.** One of the two has to give before the work starts.\n\nYour validation test is the cheapest thing here and it's dated Thursday — mining Riverbend's existing message log for that claim rate. Run it, and you'll know whether the waitlist is standing demand before you spend anything.\n\nRe-run `/to-pitch` and name this slug to revise any field; editing an approved pitch clears the approval marker and asks you for a fresh one."
+  }
+]

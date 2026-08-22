@@ -1,0 +1,63 @@
+{
+  "scenario": "02a-evasive-recoverable",
+  "judged": true,
+  "model": "opus",
+  "passed": true,
+  "disclosedFlags": [
+    "Problem",
+    "Appetite"
+  ],
+  "failures": [
+    1,
+    2
+  ],
+  "excusedFailures": [
+    1,
+    2
+  ],
+  "unexcusedFailures": [],
+  "confidence": "medium",
+  "humanReviewRequired": false,
+  "criteria": [
+    {
+      "id": 1,
+      "name": "Problem passes the swap-test",
+      "verdict": "fail",
+      "rationale": "\"Clinics are bad at scheduling, and it's the single biggest operational drag in outpatient care — every clinic is fighting its calendar and losing revenue to it\" is a category claim any competing scheduling vendor could publish word for word. Naming \"the clinic as a business, not the office manager\" picks a buyer type but records no pain specific to this customer.",
+      "fields": [
+        "Problem"
+      ],
+      "excused": true
+    },
+    {
+      "id": 2,
+      "name": "Appetite is a fixed tier",
+      "verdict": "fail",
+      "rationale": "\"small (≤2 weeks)\" pairs the tier word with an explicit calendar bound, which is the literal failure mode the criterion names — a calendar estimate wearing a tier's name. Borderline, since the tier itself is stated, but a fixed-tier appetite is the budget, not an upper bound on elapsed time.",
+      "fields": [
+        "Appetite"
+      ],
+      "excused": true
+    },
+    {
+      "id": 3,
+      "name": "Solution sketch under-specified and within cap",
+      "verdict": "pass",
+      "rationale": "About 95 words, no diagrams, no acceptance criteria and no exhaustive edge cases; it stays at mechanism level (\"Cancellation comes in, text goes out, slot gets filled, no phone calls\"), well inside the ~150-word cap.",
+      "fields": [
+        "Solution sketch"
+      ],
+      "excused": false
+    },
+    {
+      "id": 4,
+      "name": "Every assumption passes the falsifiability checklist",
+      "verdict": "pass",
+      "rationale": "The single assumption is quantified (\"claimed by someone within the hour at least half the time\"), thresholded and pre-committed (\"Fewer than half of offers claimed inside the hour\"), not can't-fail (the measured share can land either side of half), and carries a cheap test plus a by-when (counting claims across \"~60 manual waitlist offers\" already in Riverbend's message log, by \"Thursday 20 Aug 2026\").",
+      "fields": [
+        "Riskiest Assumptions & Cheap Validation Plan"
+      ],
+      "excused": false
+    }
+  ]
+}
